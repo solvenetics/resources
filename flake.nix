@@ -11,11 +11,11 @@
                     system :
                         let
                             lib = null ;
+                            pkgs = builtins.import nixpkgs { system = system ; } ;
                             in
                                 {
-                                    checks = [ ] ;
+                                    checks = { } ;
                                     lib = lib ;
                                 } ;
-                pkgs = builtins.import nixpkgs { system = system ; } ;
                 in flake-utils.lib.eachDefaultSystem fun ;
 }
