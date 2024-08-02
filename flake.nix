@@ -11,11 +11,13 @@
                     system :
                         let
                             lib =
-                                let
-                                    in
-                                        {
-                                            environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
-                                        } ;
+                                { scripts ? { } } :
+                                    let
+                                        environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
+                                        in
+                                            {
+                                                environment-variable = environment-variable ;
+                                            } ;
                             pkgs = import nixpkgs { system = system ; } ;
                             in
                                 {
@@ -27,18 +29,21 @@
                                                         name = "simple" ;
                                                         src = ./. ;
                                                         buildCommand =
-                                                            ''
-                                                                ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                    da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287=b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 &&
-                                                                    if [ ${ lib.environment-variable "da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287" } == b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 ]
-                                                                    then
-                                                                        ${ pkgs.coreutils }/bin/echo The environment variable was set correctly.
-                                                                    else
-                                                                        ${ pkgs.coreutils }/bin/echo The environment variable was not set correctly. &&
-                                                                            exit 64
-                                                                    fi
+                                                            let
+                                                                resources = lib { } ;
+                                                                in
+                                                                    ''
+                                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                            da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287=b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 &&
+                                                                            if [ ${ resources.environment-variable "da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287" } == b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 ]
+                                                                            then
+                                                                                ${ pkgs.coreutils }/bin/echo The environment variable was set correctly.
+                                                                            else
+                                                                                ${ pkgs.coreutils }/bin/echo The environment variable was not set correctly. &&
+                                                                                    exit 64
+                                                                            fi
 
-                                                            '' ;
+                                                                    '' ;
                                                     } ;
                                         } ;
                                     lib = lib ;
