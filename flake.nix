@@ -11,22 +11,11 @@
                     system :
                         let
                             lib =
-                                { scripts } : { pkgs , ... } @secondary :
-                                    let
-                                        arguments =
-                                            {
-                                                scripts =
-                                                    let
-                                                        mapper =
-                                                            path : name : value :
-                                                                if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ( value secondary )
-                                                                else builtins.mapAttrs ( builtins.concatLists [ path [ name ] ] ) ;
-                                                        in builtins.mapAttrs ( mapper [ ] ) scripts ;
-                                            } ;
-                                        in
-                                            {
-                                                scripts = arguments.scripts ;
-                                            } ;
+                                let
+                                    in
+                                        {
+                                            environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
+                                        } ;
                             pkgs = import nixpkgs { system = system ; } ;
                             in
                                 {
@@ -40,8 +29,15 @@
                                                         buildCommand =
                                                             ''
                                                                 ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                    ${ pkgs.coreutils }/bin/echo THIS ALWAYS FAILS &&
-                                                                    exit 64
+                                                                    da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287=b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 &&
+                                                                    if [ ${ lib.environment-variable "da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287" } == b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 ]
+                                                                    then
+                                                                        ${ pkgs.coreutils }/bin/echo The environment variable was set correctly.
+                                                                    else
+                                                                        ${ pkgs.coreutils }/bin/echo The environment variable was not set correctly. &&
+                                                                            exit 64
+                                                                    fi
+
                                                             '' ;
                                                     } ;
                                         } ;
