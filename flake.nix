@@ -21,7 +21,7 @@
                                     temporary ? { }
                                 } :
                                     let
-                                        environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
+                                        environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
                                         outputs =
                                             {
                                                 scripts =
@@ -107,9 +107,10 @@
                                                                                             temporary =
                                                                                                 { pkgs , environment-variable , ... } :
                                                                                                     ''
-                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c5590393=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
-                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ pkgs.coreutils }/bin/mktemp --dry-run )&&
-                                                                                                            export e89cff209ac3b6e3b22c0f3b1a7c0a246c95857f513785cb39a60a7181aec208b29bb9dbbba8b08c742319915810a402446d8760da285db887f0933423aed2f6=$( ${ pkgs.coreutils }/bin/mktemp --dry-run )
+                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c5590393=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
+                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
+                                                                                                            export e89cff209ac3b6e3b22c0f3b1a7c0a246c95857f513785cb39a60a7181aec208b29bb9dbbba8b08c742319915810a402446d8760da285db887f0933423aed2f6=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
+                                                                                                            ${ environment-variable 1 }
                                                                                                     '' ;
                                                                                         } ;
                                                                                 } ;
@@ -136,7 +137,7 @@
                                                                                     ${ pkgs.coreutils }/bin/echo EXPECTED
                                                                                     ${ pkgs.coreutils }/bin/echo 5bc84c7df8361e1fbebf1af143c7714b25f534582d57d36bb2c693886508bf4b3d5a755a3ae15d3f463ad826ecaec4acc5469a07ed3f7cc0601578cab6062542 &&
                                                                                     ${ pkgs.coreutils }/bin/echo OBSERVED: &&
-                                                                                    ${ resources.scripts.alpha } &&
+                                                                                    ${ resources.scripts.alpha } ${ resources.temporary.beta } &&
                                                                                     exit 64
                                                                             fi &&
                                                                             ${ resources.scripts.verification.temporary }
