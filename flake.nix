@@ -40,8 +40,8 @@
                                                         buildCommand =
                                                             ''
                                                                 ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                    ${ pkgs.coreutils }/bin/echo THIS ALWAYS PASSES &&
-                                                                    exit 0
+                                                                    ${ pkgs.coreutils }/bin/echo THIS ALWAYS FAILS &&
+                                                                    exit 64
                                                             '' ;
                                                     } ;
                                         } ;
