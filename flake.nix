@@ -14,9 +14,20 @@
                                 { scripts ? { } } :
                                     let
                                         environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
+                                        outputs =
+                                            {
+                                                scripts =
+                                                    let
+                                                        mapper =
+                                                            path : name : value :
+                                                                if builtins.typeOf value == "set" then builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                else pkgs.writeShellScript name value ;
+                                                        in builtins.mapAttrs ( mapper [ ] ) scripts ;
+                                            } ;
                                         in
                                             {
                                                 environment-variable = environment-variable ;
+                                                scripts = outputs.scripts ;
                                             } ;
                             pkgs = import nixpkgs { system = system ; } ;
                             in
@@ -30,7 +41,17 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
-                                                                resources = lib { } ;
+                                                                resources =
+                                                                    lib
+                                                                        {
+                                                                            scripts =
+                                                                                {
+                                                                                    alpha =
+                                                                                        ''
+                                                                                            ${ pkgs.coreutils }/bin/echo hi
+                                                                                        '' ;
+                                                                                } ;
+                                                                        } ;
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
@@ -41,7 +62,9 @@
                                                                             else
                                                                                 ${ pkgs.coreutils }/bin/echo The environment variable was not set correctly. &&
                                                                                     exit 64
-                                                                            fi
+                                                                            fi &&
+                                                                            ${ pkgs.coreutils }/bin/echo ${ resources.scripts.alpha } &&
+                                                                            exit 64
 
                                                                     '' ;
                                                     } ;
