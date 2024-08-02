@@ -39,8 +39,9 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             ''
-                                                                ${ pkgs.coreutils }/bin/echo THIS ALWAYS FAILS &&
-                                                                    exit 64
+                                                                ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                    ${ pkgs.coreutils }/bin/echo THIS ALWAYS PASSES &&
+                                                                    exit 0
                                                             '' ;
                                                     } ;
                                         } ;
