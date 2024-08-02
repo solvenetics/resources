@@ -18,7 +18,10 @@
                                     secondary ? { } ,
                                     scripts ? secondary : { } ,
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
-                                    temporary ? { }
+                                    temporary ? { } ,
+                                    temporary-init-error-code ? 64 ,
+                                    temporary-init-error-message ? resource-directory : "We were unable to complete initiation:  ${ resource-directory }." ,
+                                    temporary-resource-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.resource"
                                 } :
                                     let
                                         environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
@@ -38,21 +41,42 @@
                                                             path : name : value :
                                                                 if builtins.typeOf value == "lambda" then
                                                                     let
-                                                                        exec =
+                                                                        init =
                                                                             ''
-                                                                                export ${ target }=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
-                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "remove" remove } ${ environment-variable "$" } ${ environment-variable target } | ${ at } now  2> /dev/null &&
-                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                    exec ${ temporary.init } ${ environment-variable "@" } > /dev/null 2>&1
+                                                                                RESOURCE=$( ${ temporary-resource-directory } ) &&
+                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    if [ -t 0 ]
+                                                                                    then
+                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        then
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                        else
+                                                                                             ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
+                                                                                                exit ${ builtins.toString temporary-init-error-code }
+                                                                                        fi
+                                                                                    else
+                                                                                        if ${ temporary.init } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        then
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                        else
+                                                                                           ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
+                                                                                                exit ${ builtins.toString temporary-init-error-code }
+                                                                                        fi
+                                                                                    fi
                                                                             '' ;
-                                                                        remove =
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "1" } &&
-                                                                                    ${ pkgs.writeShellScript "release" temporary.release } &&
-                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --follow ${ environment-variable "2" }
-                                                                            '' ;
-                                                                        temporary = value outputs.scripts ;
-                                                                        in pkgs.writeShellScript name exec
+                                                                        temporary =
+                                                                            let
+                                                                                identity =
+                                                                                    {
+                                                                                        init ? builtins.null ,
+                                                                                        release ? builtins.null
+                                                                                    } :
+                                                                                        {
+                                                                                            init = init ;
+                                                                                            release = release ;
+                                                                                        } ;
+                                                                                in identity ( value outputs.scripts ) ;
+                                                                        in pkgs.writeShellScript name init
                                                                 else if builtins.typeOf value == "set" then builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
                                                         in builtins.mapAttrs ( mapper [ ] ) temporary ;
@@ -107,7 +131,7 @@
                                                                                             temporary =
                                                                                                 { pkgs , environment-variable , ... } :
                                                                                                     ''
-                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c5590393=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
+                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
                                                                                                             export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
                                                                                                             export e89cff209ac3b6e3b22c0f3b1a7c0a246c95857f513785cb39a60a7181aec208b29bb9dbbba8b08c742319915810a402446d8760da285db887f0933423aed2f6=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
                                                                                                             ${ environment-variable 1 }
@@ -140,7 +164,7 @@
                                                                                     ${ resources.scripts.alpha } ${ resources.temporary.beta } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary }
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta }
                                                                     '' ;
                                                     } ;
                                         } ;
