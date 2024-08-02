@@ -11,7 +11,11 @@
                     system :
                         let
                             lib =
-                                { scripts ? { } } :
+                                {
+                                    invalid-script-throw ?  value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172: ${ builtins.typeOf value }" ,
+                                    secondary ? { } ,
+                                    scripts ? secondary : { } ,
+                                } :
                                     let
                                         environment-variable = name : builtins.concatStringsSep "" [ "$" "{" name "}" ] ;
                                         outputs =
@@ -20,13 +24,13 @@
                                                     let
                                                         mapper =
                                                             path : name : value :
-                                                                if builtins.typeOf value == "set" then builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value
-                                                                else pkgs.writeShellScript name value ;
+                                                                if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ( value ( secondary // { environment-variable = environment-variable ; } ) )
+                                                                else if builtins.typeOf value == "set" then builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                else builtins.throw ( invalid-script-throw value ) ;
                                                         in builtins.mapAttrs ( mapper [ ] ) scripts ;
                                             } ;
                                         in
                                             {
-                                                environment-variable = environment-variable ;
                                                 scripts = outputs.scripts ;
                                             } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -47,23 +51,16 @@
                                                                             scripts =
                                                                                 {
                                                                                     alpha =
-                                                                                        ''
-                                                                                            ${ pkgs.coreutils }/bin/echo hi
-                                                                                        '' ;
+                                                                                        { pkgs , environment-variable , ... } :
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "e8f69632444d7b53bd5cba03f969154d93562ef09e791e97ce95d2b5c35bd8c4f821bbc48697268d6c819f7b7a1a21a13411ff55f86cc339de375411681fe839" }
+                                                                                            '' ;
                                                                                 } ;
+                                                                            secondary = { pkgs = pkgs ; } ;
                                                                         } ;
                                                                 in
                                                                     ''
-                                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287=b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 &&
-                                                                            if [ ${ resources.environment-variable "da9276c8b8e38cc2a707f129adbb126dcba08f4d72364b741725c23614f980e3bcf5643a2b46157ecf1e8f62dd9bd3c1bb5b18d4566cf430892eb1a4f28a3287" } == b63ab4cc53c0fb0ed14976cace70f3c4ea9fa95dee38fc2f9cdbcf7e48757787401e626f9374d93e7fe8f3ac43086931299314d87cc99f5ef255a4bb7fbd3dc4 ]
-                                                                            then
-                                                                                ${ pkgs.coreutils }/bin/echo The environment variable was set correctly.
-                                                                            else
-                                                                                ${ pkgs.coreutils }/bin/echo The environment variable was not set correctly. &&
-                                                                                    exit 64
-                                                                            fi &&
-                                                                            ${ pkgs.coreutils }/bin/echo ${ resources.scripts.alpha } &&
+                                                                        ${ pkgs.coreutils }/bin/echo  ${ resources.scripts.alpha } &&
                                                                             exit 64
 
                                                                     '' ;
