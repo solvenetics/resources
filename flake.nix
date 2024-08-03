@@ -133,38 +133,94 @@
                                                                                     verification =
                                                                                         {
                                                                                             temporary =
-                                                                                                { pkgs , environment-variable , target ,... } :
-                                                                                                    let
-                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
-                                                                                                        in
-                                                                                                            ''
-                                                                                                                export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
-                                                                                                                    export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
-                                                                                                                    TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
-                                                                                                                    if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo missing init flag &&
+                                                                                                {
+                                                                                                    lower =
+                                                                                                        { pkgs , environment-variable , target ,... } :
+                                                                                                            let
+                                                                                                                mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
+                                                                                                                in
+                                                                                                                    ''
+                                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
+                                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
+                                                                                                                            TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
+                                                                                                                            if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo missing init flag &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo wrong arguments &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
+                                                                                                                            fi &&
+                                                                                                                            if [ ${ environment-variable "#" } == 2 ]
+                                                                                                                            then
+                                                                                                                                if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file
+                                                                                                                                fi
+                                                                                                                            elif [ ${ environment-variable "#" } == 3 ]
+                                                                                                                            then
+                                                                                                                                if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable 3 }" ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo wrong stdin &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin
+                                                                                                                                fi
+                                                                                                                            fi &&
                                                                                                                             exit 64
-                                                                                                                    fi &&
-                                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo wrong arguments &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo EXPECTED &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo OBSERVED &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
-                                                                                                                    fi &&
-                                                                                                                    if [ ${ environment-variable "#" } == 2 ]
-                                                                                                                    then
-                                                                                                                        if [ -e ${ environment-variable "TARGET" }/stdin ]
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file
-                                                                                                                        fi
-                                                                                                                    fi &&
-                                                                                                                    exit 64
 
-                                                                                                            '' ;
+                                                                                                                    '' ;
+                                                                                                    upper =
+                                                                                                        { pkgs , environment-variable , target ,... } :
+                                                                                                            let
+                                                                                                                mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
+                                                                                                                in
+                                                                                                                    ''
+                                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
+                                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
+                                                                                                                            TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
+                                                                                                                            if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo missing init flag &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo wrong arguments &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
+                                                                                                                            fi &&
+                                                                                                                            if [ ${ environment-variable "#" } == 2 ]
+                                                                                                                            then
+                                                                                                                                if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file
+                                                                                                                                fi
+                                                                                                                            elif [ ${ environment-variable "#" } == 3 ]
+                                                                                                                            then
+                                                                                                                                if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable 3 }" ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo wrong stdin &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin
+                                                                                                                                fi
+                                                                                                                            fi &&
+                                                                                                                            exit 64
+
+                                                                                                                    '' ;
+                                                                                                } ;
                                                                                         } ;
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
@@ -193,7 +249,8 @@
                                                                                     ${ resources.scripts.alpha } ${ resources.temporary.beta } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 1e9dd5648ba703f4ff798808bd0fbcc8f97241fc20a44c39272d42935a4dbc7945b64f855a4ddf3b1a3337098192b19545854b0cff4c9c0aa5128ee64ed97802
+                                                                            ${ resources.scripts.verification.temporary.upper } ${ resources.temporary.beta } 1e9dd5648ba703f4ff798808bd0fbcc8f97241fc20a44c39272d42935a4dbc7945b64f855a4ddf3b1a3337098192b19545854b0cff4c9c0aa5128ee64ed97802 &&
+                                                                            ${ resources.scripts.verification.temporary.upper } ${ resources.temporary.beta } 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
                                                                     '' ;
                                                     } ;
                                         } ;
