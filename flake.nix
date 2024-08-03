@@ -150,7 +150,7 @@
                                                                                             temporary =
                                                                                                 { pkgs , environment-variable , target ,... } :
                                                                                                     let
-                                                                                                        lower =
+                                                                                                        inner =
                                                                                                             ''
                                                                                                                 if [ -t 0 ]
                                                                                                                 then
@@ -176,28 +176,31 @@
                                                                                                                     then
                                                                                                                         if [ -e ${ environment-variable "TARGET" }/stdin ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file >&2
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
                                                                                                                         fi
                                                                                                                     elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                     then
                                                                                                                         if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable 3 }" ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo wrong stdin >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner wrong stdin >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
                                                                                                                             exit 64
                                                                                                                         fi
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
+                                                                                                                            exit 64
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo present release flag >&2 &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }
                                                                                                             '' ;
-                                                                                                        upper =
+                                                                                                        outer =
                                                                                                             let
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
@@ -206,30 +209,30 @@
                                                                                                                             export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
                                                                                                                             if [ -t 0 ]
                                                                                                                             then
-                                                                                                                                TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "lower" lower } ${ environment-variable "@" } )
+                                                                                                                                TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             else
-                                                                                                                                TARGET=$( ${ pkgs.writeShellScript "lower" lower } ${ environment-variable "@" } )
+                                                                                                                                TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
                                                                                                                             if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo missing init flag &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing init flag &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
+                                                                                                                            ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                             if [ ! -f ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo missing release flag &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing release flag &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo present target directory &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present target directory &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
-
                                                                                                                     '' ;
-                                                                                                in upper ;
+                                                                                                in outer ;
                                                                                         } ;
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
