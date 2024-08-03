@@ -115,7 +115,7 @@
                                                                 resources =
                                                                     lib
                                                                         {
-                                                                            at = "$( ${ pkgs.coreutils }/bin/tee ) &" ;
+                                                                            at = "${ pkgs.bash }/bin/bash -c $( ${ pkgs.coreutils }/bin/tee ) &" ;
                                                                             scripts =
                                                                                 {
                                                                                     alpha =
