@@ -58,17 +58,13 @@
                                                                                     else
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            echo AAAA0001000 &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/stderr 2>1
-                                                                                           echo AAAA0002000 &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                            ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
-                                                                                        fi &&
-                                                                                           echo AAAA0003000
+                                                                                        fi
                                                                                     fi
-                                                                                    echo AAAA0004000
                                                                              '' ;
                                                                         release =
                                                                             ''
@@ -156,16 +152,12 @@
                                                                                                     let
                                                                                                         lower =
                                                                                                             ''
-                                                                                                                echo BBBB ${ environment-variable "@" } >&2 &&
-                                                                                                                cat ${ environment-variable "1" } >&2 &&
-                                                                                                                echo BBBB >&2 &&
                                                                                                                 if [ -t 0 ]
                                                                                                                 then
                                                                                                                     TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 else
                                                                                                                     TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 fi &&
-                                                                                                                   ${ pkgs.coreutils }/bin/echo BBBB TARGET=${ environment-variable "TARGET" } >&2 &&
                                                                                                                     if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
@@ -177,8 +169,6 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
