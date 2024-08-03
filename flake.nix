@@ -232,7 +232,6 @@
                                                                                                                             then
                                                                                                                                  ${ pkgs.coreutils }/bin/echo outer present target directory &&
                                                                                                                                  # AAAA
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo AAAA TARGET=${ environment-variable "TARGET" } &&
                                                                                                                                     ${ pkgs.coreutils }/bin/cat /tmp/RELEASE &&
                                                                                                                                    exit 64
                                                                                                                             fi &&
