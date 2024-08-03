@@ -47,7 +47,7 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     if [ -t 0 ]
                                                                                     then
-                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
@@ -55,7 +55,7 @@
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
-                                                                                        if ${ temporary.init } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
@@ -140,7 +140,8 @@
                                                                                                             ''
                                                                                                                 export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
                                                                                                                     export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
-                                                                                                                    TARGET=$( ${ environment-variable 1 } ) &&
+                                                                                                                    TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
                                                                                                                     if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo missing init flag &&
@@ -152,7 +153,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable target }/arguments
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
                                                                                                                     fi
                                                                                                                     exit 64
 
@@ -185,7 +186,7 @@
                                                                                     ${ resources.scripts.alpha } ${ resources.temporary.beta } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta }
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 1e9dd5648ba703f4ff798808bd0fbcc8f97241fc20a44c39272d42935a4dbc7945b64f855a4ddf3b1a3337098192b19545854b0cff4c9c0aa5128ee64ed97802
                                                                     '' ;
                                                     } ;
                                         } ;
