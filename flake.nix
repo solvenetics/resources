@@ -114,8 +114,12 @@
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" }
+                                                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
+                                                                                                            if [ -t 0 ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
+                                                                                                            fi
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -129,13 +133,30 @@
                                                                                     verification =
                                                                                         {
                                                                                             temporary =
-                                                                                                { pkgs , environment-variable , ... } :
-                                                                                                    ''
-                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
-                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
-                                                                                                            export e89cff209ac3b6e3b22c0f3b1a7c0a246c95857f513785cb39a60a7181aec208b29bb9dbbba8b08c742319915810a402446d8760da285db887f0933423aed2f6=$( ${ pkgs.coreutils }/bin/mktemp --dry-run XXXXXXXX.test ) &&
-                                                                                                            ${ environment-variable 1 }
-                                                                                                    '' ;
+                                                                                                { pkgs , environment-variable , target ,... } :
+                                                                                                    let
+                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
+                                                                                                        in
+                                                                                                            ''
+                                                                                                                export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
+                                                                                                                    export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
+                                                                                                                    TARGET=$( ${ environment-variable 1 } ) &&
+                                                                                                                    if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo missing init flag &&
+                                                                                                                            exit 64
+                                                                                                                    fi &&
+                                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo wrong arguments &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo EXPECTED &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo OBSERVED &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable target }/arguments
+                                                                                                                    fi
+                                                                                                                    exit 64
+
+                                                                                                            '' ;
                                                                                         } ;
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
