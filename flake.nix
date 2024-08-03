@@ -222,7 +222,7 @@
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing init flag &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                            ${ pkgs.coreutils }/bin/sleep 0.01s &&
                                                                                                                             if [ ! -f ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
