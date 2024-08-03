@@ -232,7 +232,6 @@
                                                                                                                             then
                                                                                                                                  ${ pkgs.coreutils }/bin/echo outer present target directory &&
                                                                                                                                  # AAAA
-                                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/RELEASE &&
                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
