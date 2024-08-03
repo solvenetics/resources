@@ -227,7 +227,6 @@
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
                                                                                                                                 # AAAA
-                                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/RELEASE &&
                                                                                                                                  ${ pkgs.findutils }/bin/find /tmp/FLAG &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
