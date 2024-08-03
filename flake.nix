@@ -78,8 +78,7 @@
                                                                                     ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
-                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0002100 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
-                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
+                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0003000 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
                                                                             '' ;
