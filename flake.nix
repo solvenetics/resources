@@ -75,13 +75,16 @@
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /tmp/RELEASE &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/RELEASE &&
-                                                                                    ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE&&
+                                                                                    ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0002100 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
                                                                                         ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } -mindepth 1 -type f -exec ${ pkgs.coreutils }/bin/shred --remove --force &&
-                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
-                                                                                    fi
-                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0003000 >> /tmp/RELEASE
+                                                                                   ${ pkgs.coreutils }/bin/echo AAAA 0002200 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
+                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" } &&
+                                                                                   ${ pkgs.coreutils }/bin/echo AAAA 0002300 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
+                                                                                    fi &&
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0003000 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
                                                                             '' ;
                                                                         temporary =
                                                                             let
@@ -151,9 +154,10 @@
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
                                                                                                         # AAAA
-                                                                                                        ${ pkgs.coreutils }/bin/touch /tmp/FLAG &&
-                                                                                                        ${ pkgs.coreutils }/bin/env >> /tmp/RELEASE &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" }
+                                                                                                        ${ pkgs.coreutils }/bin/echo AAAA RELEASE xxx=${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } >> /tmp/RELEASE &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo AAAA RELEASE xxx=${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } >> /tmp/RELEASE &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } >> /tmp/RELEASE
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
@@ -242,6 +246,9 @@
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
                                                                                                                                  ${ pkgs.coreutils }/bin/echo outer present target directory &&
+                                                                                                                                 # AAAA
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo AAAA TARGET=${ environment-variable "TARGET" } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/RELEASE &&
                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
