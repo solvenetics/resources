@@ -154,7 +154,14 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
-                                                                                                                    fi
+                                                                                                                    fi &&
+                                                                                                                    if [ ${ environment-variable "#" } == 2 ]
+                                                                                                                    then
+                                                                                                                        if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file
+                                                                                                                        fi
+                                                                                                                    fi &&
                                                                                                                     exit 64
 
                                                                                                             '' ;
