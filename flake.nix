@@ -47,7 +47,7 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     if [ -t 0 ]
                                                                                     then
-                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
@@ -55,13 +55,25 @@
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
-                                                                                        if ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                            ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
+                                                                                    fi
+                                                                            '' ;
+                                                                        release =
+                                                                            ''
+                                                                                RESOURCE=${ environment-variable 1 } &&
+                                                                                    PID=${ environment-variable 2 } &&
+                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                    if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
+                                                                                    then
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } -mindepth 1 -type f -exec ${ pkgs.coreutils }/bin/shred --remove --force &&
+                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                     fi
                                                                             '' ;
                                                                         temporary =
@@ -175,6 +187,11 @@
                                                                                                                             exit 64
                                                                                                                         fi
                                                                                                                     fi &&
+                                                                                                                    if [ -e ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo present release flag >&2 &&
+                                                                                                                            exit 64
+                                                                                                                    fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }
                                                                                                             '' ;
                                                                                                         upper =
@@ -196,30 +213,15 @@
                                                                                                                                 ${ pkgs.coreutils }/bin/echo missing init flag &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
+                                                                                                                            if [ ! -f ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo wrong arguments &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments
+                                                                                                                                ${ pkgs.coreutils }/bin/echo missing release flag &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ ${ environment-variable "#" } == 2 ]
+                                                                                                                            if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
-                                                                                                                                if [ -e ${ environment-variable "TARGET" }/stdin ]
-                                                                                                                                then
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo UNEXPECTED stdin file
-                                                                                                                                fi
-                                                                                                                            elif [ ${ environment-variable "#" } == 3 ]
-                                                                                                                            then
-                                                                                                                                if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable 3 }" ]
-                                                                                                                                then
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo wrong stdin &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo EXPECTED &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo OBSERVED &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin
-                                                                                                                                fi
+                                                                                                                                ${ pkgs.coreutils }/bin/echo present target directory &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
 
