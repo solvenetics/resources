@@ -227,8 +227,7 @@
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
                                                                                                                                 # AAAA
-                                                                                                                                 ${ pkgs.findutils }/bin/find /tmp/FLAG &&
-                                                                                                                                    exit 64
+                                                                                                                                   exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
