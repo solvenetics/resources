@@ -45,7 +45,7 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    if [ -t 0 ]
+                                                                                    if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
@@ -72,7 +72,8 @@
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                    ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE &&
+                                                                                    ### AAAAA
+                                                                                    ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
@@ -134,7 +135,7 @@
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
                                                                                                             ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
-                                                                                                            if [ -t 0 ]
+                                                                                                            if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
                                                                                                             fi
@@ -155,11 +156,15 @@
                                                                                                     let
                                                                                                         inner =
                                                                                                             ''
-                                                                                                                if [ -t 0 ]
+                                                                                                                if [ ${ environment-variable "#" } == 2 ]
                                                                                                                 then
-                                                                                                                    TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ environment-variable 1 } ${ environment-variable 2 } )
-                                                                                                                else
                                                                                                                     TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } )
+                                                                                                                elif [ ${ environment-variable "#" } == 3 ]
+                                                                                                                then
+                                                                                                                    TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable 1 } ${ environment-variable 2 } )
+                                                                                                                else
+                                                                                                                    ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
+                                                                                                                        exit 64
                                                                                                                 fi &&
                                                                                                                     if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
                                                                                                                     then
@@ -210,7 +215,7 @@
                                                                                                                     ''
                                                                                                                         export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
                                                                                                                             export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
-                                                                                                                            if [ -t 0 ]
+                                                                                                                            if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
                                                                                                                             then
                                                                                                                                 TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             else
@@ -263,8 +268,8 @@
                                                                                     ${ resources.scripts.alpha } ${ resources.temporary.beta } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 1e9dd5648ba703f4ff798808bd0fbcc8f97241fc20a44c39272d42935a4dbc7945b64f855a4ddf3b1a3337098192b19545854b0cff4c9c0aa5128ee64ed97802 &&
-                                                                            # AAAA ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
+                                                                            # AAAA ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 1e9dd5648ba703f4ff798808bd0fbcc8f97241fc20a44c39272d42935a4dbc7945b64f855a4ddf3b1a3337098192b19545854b0cff4c9c0aa5128ee64ed97802 &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta } 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
                                                                             true
                                                                     '' ;
                                                     } ;
