@@ -72,7 +72,6 @@
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/RELEASE &&
                                                                                     ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
