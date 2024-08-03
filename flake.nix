@@ -68,15 +68,20 @@
                                                                              '' ;
                                                                         release =
                                                                             ''
-                                                                                RESOURCE=${ environment-variable 1 } &&
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0000000 >> /tmp/RELEASE &&
+                                                                                    RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /tmp/RELEASE &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/RELEASE &&
+                                                                                    ${ pkgs.coreutils }/bin/cat ${ temporary.release } >> /tmp/RELEASE&&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } -mindepth 1 -type f -exec ${ pkgs.coreutils }/bin/shred --remove --force &&
                                                                                             ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                     fi
+                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0003000 >> /tmp/RELEASE
                                                                             '' ;
                                                                         temporary =
                                                                             let
@@ -115,7 +120,10 @@
                                                                 resources =
                                                                     lib
                                                                         {
-                                                                            at = "${ pkgs.bash }/bin/bash -c $( ${ pkgs.coreutils }/bin/tee ) > /dev/null 2>&1 &" ;
+                                                                            at =
+                                                                                ''
+                                                                                    ${ pkgs.bash }/bin/bash -c "$( ${ pkgs.coreutils }/bin/tee )" > /dev/null 2>&1 &
+                                                                                 '' ;
                                                                             scripts =
                                                                                 {
                                                                                     alpha =
@@ -142,7 +150,10 @@
                                                                                             beta =
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "e89cff209ac3b6e3b22c0f3b1a7c0a246c95857f513785cb39a60a7181aec208b29bb9dbbba8b08c742319915810a402446d8760da285db887f0933423aed2f6" }
+                                                                                                        # AAAA
+                                                                                                        ${ pkgs.coreutils }/bin/touch /tmp/FLAG &&
+                                                                                                        ${ pkgs.coreutils }/bin/env >> /tmp/RELEASE &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" }
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
@@ -223,12 +234,15 @@
                                                                                                                             if [ ! -f ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
+                                                                                                                                # AAAA
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/RELEASE &&
+                                                                                                                                 ${ pkgs.findutils }/bin/find /tmp/FLAG &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present target directory &&
-                                                                                                                                    exit 64
+                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer present target directory &&
+                                                                                                                                   exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
                                                                                                                     '' ;
