@@ -81,8 +81,7 @@
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0002100 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
                                                                                         ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } -mindepth 1 -type f -exec ${ pkgs.coreutils }/bin/shred --remove --force &&
                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0002200 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
-                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" } &&
-                                                                                   ${ pkgs.coreutils }/bin/echo AAAA 0002300 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
+                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0003000 RESOURCE=${ environment-variable "RESOURCE" } >> /tmp/RELEASE
                                                                             '' ;
