@@ -231,7 +231,6 @@
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
                                                                                                                                  ${ pkgs.coreutils }/bin/echo outer present target directory &&
-                                                                                                                                 # AAAA
                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             exit 64
