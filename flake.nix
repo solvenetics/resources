@@ -169,6 +169,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
