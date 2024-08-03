@@ -68,8 +68,7 @@
                                                                              '' ;
                                                                         release =
                                                                             ''
-                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0000000 >> /tmp/RELEASE &&
-                                                                                    RESOURCE=${ environment-variable 1 } &&
+                                                                                RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     ${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /tmp/RELEASE &&
