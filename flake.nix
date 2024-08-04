@@ -46,11 +46,16 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    ### AAAA
+                                                                                        ${ pkgs.coreutils }/bin/echo init PID=${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                        ${ pkgs.coreutils }/bin/echo init PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
+                                                                                        ${ pkgs.coreutils }/bin/echo init PPPID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) >> /tmp/AAAA
+                                                                                    ### AAAA
                                                                                     if ${ has-standard-input }
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/null 2> /dev/null
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2> /dev/null
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                              ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
@@ -59,7 +64,7 @@
                                                                                     else
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/stderr 2>1
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/stderr 2>1
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                            ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
@@ -73,6 +78,9 @@
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                    #### AAAA
+                                                                                        ${ pkgs.coreutils }/bin/echo release PID=${ environment-variable "PID" } >> /tmp/AAAA
+                                                                                    #### AAAA
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
@@ -257,6 +265,12 @@
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                     fi &&
+                                                                                                                    ### AAAA
+                                                                                                                    ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo inner PID=${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                                                     ${ pkgs.coreutils }/bin/echo inner PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
+                                                                                                                     ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
+                                                                                                                    ### AAAA
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
