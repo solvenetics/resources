@@ -48,11 +48,6 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     PARENT_PID=${ environment-variable "PPID" } &&
                                                                                     GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
-                                                                                    ### AAAA
-                                                                                        ${ pkgs.coreutils }/bin/echo init PID=${ environment-variable "$" } >> /tmp/AAAA &&
-                                                                                        ${ pkgs.coreutils }/bin/echo init PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
-                                                                                        ${ pkgs.coreutils }/bin/echo init PPPID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) >> /tmp/AAAA
-                                                                                    ### AAAA
                                                                                     if ${ has-standard-input }
                                                                                     then
                                                                                         TARGET_PID=${ environment-variable "PARENT_PID" } &&
