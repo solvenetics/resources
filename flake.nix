@@ -47,7 +47,6 @@
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     PARENT_PID=${ environment-variable "PPID" } &&
-                                                                                    GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                     if ${ has-standard-input }
                                                                                     then
                                                                                         TARGET_PID=${ environment-variable "PARENT_PID" } &&
