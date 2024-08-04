@@ -75,8 +75,8 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     #### AAAA
                                                                                         ${ pkgs.coreutils }/bin/echo before release PID=${ environment-variable "PID" } >> /tmp/AAAA
-                                                                                        ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "$" } >> /tmp/AAAA &&
-                                                                                        ${ pkgs.coreutils }/bin/echo PPID=${ environment-variable "PID" } >> /tmp/AAAA  &&
+                                                                                        ${ pkgs.coreutils }/bin/echo XPID=${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                        ${ pkgs.coreutils }/bin/echo PPID=${ environment-variable "XPID" } >> /tmp/AAAA  &&
                                                                                     #### AAAA
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
