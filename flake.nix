@@ -137,7 +137,9 @@
                                                                                                             if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
-                                                                                                            fi
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo 193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952 >&2
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -145,7 +147,9 @@
                                                                                             beta =
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_FLAG" }
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_FLAG" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
