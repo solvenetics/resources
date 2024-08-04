@@ -51,9 +51,6 @@
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            #### AAAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/echo 1b0364027c95ac722d1ffb27679b3e8dd132ad174b5cc169f4e1346bbf134fa9cd57e0f9f63bcea491d6f00df987ef245c3b8202f11943563b2cf47b73e3fb3b >> /tmp/AAAA
-                                                                                            #### AAAA END
                                                                                             GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                             #### AAAA BEGIN
                                                                                                 ${ pkgs.coreutils }/bin/echo 989d9c25ece7a2d1e5041212d50ebd7d9e4ae4ffd512beb402899354ed92c45e9a3450207cf76387abccdda28167fbed10a8c7a6195456b33e69b006fef53afc >> /tmp/AAAA
