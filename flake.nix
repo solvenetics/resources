@@ -228,7 +228,8 @@
                                                                                                                             else
                                                                                                                                 TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             fi &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
+                                                                                                                            RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
                                                                                                                             if [ ! -f ${ environment-variable "INIT_FLAG" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing init flag &&
@@ -240,6 +241,11 @@
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" } ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present resource directory &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                             then
