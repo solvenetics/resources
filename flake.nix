@@ -164,11 +164,11 @@
                                                                                                                     else
                                                                                                                         HAS_STDIN=false
                                                                                                                     fi &&
-                                                                                                                    if [ ${ environment-variable "HAS_STDIN" } == false ]
+                                                                                                                    if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                     then
-                                                                                                                        TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
-                                                                                                                    else
                                                                                                                         TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                    else
+                                                                                                                        TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     fi &&
                                                                                                                     if [ ! -f ${ environment-variable "INIT_FLAG" } ]
                                                                                                                     then
