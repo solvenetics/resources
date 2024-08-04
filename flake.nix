@@ -132,7 +132,7 @@
                                                                                                 { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "INIT_FLAG" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
                                                                                                             if ${ has-standard-input }
                                                                                                             then
@@ -170,7 +170,7 @@
                                                                                                                     else
                                                                                                                         TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     fi &&
-                                                                                                                    if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
+                                                                                                                    if [ ! -f ${ environment-variable "INIT_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
                                                                                                                             exit 64
@@ -213,7 +213,7 @@
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
                                                                                                                     ''
-                                                                                                                        export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
+                                                                                                                        export INIT_FLAG=$( ${ mktemp } ) &&
                                                                                                                             export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
                                                                                                                             if ${ has-standard-input }
                                                                                                                             then
@@ -222,7 +222,7 @@
                                                                                                                                 TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo TARGET=${ environment-variable "TARGET" } &&
-                                                                                                                            if [ ! -f ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } ]
+                                                                                                                            if [ ! -f ${ environment-variable "INIT_FLAG" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing init flag &&
                                                                                                                                     exit 64
