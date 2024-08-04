@@ -156,12 +156,13 @@
                                                                                                         inner =
                                                                                                             ''
                                                                                                                 TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 2 } &&
                                                                                                                     if [ ${ environment-variable "#" } == 2 ]
                                                                                                                     then
-                                                                                                                        TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable 2 } )
+                                                                                                                        TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                     then
-                                                                                                                        TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable "TEMPORARY" } ${ environment-variable 2 } )
+                                                                                                                        TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
                                                                                                                             exit 64
@@ -171,11 +172,11 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable 2 }" ]
+                                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 2 } >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             exit 64
