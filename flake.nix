@@ -46,27 +46,29 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                    PARENT_PID=${ environment-variable "PPID" } &&
+                                                                                    GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                     ### AAAA
-                                                                                        ${ pkgs.coreutils }/bin/echo init XXXX==A${ environment-variable "PPID" } >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo init PID=${ environment-variable "$" } >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo init PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo init PPPID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) >> /tmp/AAAA
                                                                                     ### AAAA
                                                                                     if ${ has-standard-input }
                                                                                     then
+                                                                                        TARGET_PID=${ environment-variable "PARENT_PID" } &&
                                                                                         ### AAAA
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0001000 >> /tmp/AAAA
                                                                                         ### AAAA
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2> /dev/null
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "TARGET_PID" } | ${ at } now > /dev/null 2> /dev/null
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                              ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
+                                                                                        TARGET_PID=${ environment-variable "GRANDPARENT_PID" } &&
                                                                                         ### AAAA
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0002000 >> /tmp/AAAA
                                                                                         ### AAAA
@@ -75,7 +77,7 @@
                                                                                         ### AAAA
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0002100 >> /tmp/AAAA
                                                                                         ### AAAA
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/stderr 2>1
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "TARGET_PID" } | ${ at } now > /dev/stderr 2>1
                                                                                         ### AAAA
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0002110 >> /tmp/AAAA
                                                                                         ### AAAA
@@ -96,6 +98,9 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     #### AAAA
                                                                                         ${ pkgs.coreutils }/bin/echo before release PID=${ environment-variable "PID" } >> /tmp/AAAA
+                                                                                        ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                        ${ pkgs.coreutils }/bin/echo PPID=${ environment-variable "PID" } >> /tmp/AAAA  &&
+                                                                                        ${ pkgs.coreutils }/bin/echo PPPID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) >> /tmp/AAAA &&
                                                                                     #### AAAA
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     #### AAAA
@@ -286,8 +291,6 @@
                                                                                                                         fi
                                                                                                                     fi &&
                                                                                                                     ### AAAA
-                                                                                                                    ${ pkgs.coreutils }/bin/sleep 0s &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo XXXX==B${ environment-variable "$" } >> /tmp/AAAA &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo inner PID=${ environment-variable "$" } >> /tmp/AAAA &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo inner PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
                                                                                                                     ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
@@ -371,9 +374,8 @@
                                                                                     ${ resources.scripts.alpha } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            #### AAAA
-                                                                            # ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
+                                                                            # ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
                                                                             true
                                                                     '' ;
                                                     } ;
