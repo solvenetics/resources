@@ -271,11 +271,6 @@
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release log out >&2 &&
-                                                                                                                            #### AAAA BEGIN
-                                                                                                                            ${ pkgs.coreutils }/bin/echo TARGET PID=${ environment-variable "$" } >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STDIN" } >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
-                                                                                                                            #### AAAA END
                                                                                                                             exit 64
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
