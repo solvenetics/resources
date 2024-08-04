@@ -305,15 +305,6 @@
                                                                                                                             if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
-                                                                                                                                    #### AAAA BEGIN
-                                                                                                                                        if [ -e /tmp/AAAA ]
-                                                                                                                                        then
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo AAAA >&2
-                                                                                                                                            ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2
-                                                                                                                                        else
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo XXXX >&2
-                                                                                                                                        fi
-                                                                                                                                    #### AAAA END
                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "RESOURCE" } ]
