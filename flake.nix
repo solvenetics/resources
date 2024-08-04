@@ -46,7 +46,6 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 0 } >> /tmp/AAAA &&
                                                                                     if ${ has-standard-input }
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/AAAA &&
