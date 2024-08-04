@@ -301,10 +301,8 @@
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing init flag &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            #### AAAA
                                                                                                                             ${ pkgs.coreutils }/bin/echo We have determined that sleep 0.01 seconds is too fast because the test for removal happens before the removal has had a chance. &&
-                                                                                                                            ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                                            ### AAAA
+                                                                                                                            ${ pkgs.coreutils }/bin/sleep .01s &&
                                                                                                                             if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
