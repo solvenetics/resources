@@ -299,18 +299,13 @@
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 0.01s &&
                                                                                                                             if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing release flag &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "RESOURCE" } ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present resource directory &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present resource directory >&2 &&
                                                                                                                                     exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "TARGET" } ]
-                                                                                                                            then
-                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer present target directory &&
-                                                                                                                                   exit 64
                                                                                                                             fi
                                                                                                                     '' ;
                                                                                                 in outer ;
