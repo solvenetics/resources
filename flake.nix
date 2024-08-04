@@ -74,9 +74,6 @@
                                                                                         ### AAAA
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                        ### AAAA
-                                                                                            ${ pkgs.coreutils }/bin/echo AAA 0002100 >> /tmp/AAAA
-                                                                                        ### AAAA
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "TARGET_PID" } | ${ at } now > /dev/stderr 2>1
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
