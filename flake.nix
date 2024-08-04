@@ -157,12 +157,13 @@
                                                                                                             ''
                                                                                                                 TEMPORARY=${ environment-variable 1 } &&
                                                                                                                     ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                                    STDIN=${ environment-variable 3 } &&
                                                                                                                     if [ ${ environment-variable "#" } == 2 ]
                                                                                                                     then
                                                                                                                         TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                     then
-                                                                                                                        TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                        TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
                                                                                                                             exit 64
@@ -189,11 +190,11 @@
                                                                                                                         fi
                                                                                                                     elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                     then
-                                                                                                                        if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable 3 }" ]
+                                                                                                                        if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable "STDIN" }" ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/echo inner wrong stdin >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
                                                                                                                             exit 64
