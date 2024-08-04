@@ -48,7 +48,6 @@
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     if ${ has-standard-input }
                                                                                     then
-                                                                                        ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/AAAA &&
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/null 2> /dev/null
