@@ -182,7 +182,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing resource directory &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ "${ environment-variable "TEST_ARGUMENTS" }" == "true" ] [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
+                                                                                                                    if [ "${ environment-variable "TEST_ARGUMENTS" }" == "true" ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
