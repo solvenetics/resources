@@ -281,11 +281,6 @@
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                     fi &&
-                                                                                                                    ### AAAA
-                                                                                                                    ${ pkgs.coreutils }/bin/echo inner PID=${ environment-variable "$" } >> /tmp/AAAA &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo inner PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
-                                                                                                                    ### AAAA
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
