@@ -160,7 +160,6 @@
                                                                                                                     TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /tmp/AAAA &&
                                                                                                                     TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
