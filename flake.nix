@@ -177,6 +177,11 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
+                                                                                                                    if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo inner missing resource directory &&
+                                                                                                                            exit 64
+                                                                                                                    fi &&
                                                                                                                     if [ "${ environment-variable "TEST_ARGUMENTS" }" == "true" ] [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
