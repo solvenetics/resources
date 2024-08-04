@@ -160,7 +160,7 @@
                                                                                                         inner =
                                                                                                             ''
                                                                                                                 TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                    TEST_ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                                    TEST_INIT=${ environment-variable 2 } &&
                                                                                                                     ARGUMENTS=${ environment-variable 3 } &&
                                                                                                                     STDIN=${ environment-variable 4 } &&
                                                                                                                     if [ ${ environment-variable "#" } == 4 ]
@@ -186,30 +186,33 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing resource directory &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ "${ environment-variable "TEST_ARGUMENTS" }" == "true" ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
+                                                                                                                    if [ "${ environment-variable "TEST_INIT" }" == "true" ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
-                                                                                                                            exit 64
-                                                                                                                    fi &&
-                                                                                                                    if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
-                                                                                                                    then
-                                                                                                                        if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable "STDIN" }" ]
+                                                                                                                        if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo inner wrong stdin >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
-                                                                                                                            exit 64
-                                                                                                                        fi
-                                                                                                                    else
-                                                                                                                        if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        fi &&
+                                                                                                                        if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
+                                                                                                                            if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable "STDIN" }" ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo inner wrong stdin >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
+                                                                                                                                exit 64
+                                                                                                                            fi
+                                                                                                                        else
+                                                                                                                            if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
+                                                                                                                            fi
                                                                                                                         fi
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
