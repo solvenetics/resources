@@ -244,6 +244,10 @@
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             temporary =
                                                                                 {
+                                                                                    beta-00 = scripts : { } ;
+                                                                                    beta-01 = scripts : { release = scripts.release.beta ; } ;
+                                                                                    beta-10 = scripts : { init = scripts.init.beta ; } ;
+                                                                                    beta-11 = scripts : { init = scripts.init.beta ; release = scripts.release.beta ; } ;
                                                                                     beta =
                                                                                         scripts :
                                                                                             {
