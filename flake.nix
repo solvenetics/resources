@@ -218,7 +218,7 @@
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/echo inner absent init log out >&2 &&
                                                                                                                                 exit 64
-                                                                                                                        elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "" ]
+                                                                                                                        elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/echo inner wrong init log out >&2 &&
                                                                                                                                 exit 64
