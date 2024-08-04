@@ -46,6 +46,7 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
                                                                                     ### AAAA
                                                                                         ${ pkgs.coreutils }/bin/echo init PID=${ environment-variable "$" } >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo init PPID=${ environment-variable "PPID" } >> /tmp/AAAA &&
@@ -55,7 +56,7 @@
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2> /dev/null
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2> /dev/null
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                              ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
@@ -64,7 +65,7 @@
                                                                                     else
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/stderr 2>1
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/stderr 2>1
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                            ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
