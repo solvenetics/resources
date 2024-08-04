@@ -145,7 +145,7 @@
                                                                                             beta =
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" }
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_FLAG" }
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
@@ -201,7 +201,7 @@
                                                                                                                             exit 64
                                                                                                                         fi
                                                                                                                     fi &&
-                                                                                                                    if [ -e ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
+                                                                                                                    if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
                                                                                                                             exit 64
@@ -214,7 +214,7 @@
                                                                                                                 in
                                                                                                                     ''
                                                                                                                         export INIT_FLAG=$( ${ mktemp } ) &&
-                                                                                                                            export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
+                                                                                                                            export RELEASE_FLAG=$( ${ mktemp } ) &&
                                                                                                                             if ${ has-standard-input }
                                                                                                                             then
                                                                                                                                 TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
@@ -228,7 +228,7 @@
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 0.01s &&
-                                                                                                                            if [ ! -f ${ environment-variable "e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549" } ]
+                                                                                                                            if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo outer missing release flag &&
                                                                                                                                    exit 64
