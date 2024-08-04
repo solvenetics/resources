@@ -184,13 +184,8 @@
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ ${ environment-variable "HAS_STDIN" } == false ]
+                                                                                                                    if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                     then
-                                                                                                                        if [ -e ${ environment-variable "TARGET" }/stdin ]
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
-                                                                                                                        fi
-                                                                                                                    else
                                                                                                                         if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin )" != "${  environment-variable "STDIN" }" ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/echo inner wrong stdin >&2 &&
@@ -199,6 +194,11 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
                                                                                                                             exit 64
+                                                                                                                        fi
+                                                                                                                    else
+                                                                                                                        if [ -e ${ environment-variable "TARGET" }/stdin ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
                                                                                                                         fi
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
