@@ -239,6 +239,16 @@
                                                                                                                                 ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
                                                                                                                                 ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log >&2 &&
                                                                                                                                 exit 64
+                                                                                                                        fi &&
+                                                                                                                        if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present release log out >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        fi &&
+                                                                                                                        if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present release log err >&2 &&
+                                                                                                                                exit 64
                                                                                                                         fi
                                                                                                                     else
                                                                                                                         if [ -e "${ environment-variable "TARGET" }" ]
