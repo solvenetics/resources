@@ -171,12 +171,13 @@
                                                                                                                     else
                                                                                                                         TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     fi &&
+                                                                                                                    RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                     if [ ! -f ${ environment-variable "INIT_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
+                                                                                                                    if [ "${ environment-variable "TEST_ARGUMENTS" }" == "true" ] [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/arguments )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner wrong arguments >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
