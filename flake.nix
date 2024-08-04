@@ -77,7 +77,6 @@
                                                                                         ${ pkgs.coreutils }/bin/echo before release PID=${ environment-variable "PID" } >> /tmp/AAAA
                                                                                         ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "$" } >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo PPID=${ environment-variable "PID" } >> /tmp/AAAA  &&
-                                                                                        ${ pkgs.coreutils }/bin/echo PPPID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) >> /tmp/AAAA &&
                                                                                     #### AAAA
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
