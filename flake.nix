@@ -53,7 +53,7 @@
                                                                                         then
                                                                                             GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                             #### AAAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/echo 989d9c25ece7a2d1e5041212d50ebd7d9e4ae4ffd512beb402899354ed92c45e9a3450207cf76387abccdda28167fbed10a8c7a6195456b33e69b006fef53afc > /dev/null
+                                                                                                ${ pkgs.coreutils }/bin/echo > /dev/null
                                                                                             #### AAAA END
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2> /dev/null
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
