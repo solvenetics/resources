@@ -49,13 +49,12 @@
                                                                                     PARENT_PID=${ environment-variable "PPID" } &&
                                                                                     if ${ has-standard-input }
                                                                                     then
+                                                                                        #### AAA BEGIN
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } >> /tmp/AAAA
+                                                                                        #### AAAA END
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            GRANDPARENT_PID=$( ${ pkgs.ps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
-                                                                                            #### AAAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/true
-                                                                                            #### AAAA END
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2> /dev/null
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2> /dev/null
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                              ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
@@ -265,6 +264,10 @@
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
+                                                                                                                            #### AAAA BEGIN
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "$" } >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
+                                                                                                                            #### AAAA END
                                                                                                                             exit 64
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
@@ -339,7 +342,7 @@
                                                                                     ${ resources.scripts.alpha } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
+                                                                            # ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
                                                                     '' ;
                                                     } ;
