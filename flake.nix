@@ -214,6 +214,22 @@
                                                                                                                                 ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
                                                                                                                             fi
                                                                                                                         fi
+                                                                                                                    else
+                                                                                                                        if [ -e "${ environment-variable "TARGET" }" ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present target &&
+                                                                                                                                exit 64
+                                                                                                                        fi &&
+                                                                                                                        if [ -e "${ environment-variable "RESOURCE}" }/init.out.log" ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present init out &&
+                                                                                                                                exit 64
+                                                                                                                        fi &&
+                                                                                                                        if [ -e "${ environment-variable "RESOURCE" }/init.err.log" ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present init err &&
+                                                                                                                                exit 64
+                                                                                                                        fi
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
