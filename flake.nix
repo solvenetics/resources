@@ -78,9 +78,6 @@
                                                                                 RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    #### AAAA BEGIN
-                                                                                        ${ pkgs.coreutils }/bin/echo BEGIN RELEASE PID=${ environment-variable "PID" } >> /tmp/AAAA &&
-                                                                                    #### AAAA END
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     #### AAAA BEGIN
                                                                                         ${ pkgs.coreutils }/bin/echo END RELEASE PID=${ environment-variable "PID" } >> /tmp/AAAA &&
