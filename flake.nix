@@ -213,16 +213,25 @@
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/echo inner UNEXPECTED stdin file >&2
                                                                                                                             fi
+                                                                                                                        fi &&
+                                                                                                                        if [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner absent init log out >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "" ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner wrong init log out >&2 &&
+                                                                                                                                exit 64
                                                                                                                         fi
                                                                                                                     else
                                                                                                                         if [ -e "${ environment-variable "TARGET" }" ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present target &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present target >&2 &&
                                                                                                                                 exit 64
                                                                                                                         fi &&
-                                                                                                                        if [ -e "${ environment-variable "RESOURCE}" }/init.out.log" ]
+                                                                                                                        if [ -e "${ environment-variable "RESOURCE}" }/init.log.out" ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present init out &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo inner present init out >&2 &&
                                                                                                                                 exit 64
                                                                                                                         fi &&
                                                                                                                         if [ -e "${ environment-variable "RESOURCE" }/init.err.log" ]
