@@ -25,13 +25,14 @@
                                 } :
                                     let
                                         environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
+                                        has-standard-input = ''[ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]'' ;
                                         outputs =
                                             {
                                                 scripts =
                                                     let
                                                         mapper =
                                                             path : name : value :
-                                                                if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ( value ( secondary // { environment-variable = environment-variable ; target = target ; } ) )
+                                                                if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ( value ( secondary // { environment-variable = environment-variable ; has-standard-input = has-standard-input ; target = target ; } ) )
                                                                 else if builtins.typeOf value == "set" then builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                 else builtins.throw ( invalid-script-throw value ) ;
                                                         in builtins.mapAttrs ( mapper [ ] ) scripts ;
@@ -45,8 +46,12 @@
                                                                             ''
                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
+                                                                                    ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 >> /tmp/AAAA &&
+                                                                                    ${ pkgs.coreutils }/bin/echo '${ has-standard-input }' >> /tmp/AAAA &&
+                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable 0 } >> /tmp/AAAA &&
+                                                                                    if ${ has-standard-input }
                                                                                     then
+                                                                                        ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /tmp/AAAA &&
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/null 2> /dev/null
@@ -56,6 +61,7 @@
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
+                                                                                        ${ pkgs.coreutils }/bin/echo AAAA 0002100 >> /tmp/AAAA &&
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/stderr 2>1
@@ -130,12 +136,12 @@
                                                                                     init =
                                                                                         {
                                                                                             beta =
-                                                                                                { pkgs , environment-variable , target , ... } :
+                                                                                                { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
                                                                                                             ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
-                                                                                                            if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
+                                                                                                            if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
                                                                                                             fi
@@ -152,7 +158,7 @@
                                                                                     verification =
                                                                                         {
                                                                                             temporary =
-                                                                                                { pkgs , environment-variable , target ,... } :
+                                                                                                { environment-variable , has-standard-input , target ,... } :
                                                                                                     let
                                                                                                         inner =
                                                                                                             ''
@@ -161,6 +167,7 @@
                                                                                                                     TARGET=$( ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 elif [ ${ environment-variable "#" } == 3 ]
                                                                                                                 then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /tmp/AAAA &&
                                                                                                                     TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } | ${ environment-variable 1 } ${ environment-variable 2 } )
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo inner unexpected verification &&
@@ -194,6 +201,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 3 } >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET" }/stdin >&2 &&
                                                                                                                             exit 64
                                                                                                                         fi
@@ -215,7 +223,7 @@
                                                                                                                     ''
                                                                                                                         export f8ddb5346d7a40337e77b2f8dc621f0fca7901a106e8b69cd0840a5cfea61cfc92073b1af215b5f8d8c687f41dc711594da655233f1965c269990f0c55903933=$( ${ mktemp } ) &&
                                                                                                                             export e44a5854dee7d93638bc69f1dc0001cffb6826f723779d53195a93bcac4e976f52bf03f583212c1a88db6f8d8685204d0ed6b7f8bb5c6cb6f3e945796acbc549=$( ${ mktemp } ) &&
-                                                                                                                            if [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/o )" == pipe.* ]]
+                                                                                                                            if ${ has-standard-input }
                                                                                                                             then
                                                                                                                                 TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             else
