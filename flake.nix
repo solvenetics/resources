@@ -133,18 +133,26 @@
                                                                                     init =
                                                                                         {
                                                                                             beta =
-                                                                                                { environment-variable , has-standard-input , pkgs , target , ... } :
-                                                                                                    ''
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "INIT_FLAG" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
-                                                                                                            if ${ has-standard-input }
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo 193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952 >&2
-                                                                                                    '' ;
+                                                                                                let
+                                                                                                    beta =
+                                                                                                        { environment-variable , has-standard-input , pkgs , target , ... } : exit :
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "INIT_FLAG" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
+                                                                                                                    fi &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952 >&2 &&
+                                                                                                                    exit ${ builtins.toString exit }
+                                                                                                            '' ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            bad = primary : beta primary 64 ;
+                                                                                                            good = primary : beta primary 0 ;
+                                                                                                        } ;
                                                                                         } ;
                                                                                     release =
                                                                                         {
@@ -319,8 +327,10 @@
                                                                                 {
                                                                                     beta-00 = scripts : { } ;
                                                                                     beta-01 = scripts : { release = scripts.release.beta ; } ;
-                                                                                    beta-10 = scripts : { init = scripts.init.beta ; } ;
-                                                                                    beta-11 = scripts : { init = scripts.init.beta ; release = scripts.release.beta ; } ;
+                                                                                    beta-10 = scripts : { init = scripts.init.beta.good ; } ;
+                                                                                    beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
+                                                                                    beta-11 = scripts : { init = scripts.init.beta.good ; release = scripts.release.beta ; } ;
+                                                                                    beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta ; } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
@@ -339,8 +349,7 @@
                                                                                     exit 64
                                                                             fi &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 &&
-                                                                            ${ pkgs.coreutils }/bin/true
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
                                                                     '' ;
                                                     } ;
                                         } ;
