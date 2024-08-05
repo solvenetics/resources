@@ -51,6 +51,12 @@
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
+                                                                                            #### AAAA BEGIN
+                                                                                                ${ pkgs.coreutils }/bin/echo 65fa33a1d28ad04df63573fdeed5a6bf69ea4b9eaa88e45f2557a34eb515cbcee76669480286feb42338c94c204302b191000548fe87bf96fdf1e69f1ea89dff >> /tmp/AAAA &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo PPID=${ environment-variable "PARENT_PID" } >> /tmp/AAAA &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo PPPID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) >> /tmp/AAAA &&
+                                                                                            #### AAAA END
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
