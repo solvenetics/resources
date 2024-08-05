@@ -303,10 +303,6 @@
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
-                                                                                                                            #### AAAA BEGIN
-                                                                                                                                ${ pkgs.coreutils }/bin/echo 559d8cef1c4603f760498a4f9f1630dd0bd66e877be4307f8a3c15be363f6c1e7fb16a33cd3c6e8829ae4ca1ee4a17ece31bd04ef086879b6d6502eea2548145 >> /tmp/AAAA &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo PID TO BE TARGETED = ${ environment-variable "$" } >> /tmp/AAAA
-                                                                                                                            #### AAAA END
                                                                                                                             exit 64
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
