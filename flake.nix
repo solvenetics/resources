@@ -289,13 +289,6 @@
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
                                                                                                                     ''
-                                                                                                                        #### AAAA BEGIN
-                                                                                                                        cleanup ( )
-                                                                                                                            {
-                                                                                                                                ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2
-                                                                                                                            } &&
-                                                                                                                        trap cleanup EXIT &&
-                                                                                                                        #### AAAA END
                                                                                                                         export INIT_FLAG=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_FLAG=$( ${ mktemp } ) &&
                                                                                                                             if ${ has-standard-input }
