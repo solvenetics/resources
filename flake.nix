@@ -53,6 +53,13 @@
                                                                                         then
                                                                                             ### AAA BEGIN
                                                                                                 ${ pkgs.coreutils }/bin/echo 894b23a081f816d567f7ad7ce6b2c5b6f34b1330b4c0ba3025c5e9036254e67d45605af3edcc91d7541e41f6b5f7f4883547e3e62154f861de159e8737aa01c8 >> /tmp/AAAA &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" }  >> /tmp/AAAA &&
+                                                                                                if ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now >> /tmp/AAAA 2>&1
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo 72aa930eaca331ab21f6ff5eb13c795289c0675eb80ca2c75c4308a57057289164161118b15677208e0dc5f2a69e28d71790dd3b4fffd726bd7a1c6b8a8bd94b >> /tmp/AAAA
+                                                                                                else
+                                                                                                    ${ pkgs.coreutils }/bin/echo 1dfb14265ab5ee7736ead5d7453925b9f30aabf8d35837574c089f25f316e806235bda9261e140caa6101335492f94a0aa0c1223f73b599a34938d6abbd54ac8 >> /tmp/AAAA
+                                                                                                fi &&
                                                                                             ### AAA END
                                                                                             ### AAA BEGIN
                                                                                             # I think the below line fails for whatever reason.
@@ -61,6 +68,8 @@
                                                                                             # 2. Since the line below it, echoes the target name the target name is not echoed.  This causes downstream scripts to fail.
                                                                                             #
                                                                                             # The logging below stops.  This suggests I was right.
+                                                                                            #
+                                                                                            # I made at into a program rather than a script.  That seemed to solve some problem.
                                                                                             ### AAA END
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                             ### AAA BEGIN
@@ -134,9 +143,11 @@
                                                                     lib
                                                                         {
                                                                             at =
-                                                                                ''
-                                                                                    ${ pkgs.bash }/bin/bash -c "$( ${ pkgs.coreutils }/bin/tee )" > /dev/null 2>&1 &
-                                                                                 '' ;
+                                                                                pkgs.writeShellScript
+                                                                                    "at"
+                                                                                    ''
+                                                                                        ${ pkgs.bash }/bin/bash -c "$( ${ pkgs.coreutils }/bin/tee )" > /dev/null 2>&1 &
+                                                                                    '' ;
                                                                             scripts =
                                                                                 {
                                                                                     alpha =
