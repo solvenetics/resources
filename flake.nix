@@ -99,7 +99,13 @@
                                                                                 RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    #### AAAA BEGIN
+                                                                                        ${ pkgs.coreutils }/bin/echo 44def5b265cf3774699aed98fb6994370c6dfc64ae58e85d893ffa4bf4d445e0cbe15308a32ab3b817bb68be4055caf8432b028d8fdba0c2bdbc38020e8693d0 >> /tmp/AAAA &&
+                                                                                    #### AAAA END
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                    #### AAAA BEGIN
+                                                                                        ${ pkgs.coreutils }/bin/echo a59bcc1250375c10c28e970f5253313531c8d88e5091daeb7a70d94c2e51d7310103bc5399e73c6d0d8f47539c7c521be55a54b9b4279e0fda3e89220ac943a5 >> /tmp/AAAA &&
+                                                                                    #### AAAA END
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
