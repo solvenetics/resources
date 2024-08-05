@@ -81,10 +81,6 @@
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                    #### AAAA BEGIN
-                                                                                        ${ pkgs.coreutils }/bin/echo a59bcc1250375c10c28e970f5253313531c8d88e5091daeb7a70d94c2e51d7310103bc5399e73c6d0d8f47539c7c521be55a54b9b4279e0fda3e89220ac943a5 >> /tmp/AAAA &&
-                                                                                        ${ pkgs.coreutils }/bin/echo TARGETING PID ${ environment-variable "PID" } >> /tmp/AAAA &&
-                                                                                    #### AAAA END
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
