@@ -102,7 +102,14 @@
                                                                                     #### AAAA BEGIN
                                                                                         ${ pkgs.coreutils }/bin/echo 44def5b265cf3774699aed98fb6994370c6dfc64ae58e85d893ffa4bf4d445e0cbe15308a32ab3b817bb68be4055caf8432b028d8fdba0c2bdbc38020e8693d0 >> /tmp/AAAA &&
                                                                                         ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "PID" } >> /tmp/AAAA &&
-                                                                                    #### AAAA END
+                                                                                        if ${ pkgs.procps }/bin/ps  -o ppid= -p ${ environment-variable "PID" } >> /tmp/AAAA 2>&1
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/echo c10ed6a78fdb9b4db633c2e44a1d1571a2d65752f30fb1d46fb09a05b45a6e61e93315e99ae2ed25916b746b1cf54d3975c251af349ad74fa535fea247cf26de >> /tmp/AAAA
+                                                                                        else
+                                                                                            ${ pkgs.coreutils }/bin/echo 62f2fb4747b506683e89af27b88d24e3653e3fd6ed0a54b0ed81c8138c8164eac03f933131b2c5df10092adbe692abb7bf7d925797edf5cc5df8a6bb0629a0e8 >> /tmp/AAAA
+                                                                                        fi &&
+                                                                                        ${ pkgs.coreutils }/bin/echo 9c597c2f03304c89ae72dacc7269ead717fcbacc9898ef95d8db49c04bd36d140f814ae114a44aabeb43d9819cb8ecc64afadc2d08dbd50360df3224cbf8d599 >> /tmp/AAAA &&
+                                                                                      #### AAAA END
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     #### AAAA BEGIN
                                                                                         ${ pkgs.coreutils }/bin/echo a59bcc1250375c10c28e970f5253313531c8d88e5091daeb7a70d94c2e51d7310103bc5399e73c6d0d8f47539c7c521be55a54b9b4279e0fda3e89220ac943a5 >> /tmp/AAAA &&
@@ -298,7 +305,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
                                                                                                                             #### AAAA BEGIN
                                                                                                                                 ${ pkgs.coreutils }/bin/echo 559d8cef1c4603f760498a4f9f1630dd0bd66e877be4307f8a3c15be363f6c1e7fb16a33cd3c6e8829ae4ca1ee4a17ece31bd04ef086879b6d6502eea2548145 >> /tmp/AAAA &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "$" } >> /tmp/AAAA
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo PID TO BE TARGETED = ${ environment-variable "$" } >> /tmp/AAAA
                                                                                                                             #### AAAA END
                                                                                                                             exit 64
                                                                                                                     fi &&
