@@ -267,9 +267,6 @@
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                     fi &&
-                                                                                                                    #### AAAA BEGIN
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                                    #### AAAA END
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
