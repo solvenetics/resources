@@ -173,9 +173,10 @@
                                                                                                             ''
                                                                                                                 TEMPORARY=${ environment-variable 1 } &&
                                                                                                                     TEST_INIT=${ environment-variable 2 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                    STDIN=${ environment-variable 4 } &&
-                                                                                                                    if [ ${ environment-variable "#" } == 4 ]
+                                                                                                                    TEST_RELEASE=${ environment-variable 3 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 4 } &&
+                                                                                                                    STDIN=${ environment-variable 5 } &&
+                                                                                                                    if [ ${ environment-variable "#" } == 5 ]
                                                                                                                     then
                                                                                                                         HAS_STDIN=true
                                                                                                                     else
@@ -291,7 +292,8 @@
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
                                                                                                                     ''
-                                                                                                                        export INIT_FLAG=$( ${ mktemp } ) &&
+                                                                                                                        TEST_RELEASE=${ environment-variable 3 } &&
+                                                                                                                            export INIT_FLAG=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_FLAG=$( ${ mktemp } ) &&
                                                                                                                             if ${ has-standard-input }
                                                                                                                             then
@@ -308,15 +310,20 @@
                                                                                                                             fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo We have determined that sleep 1 second is too fast because the test for removal happens before the removal has had a chance. &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
-                                                                                                                            if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
+                                                                                                                            if [ "${ environment-variable "TEST_RELEASE" }" == "true" ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
-                                                                                                                                   exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" } ]
-                                                                                                                            then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer present resource directory >&2 &&
-                                                                                                                                    exit 64
+                                                                                                                                ${ pkgs.coreutils }/bin/true NOTHING FOR NOW
+                                                                                                                            else
+                                                                                                                                if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
+                                                                                                                                       exit 64
+                                                                                                                                fi &&
+                                                                                                                                if [ -e ${ environment-variable "RESOURCE" } ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo outer present resource directory >&2 &&
+                                                                                                                                        exit 64
+                                                                                                                                fi
                                                                                                                             fi
                                                                                                                     '' ;
                                                                                                 in outer ;
@@ -348,8 +355,8 @@
                                                                                     ${ resources.scripts.alpha } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true false 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } true false c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886
                                                                     '' ;
                                                     } ;
                                         } ;
