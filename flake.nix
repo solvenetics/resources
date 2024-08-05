@@ -51,34 +51,8 @@
                                                                                     then
                                                                                         if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                         then
-                                                                                            ### AAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/echo 894b23a081f816d567f7ad7ce6b2c5b6f34b1330b4c0ba3025c5e9036254e67d45605af3edcc91d7541e41f6b5f7f4883547e3e62154f861de159e8737aa01c8 >> /tmp/AAAA &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" }  >> /tmp/AAAA &&
-                                                                                                if ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now >> /tmp/AAAA 2>&1
-                                                                                                then
-                                                                                                    ${ pkgs.coreutils }/bin/echo 72aa930eaca331ab21f6ff5eb13c795289c0675eb80ca2c75c4308a57057289164161118b15677208e0dc5f2a69e28d71790dd3b4fffd726bd7a1c6b8a8bd94b >> /tmp/AAAA
-                                                                                                else
-                                                                                                    ${ pkgs.coreutils }/bin/echo 1dfb14265ab5ee7736ead5d7453925b9f30aabf8d35837574c089f25f316e806235bda9261e140caa6101335492f94a0aa0c1223f73b599a34938d6abbd54ac8 >> /tmp/AAAA
-                                                                                                fi &&
-                                                                                            ### AAA END
-                                                                                            ### AAA BEGIN
-                                                                                            # I think the below line fails for whatever reason.
-                                                                                            # This has two consequences:
-                                                                                            # 1. Since the below line schedules cleanup, cleanup never happens
-                                                                                            # 2. Since the line below it, echoes the target name the target name is not echoed.  This causes downstream scripts to fail.
-                                                                                            #
-                                                                                            # The logging below stops.  This suggests I was right.
-                                                                                            #
-                                                                                            # I made at into a program rather than a script.  That seemed to solve some problem.
-                                                                                            ### AAA END
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
-                                                                                            ### AAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/echo 9fc7102dac9f090a80a1726bcd351418ae5de29ab64fa6ef812fe2e2c35e15824339838209020789b71a51a76274b520d495c15baa6d7d63a0727112ce142bd6  >> /tmp/AAAA &&
-                                                                                            ### AAA END
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                            ### AAA BEGIN
-                                                                                                ${ pkgs.coreutils }/bin/echo 544fc6a3407ec2c576e96cae17205b02ab097f7e37951d6e5687b4df338fae86f92e14d74c46798ddca750a5626c127295b78341b6474cbd767de4b3c15529f3  >> /tmp/AAAA
-                                                                                            ### AAA END
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
                                                                                              ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
@@ -99,20 +73,10 @@
                                                                                 RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    #### AAAA BEGIN
-                                                                                        ${ pkgs.coreutils }/bin/echo 44def5b265cf3774699aed98fb6994370c6dfc64ae58e85d893ffa4bf4d445e0cbe15308a32ab3b817bb68be4055caf8432b028d8fdba0c2bdbc38020e8693d0 >> /tmp/AAAA &&
-                                                                                        ${ pkgs.coreutils }/bin/echo PID=${ environment-variable "PID" } >> /tmp/AAAA &&
-                                                                                        if ${ pkgs.procps }/bin/ps  -o ppid= -p ${ environment-variable "PID" } >> /tmp/AAAA 2>&1
-                                                                                        then
-                                                                                            ${ pkgs.coreutils }/bin/echo c10ed6a78fdb9b4db633c2e44a1d1571a2d65752f30fb1d46fb09a05b45a6e61e93315e99ae2ed25916b746b1cf54d3975c251af349ad74fa535fea247cf26de >> /tmp/AAAA
-                                                                                        else
-                                                                                            ${ pkgs.coreutils }/bin/echo 62f2fb4747b506683e89af27b88d24e3653e3fd6ed0a54b0ed81c8138c8164eac03f933131b2c5df10092adbe692abb7bf7d925797edf5cc5df8a6bb0629a0e8 >> /tmp/AAAA
-                                                                                        fi &&
-                                                                                        ${ pkgs.coreutils }/bin/echo 9c597c2f03304c89ae72dacc7269ead717fcbacc9898ef95d8db49c04bd36d140f814ae114a44aabeb43d9819cb8ecc64afadc2d08dbd50360df3224cbf8d599 >> /tmp/AAAA &&
-                                                                                      #### AAAA END
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                     #### AAAA BEGIN
                                                                                         ${ pkgs.coreutils }/bin/echo a59bcc1250375c10c28e970f5253313531c8d88e5091daeb7a70d94c2e51d7310103bc5399e73c6d0d8f47539c7c521be55a54b9b4279e0fda3e89220ac943a5 >> /tmp/AAAA &&
+                                                                                        ${ pkgs.coreutils }/bin/echo TARGETING PID ${ environment-variable "PID" } >> /tmp/AAAA &&
                                                                                     #### AAAA END
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
@@ -300,9 +264,16 @@
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                     fi &&
+                                                                                                                    #### AAAA BEGIN
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                    #### AAAA END
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
+                                                                                                                            #### AAAA BEGIN
+                                                                                                                                ${ pkgs.coreutils }/bin/echo e43de5b8b1a91fbe5d98c977887fdda83c305d11f9621b3c541094a16a98de5c5a30084298b6689b572ce6b191d629a1576d61a2235edcede1c14fad7b0cf78b >> /tmp/AAAA &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo PID TO BE TARGETED ${ environment-variable "$" } >> /tmp/AAAA &&
+                                                                                                                            #### AAAA END
                                                                                                                             exit 64
                                                                                                                     fi &&
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
@@ -322,14 +293,13 @@
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
                                                                                                                     ''
-                                                                                                                        ### AAA BEGIN
+                                                                                                                        #### AAAA BEGIN
                                                                                                                         cleanup ( )
                                                                                                                             {
-                                                                                                                                ${ pkgs.coreutils }/bin/echo b64dad637444a51b3565ee03a16804cc4c76d4c1dc427d4b7ab8294737d8bd97046a2275c874637a9b1aa9fdb3bb0c0fedd0f5e1b1c9536d729fb005c32d644d >&2 &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2
+                                                                                                                                ${ pkgs.coreutils }/bin/cat /tmp/AAAA >&2
                                                                                                                             } &&
                                                                                                                         trap cleanup EXIT &&
-                                                                                                                        ### AAA END
+                                                                                                                        #### AAAA END
                                                                                                                         export INIT_FLAG=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_FLAG=$( ${ mktemp } ) &&
                                                                                                                             if ${ has-standard-input }
