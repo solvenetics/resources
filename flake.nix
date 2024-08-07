@@ -188,13 +188,13 @@
                                                                                                                             fi
                                                                                                                     } &&
                                                                                                                     trap cleanup EXIT
-                                                                                                                    TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                    INIT_STATUS=${ environment-variable 2 } &&
-                                                                                                                    RELEASE_STATUS=${ environment-variable 3 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 4 } &&
-                                                                                                                    STDIN=${ environment-variable 5 } &&
-                                                                                                                    HAS_STDIN=${ environment-variable 6 } &&
-                                                                                                                    TEST_INIT=${ environment-variable 7 } &&
+                                                                                                                    export TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                    export INIT_STATUS=${ environment-variable 2 } &&
+                                                                                                                    export RELEASE_STATUS=${ environment-variable 3 } &&
+                                                                                                                    export ARGUMENTS=${ environment-variable 4 } &&
+                                                                                                                    export STDIN=${ environment-variable 5 } &&
+                                                                                                                    export HAS_STDIN=${ environment-variable 6 } &&
+                                                                                                                    export TEST_INIT=${ environment-variable 7 } &&
                                                                                                                     if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                     then
                                                                                                                         TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
@@ -207,11 +207,20 @@
                                                                                                                         MESSAGE="We did not create the RESOURCE directory." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                    if [ ${ environment-variable "TEST_INIT" } == true ]
                                                                                                                     then
-                                                                                                                        MESSAGE="We did not create the TARGET file." &&
-                                                                                                                            exit 64
-                                                                                                                    fi &&
+                                                                                                                        if [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                        then
+                                                                                                                            MESSAGE="We did not create the TARGET file." &&
+                                                                                                                                exit 64
+                                                                                                                        fi
+                                                                                                                    else
+                                                                                                                        if [ -e ${ environment-variable "TARGET" } ]
+                                                                                                                        then
+                                                                                                                            MESSAGE="We did create the TARGET." &&
+                                                                                                                                exit 64
+                                                                                                                        fi
+                                                                                                                    fi
 
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
                                                                                                                     then
@@ -301,9 +310,9 @@
                                                                                     exit 64
                                                                             fi &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true true &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 "" false true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 47ce8fce72162158377951a30e52a638c2dd87b849d88ce4e4d65622ecda0fcffde884831cd1cca3ad03e46b7bf3cceb3136bcff9b8c55461567c29d20292657 false true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 a650fec07ebe71e3bd0cc888f03bbb023c11b6cd0a5565d8ed579e899ba40f100e83f24feb9043d1df8f764bc30a70b752520bb79a03daac773af921cffa6021 "" false true
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 a650fec07ebe71e3bd0cc888f03bbb023c11b6cd0a5565d8ed579e899ba40f100e83f24feb9043d1df8f764bc30a70b752520bb79a03daac773af921cffa6021 891e854719b25e5610aadac6bd2e7351fcfbdf489a1a07701a743e5b381d870be1d49e1f7b49fb7dd7d916daa203c2fc4e27593295933532980de39938e27a5c false true
                                                                     '' ;
                                                     } ;
                                         } ;
