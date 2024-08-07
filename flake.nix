@@ -213,13 +213,28 @@
                                                                                                                         then
                                                                                                                             MESSAGE="We did not create the TARGET file." &&
                                                                                                                                 exit 64
-                                                                                                                        fi
+                                                                                                                        fi &&
+                                                                                                                            if [ ! -f ${ environment-variable "INIT_OUT" } ]
+                                                                                                                            then
+                                                                                                                                MESSAGE="We did not log init out." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_OUT" } )" != "" ]
+                                                                                                                            then
+                                                                                                                                MESSAGE="We did not correctly log init out." &&
+                                                                                                                                    OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_OUT" } )" &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                     else
                                                                                                                         if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                         then
                                                                                                                             MESSAGE="We did create the TARGET." &&
                                                                                                                                 exit 64
-                                                                                                                        fi
+                                                                                                                        fi &&
+                                                                                                                            if [ -e ${ environment-variable "INIT_OUT" } ]
+                                                                                                                            then
+                                                                                                                                MESSAGE="We did log init out." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                     fi
 
                                                                                                                     if [ -e ${ environment-variable "RELEASE_FLAG" } ]
