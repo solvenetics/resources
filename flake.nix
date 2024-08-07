@@ -211,12 +211,12 @@
                                                                                                                     then
                                                                                                                         if [ ! -f ${ environment-variable "TARGET" } ]
                                                                                                                         then
-                                                                                                                            MESSAGE="We did not create the TARGET file." &&
+                                                                                                                            export MESSAGE="We did not create the TARGET file." &&
                                                                                                                                 exit 64
                                                                                                                         fi &&
                                                                                                                             if [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                             then
-                                                                                                                                MESSAGE="We did not log init out." &&
+                                                                                                                                export MESSAGE="We did not log init out." &&
                                                                                                                                     exit 64
                                                                                                                             elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
                                                                                                                             then
@@ -227,28 +227,28 @@
                                                                                                                             fi &&
                                                                                                                             if [ ! -f ${ environment-variable "INIT_ERR" } ]
                                                                                                                             then
-                                                                                                                                MESSAGE="We did not log init err." &&
+                                                                                                                                export MESSAGE="We did not log init err." &&
                                                                                                                                     exit 64
                                                                                                                             elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ERR" } )" != "" ]
                                                                                                                             then
-                                                                                                                                MESSAGE="We did not correctly log init err." &&
-                                                                                                                                    OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ERR" } )" &&
+                                                                                                                                export MESSAGE="We did not correctly log init err." &&
+                                                                                                                                    export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ERR" } )" &&
                                                                                                                                     exit 64
                                                                                                                             fi
                                                                                                                     else
                                                                                                                         if [ -e ${ environment-variable "TARGET" } ]
                                                                                                                         then
-                                                                                                                            MESSAGE="We did create the TARGET." &&
+                                                                                                                            export MESSAGE="We did create the TARGET." &&
                                                                                                                                 exit 64
                                                                                                                         fi &&
                                                                                                                             if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                             then
-                                                                                                                                MESSAGE="We did log init out." &&
+                                                                                                                                export MESSAGE="We did log init out." &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "INIT_ERR" } ]
                                                                                                                             then
-                                                                                                                                MESSAGE="We did log init err." &&
+                                                                                                                                export MESSAGE="We did log init err." &&
                                                                                                                                     exit 64
                                                                                                                             fi
                                                                                                                     fi
