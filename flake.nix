@@ -203,7 +203,7 @@
                                                                                                                     RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                     if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo inner missing resource directory &&
+                                                                                                                        MESSAGE="We did not create the RESOURCE directory." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
 
