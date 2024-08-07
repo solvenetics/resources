@@ -192,12 +192,7 @@
                                                                                                                     RELEASE_STATUS=${ environment-variable 3 } &&
                                                                                                                     ARGUMENTS=${ environment-variable 4 } &&
                                                                                                                     STDIN=${ environment-variable 5 } &&
-                                                                                                                    if [ ${ environment-variable "#" } == 5 ]
-                                                                                                                    then
-                                                                                                                        HAS_STDIN=true
-                                                                                                                    else
-                                                                                                                        HAS_STDIN=false
-                                                                                                                    fi &&
+                                                                                                                    HAS_STDIN=${ environment-variable 6 } &&
                                                                                                                     if [ -z "${ environment-variable "INIT_STATUS" }" ]
                                                                                                                     then
                                                                                                                         TEST_INIT=false
@@ -374,10 +369,10 @@
                                                                                     ${ resources.scripts.alpha } &&
                                                                                     exit 64
                                                                             fi &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 a650fec07ebe71e3bd0cc888f03bbb023c11b6cd0a5565d8ed579e899ba40f100e83f24feb9043d1df8f764bc30a70b752520bb79a03daac773af921cffa6021
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 0 c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 "" false &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 0 a650fec07ebe71e3bd0cc888f03bbb023c11b6cd0a5565d8ed579e899ba40f100e83f24feb9043d1df8f764bc30a70b752520bb79a03daac773af921cffa6021 "" false
                                                                     '' ;
                                                     } ;
                                         } ;
