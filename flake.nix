@@ -178,7 +178,17 @@
                                                                                                     let
                                                                                                         inner =
                                                                                                             ''
-                                                                                                                TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                cleanup ( )
+                                                                                                                    {
+                                                                                                                        STATUS=${ environment-variable "?" } &&
+                                                                                                                            if [ ${ environment-variable "STATUS" } !I = 0 ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/env >&1 &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
+                                                                                                                    } &&
+                                                                                                                    trap cleanup EXIT
+                                                                                                                    TEMPORARY=${ environment-variable 1 } &&
                                                                                                                     INIT_STATUS=${ environment-variable 2 } &&
                                                                                                                     RELEASE_STATUS=${ environment-variable 3 } &&
                                                                                                                     ARGUMENTS=${ environment-variable 4 } &&
