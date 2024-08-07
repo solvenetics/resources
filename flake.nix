@@ -145,11 +145,10 @@
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable target } > ${ environment-variable "INIT_FLAG" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable target }/arguments &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "INIT_ARGUMENTS" } &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/tee > ${ environment-variable target }/stdin
+                                                                                                                        ${ pkgs.coreutils }/bin/tee > ${ environment-variable "INIT_STDIN" }
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo 193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952 >&2 &&
@@ -212,11 +211,6 @@
                                                                                                                         TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
                                                                                                                     fi &&
                                                                                                                     RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
-                                                                                                                    if [ ! -f ${ environment-variable "INIT_FLAG" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo inner missing init flag >&2 &&
-                                                                                                                            exit 64
-                                                                                                                    fi &&
                                                                                                                     if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner missing resource directory &&
@@ -316,7 +310,8 @@
                                                                                                                 in
                                                                                                                     ''
                                                                                                                         RELEASE_STATUS=${ environment-variable 3 } &&
-                                                                                                                            export INIT_FLAG=$( ${ mktemp } ) &&
+                                                                                                                            export INIT_ARGUMENTS=$( ${ mktemp } ) &&
+                                                                                                                            export INIT_STDIN=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_FLAG=$( ${ mktemp } ) &&
                                                                                                                             if [ -z "${ environment-variable "RELEASE_STATUS" }" ]
                                                                                                                             then
@@ -332,11 +327,6 @@
                                                                                                                             fi &&
                                                                                                                             RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
-                                                                                                                            if [ ! -f ${ environment-variable "INIT_FLAG" } ]
-                                                                                                                            then
-                                                                                                                                ${ pkgs.coreutils }/bin/echo outer missing init flag &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo We have determined that sleep 1 second is too fast because the test for removal happens before the removal has had a chance. &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                             if [ "${ environment-variable "TEST_RELEASE" }" == "true" ]
