@@ -144,7 +144,7 @@
                                                                                                     beta =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                                                ${ pkgs.coreutils }/bin/touch ${ environment-variable target } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "INIT_ARGUMENTS" } &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
@@ -180,9 +180,10 @@
                                                                                                                 cleanup ( )
                                                                                                                     {
                                                                                                                         STATUS=${ environment-variable "?" } &&
-                                                                                                                            if [ ${ environment-variable "STATUS" } !I = 0 ]
+                                                                                                                            if [ ${ environment-variable "STATUS" } != 0 ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/env >&1 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2
                                                                                                                                     exit 64
                                                                                                                             fi
                                                                                                                     } &&
@@ -204,6 +205,11 @@
                                                                                                                     if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                     then
                                                                                                                         MESSAGE="We did not create the RESOURCE directory." &&
+                                                                                                                            exit 64
+                                                                                                                    fi &&
+                                                                                                                    if [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                    then
+                                                                                                                        MESSAGE="We did not create the TARGET file." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
 
