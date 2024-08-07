@@ -225,7 +225,7 @@
                                                                                                                                     export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ ! -f ${ environment-variable "INIT_ERR" } ]
+                                                                                                                            if [ ! -f ${ environment-variable "RESOURCE" }/init.err.log ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not log init err." &&
                                                                                                                                     exit 64
@@ -247,7 +247,7 @@
                                                                                                                                 export MESSAGE="We did log init out." &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ -e ${ environment-variable "INIT_ERR" } ]
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did log init err." &&
                                                                                                                                     exit 64
