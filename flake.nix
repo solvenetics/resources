@@ -401,20 +401,6 @@
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not lock init err." &&
                                                                                                                                     exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not record the init status." &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != ${ environment-variable "INIT_STATUS" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not correctly record the init status." &&
-                                                                                                                                    export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "0400" ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not lock init status." &&
-                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     fi &&
 
