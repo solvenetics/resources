@@ -270,13 +270,18 @@
                                                                                                                then
                                                                                                                    export MESSAGE="We did not correctly create the init target." &&
                                                                                                                         exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not expect that init good." &&
+                                                                                                                        export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
+                                                                                                                        exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_TARGET" } ]
                                                                                                                then
                                                                                                                     export MESSAGE="We did write the init target." &&
                                                                                                                         exit 64
-                                                                                                               elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "INIT_GOOD" } ] != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
                                                                                                                then
-                                                                                                                    export MESSAGE="We did not expect that test init." &&
+                                                                                                                    export MESSAGE="We did not expect that init good." &&
                                                                                                                         export OBSERVED=${ environment-variable "TEST_INIT" } &&
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
@@ -339,7 +344,7 @@
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
                                                                                                                then
-                                                                                                                    export MESSAGE="We did record the initial status" &&
+                                                                                                                    export MESSAGE="We did record the initial status." &&
                                                                                                                         exit 64
                                                                                                                 elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } != false ]
                                                                                                                 then
