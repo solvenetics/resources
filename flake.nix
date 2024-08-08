@@ -333,7 +333,10 @@
                                                                                                                                     export MESSAGE="We did not expect that has stdin." &&
                                                                                                                                         export OBSERVED=${ environment-variable "HAS_STDIN" } &&
                                                                                                                                         exit 64
-
+                                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                                then
+                                                                                                                                    export MESSAGE="We did write the init stdin." &&
+                                                                                                                                        exit 64
 
 
 
