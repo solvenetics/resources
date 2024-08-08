@@ -242,6 +242,17 @@
                                                                                                                         MESSAGE="We did not create the RESOURCE directory." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
+
+                                                                                                                    if [ ${ environment-variable "TEST_INIT" } == "true" ] && [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not create the TARGET file." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == "false" ] && [ -e ${ environment-variable "TARGET" } ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did create the TARGET." &&
+                                                                                                                            exit 64
+                                                                                                                    fi &&
+
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock. &&
