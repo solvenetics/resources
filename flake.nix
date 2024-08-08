@@ -193,9 +193,14 @@
                                                                                             beta =
                                                                                                 { pkgs , environment-variable , target , ... } :
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_FLAG" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/tee > ${ environment-variable "RELEASE_STDIN" }
+                                                                                                            fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2
+                                                                                                            ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" }
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
@@ -238,7 +243,7 @@
                                                                                                                     fi &&
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
-                                                                                                                       ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock. &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock. &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep &&
                                                                                                                             if [ ! -f ${ environment-variable "TARGET" } ]
                                                                                                                             then
@@ -389,7 +394,9 @@
                                                                                                                             export INIT_ARGUMENTS=$( ${ mktemp } ) &&
                                                                                                                             export INIT_STDIN=$( ${ mktemp } ) &&
                                                                                                                             export INIT_TARGET=$( ${ mktemp } ) &&
-                                                                                                                            export RELEASE_FLAG=$( ${ mktemp } ) &&
+                                                                                                                            export RELEASE_ARGUMENTS=$( ${ mktemp } ) &&
+                                                                                                                            export RELEASE_STDIN=$( ${ mktemp } ) &&
+                                                                                                                            export RELEASE_TARGET=$( ${ mktemp } } &&
                                                                                                                             if [ -z "${ environment-variable "RELEASE_STATUS" }" ]
                                                                                                                             then
                                                                                                                                 TEST_RELEASE=false
