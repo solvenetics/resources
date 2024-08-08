@@ -295,7 +295,16 @@
                                                                                                                             elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not correctly write the init arguments." &&
-                                                                                                                                    exit 54
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ ! -f ${ environment-variable "INIT_TARGET" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not create the INIT_TARGET." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not correctly write the init target." &&
+                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     else
                                                                                                                         if [ -e ${ environment-variable "TARGET" } ]
@@ -318,9 +327,14 @@
                                                                                                                                 export MESSAGE="We did record the initial status" &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ -e ${ environment-variable "INIT_ARGUMENTS"  }]
+                                                                                                                            if [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
                                                                                                                             then
-                                                                                                                                export MESSAGE="We did write the arguments." &&
+                                                                                                                                export MESSAGE="We did write the init arguments." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "INIT_TARGET" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did write the init target." &&
                                                                                                                                     exit 64
                                                                                                                             fi
                                                                                                                     fi &&
