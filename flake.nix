@@ -303,6 +303,18 @@
                                                                                                                     then
                                                                                                                         export MESSAGE="We did record the initial status" &&
                                                                                                                             exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not write init arguments." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not correctly write the init arguments." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did write the init arguments." &&
+                                                                                                                            exit 64
 
                                                                                                                     elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
                                                                                                                     then
