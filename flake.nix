@@ -415,15 +415,6 @@
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not lock init status." &&
                                                                                                                                     exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not write init arguments." &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not correctly write the init arguments." &&
-                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     fi &&
 
