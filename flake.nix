@@ -264,7 +264,6 @@
                                                                                                                     fi &&
                                                                                                                     export TARGET &&
                                                                                                                     export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                     if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not create the RESOURCE directory." &&
