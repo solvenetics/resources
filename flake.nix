@@ -338,13 +338,14 @@
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
                                                                                                                then
-                                                                                                                    export MESSAGE="We were not expecting this INIT_GOOD" &&
+                                                                                                                    export MESSAGE="We did not expect this INIT_GOOD" &&
                                                                                                                         export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "400" ]
                                                                                                                then
                                                                                                                     export MESSAGE="We did not lock init status." &&
                                                                                                                         export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                        export EXPECTED=400 &&
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
                                                                                                                then
