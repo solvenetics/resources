@@ -64,10 +64,10 @@
                                                                                         else
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
                                                                                                 BROKEN=$( ${ temporary-broken-directory } ) &&
-                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
@@ -83,10 +83,10 @@
                                                                                         else
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
                                                                                                 BROKEN=$( ${ temporary-broken-directory } ) &&
-                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     fi
@@ -232,11 +232,38 @@
                                                                                                                     export TEST_INIT=${ environment-variable 8 } &&
                                                                                                                     if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                     then
-                                                                                                                        TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                        if TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                        then
+                                                                                                                            if [ ${ environment-variable "INIT_GOOD" } != true ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We had an unexpected initialization problem." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
+                                                                                                                        else
+                                                                                                                            if [ ${ environment-variable "INIT_GOOD" } != false ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not have an expected initialization problem." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
+                                                                                                                        fi
                                                                                                                     else
-                                                                                                                        TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                        if TARGET=$( ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
+                                                                                                                        then
+                                                                                                                            if [ ${ environment-variable "INIT_GOOD" } != true ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We had an unexpected initialization problem." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
+                                                                                                                        else
+                                                                                                                            if [ ${ environment-variable "INIT_GOOD" } != false ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not have an expected initialization problem." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
+                                                                                                                        fi
                                                                                                                     fi &&
-                                                                                                                    RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
+                                                                                                                    export TARGET &&
+                                                                                                                    export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                     if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                     then
@@ -244,7 +271,7 @@
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "TARGET" } ]
                                                                                                                     then
-                                                                                                                        export MESSAGE="We did not create the TARGET file." &&
+                                                                                                                        export MESSAGE="We did not create the target file." &&
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "TARGET" } ]
                                                                                                                     then
@@ -294,7 +321,7 @@
                                                                                                                    then
                                                                                                                         export MESSAGE="We did not correctly create the init target." &&
                                                                                                                             exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
+                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) == ${ environment-variable "TARGET" } ]
                                                                                                                    then
                                                                                                                        export MESSAGE="We did not correctly create the init target." &&
                                                                                                                             exit 64
@@ -343,10 +370,22 @@
                                                                                                                    then
                                                                                                                         export MESSAGE="We did not record the init status." &&
                                                                                                                             exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != ${ environment-variable "INIT_STATUS" } ]
+                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 0 ]
                                                                                                                    then
                                                                                                                         export MESSAGE="We did not correctly record the init status." &&
                                                                                                                             export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                            export EXPECTED=0 &&
+                                                                                                                            exit 64
+                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } ==false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 64 ]
+                                                                                                                   then
+                                                                                                                        export MESSAGE="We did not correctly record the init status." &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                            export EXPECTED=64 &&
+                                                                                                                            exit 64
+                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
+                                                                                                                   then
+                                                                                                                        export MESSAGE="We were not expecting this INIT_GOOD" &&
+                                                                                                                            export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
                                                                                                                             exit 64
                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "400" ]
                                                                                                                    then
@@ -436,7 +475,7 @@
                                                                             fi &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 47ce8fce72162158377951a30e52a638c2dd87b849d88ce4e4d65622ecda0fcffde884831cd1cca3ad03e46b7bf3cceb3136bcff9b8c55461567c29d20292657 false true &&
-                                                                            # ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true &&
                                                                             # ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 a650fec07ebe71e3bd0cc888f03bbb023c11b6cd0a5565d8ed579e899ba40f100e83f24feb9043d1df8f764bc30a70b752520bb79a03daac773af921cffa6021 891e854719b25e5610aadac6bd2e7351fcfbdf489a1a07701a743e5b381d870be1d49e1f7b49fb7dd7d916daa203c2fc4e27593295933532980de39938e27a5c false true
                                                                             true
                                                                     '' ;
