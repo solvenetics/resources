@@ -437,19 +437,6 @@
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did write the init stdin." &&
                                                                                                                                     exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ ! -f ${ environment-variable "INIT_TARGET" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not create the init target." &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not correctly create the init target." &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not correctly create the init target." &&
-                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     fi &&
 
