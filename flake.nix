@@ -357,9 +357,6 @@
                                                                                                                    then
                                                                                                                         export MESSAGE="We did write the init target." &&
                                                                                                                             exit 64
-
-
-
                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
                                                                                                                    then
                                                                                                                         export MESSAGE="We did not expect that test init." &&
