@@ -245,7 +245,6 @@
                                                                                                                         MESSAGE="We did not create the RESOURCE directory." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "TARGET" } ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not create the TARGET file." &&
