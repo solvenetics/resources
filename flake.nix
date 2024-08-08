@@ -191,7 +191,7 @@
                                                                                     release =
                                                                                         {
                                                                                             beta =
-                                                                                                { pkgs , environment-variable , target , ... } :
+                                                                                                { pkgs , environment-variable , has-standard-input , target , ... } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
                                                                                                             if ${ has-standard-input }
@@ -303,23 +303,18 @@
                                                                                                                                 export MESSAGE="We did not correctly write the init arguments." &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
-                                                                                                                            if [ ${ environment-variable "HAS_STDIN" } == true ]
+                                                                                                                            if [ ${ environment-variable "HAS_STDIN" } == true ] && [ ! -f ${ environment-variable "INIT_STDIN" } ]
                                                                                                                             then
-                                                                                                                                if [ ! -f ${ environment-variable "INIT_STDIN" } ]
-                                                                                                                                then
-                                                                                                                                    export MESSAGE="We did not write init stdin." &&
-                                                                                                                                        exit 64
-                                                                                                                                elif [ $( ${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STDIN" } ) != ${ environment-variable "STDIN" } ]
-                                                                                                                                then
-                                                                                                                                    export MESSAGE="We did not write the init stdin." &&
-                                                                                                                                        exit 64
-                                                                                                                                fi
-                                                                                                                            else
-                                                                                                                                if [ -e ${ environment-variable "INIT_STDIN" } ]
-                                                                                                                                then
-                                                                                                                                    export MESSAGE="We did write the init stdin." &&
-                                                                                                                                        exit 64
-                                                                                                                                fi
+                                                                                                                                export MESSAGE="We did not write init stdin." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "HAS_STDIN" } == true ] && [ $( ${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STDIN" } ) != ${ environment-variable "STDIN" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not write the init stdin." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ -e ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did write the init stdin." &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ ! -f ${ environment-variable "INIT_TARGET" } ]
                                                                                                                             then
@@ -396,7 +391,7 @@
                                                                                                                             export INIT_TARGET=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_ARGUMENTS=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_STDIN=$( ${ mktemp } ) &&
-                                                                                                                            export RELEASE_TARGET=$( ${ mktemp } } &&
+                                                                                                                            export RELEASE_TARGET=$( ${ mktemp } ) &&
                                                                                                                             if [ -z "${ environment-variable "RELEASE_STATUS" }" ]
                                                                                                                             then
                                                                                                                                 TEST_RELEASE=false
