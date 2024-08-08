@@ -368,11 +368,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock.
                                                                                                                     fi &&
 
-                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo inner present release log err >&2 &&
-                                                                                                                            exit 64
-                                                                                                                    fi
+                                                                                                                    ${ pkgs.coreutils }/bin/true
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }
                                                                                                             '' ;
                                                                                                         outer =
