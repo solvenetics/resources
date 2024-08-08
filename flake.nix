@@ -229,6 +229,8 @@
                                                                                                                 elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                 then
                                                                                                                     export MESSAGE="We did not correctly write the init arguments." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" &&
+                                                                                                                        export EXPECTED="${ environment-variable "ARGUMENTS" }" &&
                                                                                                                         exit 64
                                                                                                                 elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
                                                                                                                 then
@@ -297,6 +299,8 @@
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
                                                                                                                then
                                                                                                                     export MESSAGE="We did not lock init out." &&
+                                                                                                                        export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) &&
+                                                                                                                        export EXPECTED=400 &&
                                                                                                                         exit 64
                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                then
