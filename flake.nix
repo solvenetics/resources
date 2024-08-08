@@ -298,6 +298,24 @@
                                                                                                                                 export MESSAGE="We did not correctly write the init arguments." &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
+                                                                                                                            if [ ${ environment-variable "HAS_STDIN" } == true ]
+                                                                                                                            then
+                                                                                                                                if [ ! -f ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                                then
+                                                                                                                                    export MESSAGE="We did not write init stdin." &&
+                                                                                                                                        exit 64
+                                                                                                                                elif [ $( ${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STDIN" } ) != ${ environment-variable "STDIN" } ]
+                                                                                                                                then
+                                                                                                                                    export MESSAGE="We did not write the init stdin." &&
+                                                                                                                                        exit 64
+                                                                                                                                fi
+                                                                                                                            else
+                                                                                                                                if [ -e ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                                then
+                                                                                                                                    export MESSAGE="We did write the init stdin." &&
+                                                                                                                                        exit 64
+                                                                                                                                fi
+                                                                                                                            fi &&
                                                                                                                             if [ ! -f ${ environment-variable "INIT_TARGET" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not create the INIT_TARGET." &&
@@ -331,6 +349,11 @@
                                                                                                                             if [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did write the init arguments." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did write the init stdin." &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "INIT_TARGET" } ]
