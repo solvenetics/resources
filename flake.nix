@@ -252,6 +252,30 @@
                                                                                                                         export MESSAGE="We did create the TARGET." &&
                                                                                                                             exit 64
                                                                                                                     fi &&
+                                                                                                                    if [ ${ environment-variable "TEST_INIT" } == "true" ] && [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not log init out." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == "true" ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not correctly log init out." &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
+                                                                                                                            export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == "true" ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not lock init out." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == "false" ] && [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did log init out." &&
+                                                                                                                            exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We did not expect that test init." &&
+                                                                                                                            export OBSERVED=${ environment-variable "TEST_INIT" } &&
+                                                                                                                            exit 64
+                                                                                                                    fi
 
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
