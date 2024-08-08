@@ -450,9 +450,6 @@
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not correctly create the init target." &&
                                                                                                                                     exit 64
-                                                                                                                            else
-                                                                                                                                export MESSAGE="WTF" &&
-                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     fi &&
 
