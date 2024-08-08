@@ -497,11 +497,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release flag >&2 &&
                                                                                                                             exit 64
                                                                                                                     fi &&
-                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo inner present release log out >&2 &&
-                                                                                                                            exit 64
-                                                                                                                    fi &&
+         
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo inner present release log err >&2 &&
