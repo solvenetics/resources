@@ -50,25 +50,38 @@
                                                                                     PARENT_PID=${ environment-variable "PPID" } &&
                                                                                     if ${ has-standard-input }
                                                                                     then
-                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ]
                                                                                         then
                                                                                             GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                        elif ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
-                                                                                            BROKEN=$( ${ temporary-broken-directory } ) &&
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
-                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        if [ "${ builtins.typeOf temporary.init }" == "null" ]
                                                                                         then
                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                        elif [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                         else
-                                                                                            BROKEN=$( ${ temporary-broken-directory } ) &&
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                  ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
@@ -182,7 +195,8 @@
                                                                                                                         STATUS=${ environment-variable "?" } &&
                                                                                                                             if [ ${ environment-variable "STATUS" } != 0 ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                                ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } >&2 &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/env >&2 &&
                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2
                                                                                                                                     exit 64
                                                                                                                             fi
@@ -236,6 +250,16 @@
                                                                                                                                     export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
+                                                                                                                            if [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not record the init status." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != ${ environment-variable "INIT_STATUS" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not correctly record the init status." &&
+                                                                                                                                    export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                             if [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not write init arguments." &&
@@ -259,6 +283,11 @@
                                                                                                                             if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did log init err." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did record the initial status" &&
                                                                                                                                     exit 64
                                                                                                                             fi &&
                                                                                                                             if [ -e ${ environment-variable "INIT_ARGUMENTS"  }]
