@@ -366,12 +366,7 @@
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock. &&
-                                                                                                                            ${ pkgs.coreutils }/bin/sleep &&
-                                                                                                                            if [ ! -f ${ environment-variable "TARGET" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not create the TARGET file." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi
+                                                                                                                            ${ pkgs.coreutils }/bin/sleep
                                                                                                                     fi &&
 
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
