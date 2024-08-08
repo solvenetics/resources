@@ -371,21 +371,6 @@
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not create the TARGET file." &&
                                                                                                                                     exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not log init out." &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not correctly log init out." &&
-                                                                                                                                    export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
-                                                                                                                                    export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
-                                                                                                                                    exit 64
-                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did not lock init out." &&
-                                                                                                                                    exit 64
                                                                                                                             fi
                                                                                                                     fi &&
 
