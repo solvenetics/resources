@@ -238,6 +238,10 @@
                                                                                                                                     export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
                                                                                                                                     export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
                                                                                                                                     exit 64
+                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not lock init out." &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ ! -f ${ environment-variable "RESOURCE" }/init.err.log ]
                                                                                                                             then
@@ -249,6 +253,10 @@
                                                                                                                                     export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" &&
                                                                                                                                     export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
                                                                                                                                     exit 64
+                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.err.log ) != "400" ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not lock init err." &&
+                                                                                                                                    exit 64
                                                                                                                             fi &&
                                                                                                                             if [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
                                                                                                                             then
@@ -259,7 +267,11 @@
                                                                                                                                 export MESSAGE="We did not correctly record the init status." &&
                                                                                                                                     export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
                                                                                                                                     exit 64
-                                                                                                                            fi
+                                                                                                                            elif [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "0400" ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not lock init status." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
                                                                                                                             if [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not write init arguments." &&
