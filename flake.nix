@@ -208,6 +208,146 @@
                                                                                             temporary =
                                                                                                 { environment-variable , has-standard-input , target ,... } :
                                                                                                     let
+                                                                                                        check =
+                                                                                                            ''
+                                                                                                                if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not create the RESOURCE directory." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not create the target file." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "TARGET" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did create the TARGET." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not write init arguments." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not correctly write the init arguments." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did write the init arguments." &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } == true ] && [ ! -f ${ environment-variable "INIT_STDIN" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not write init stdin." &&
+                                                                                                                       exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_STDIN" } ) != ${ environment-variable "STDIN" } ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We did not write the init stdin." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_STDIN" } )" &&
+                                                                                                                        export EXPECTED="${ environment-variable "STDIN" }" &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } != true ] && [ ${ environment-variable "HAS_STDIN" } != false ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not expect that has stdin." &&
+                                                                                                                        export OBSERVED=${ environment-variable "HAS_STDIN" } &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_STDIN" } ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did write the init stdin." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ ${ environment-variable "HAS_STDIN" } != true ] && [ ${ environment-variable "HAS_STDIN" } != false ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not expect that has stdin." &&
+                                                                                                                        export OBSERVED=${ environment-variable "HAS_STDIN" } &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "INIT_TARGET" } ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not create the init target." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not correctly create the init target." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) == ${ environment-variable "TARGET" } ]
+                                                                                                               then
+                                                                                                                   export MESSAGE="We did not correctly create the init target." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_TARGET" } ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did write the init target." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not expect that test init." &&
+                                                                                                                        export OBSERVED=${ environment-variable "TEST_INIT" } &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not log init out." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not correctly log init out." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
+                                                                                                                        export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not lock init out." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did log init out." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not log init err." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" != "193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not correctly log init err." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" &&
+                                                                                                                        export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did log init err ." &&
+                                                                                                                       exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not record the init status." &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 0 ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not correctly record the init status." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                        export EXPECTED=0 &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } ==false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 64 ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not correctly record the init status." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                        export EXPECTED=64 &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We were not expecting this INIT_GOOD" &&
+                                                                                                                        export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "400" ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did not lock init status." &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                        exit 64
+                                                                                                               elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                               then
+                                                                                                                    export MESSAGE="We did record the initial status" &&
+                                                                                                                        exit 64
+                                                                                                                elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } != false ]
+                                                                                                                then
+                                                                                                                    export MESSAGE="We were not expecting this test init." &&
+                                                                                                                        export OBSERVED=${ environment-variable "TEST_INIT" } &&
+                                                                                                                        exit 64
+                                                                                                               fi
+                                                                                                            '' ;
                                                                                                         inner =
                                                                                                             ''
                                                                                                                 cleanup ( )
@@ -222,14 +362,6 @@
                                                                                                                             fi
                                                                                                                     } &&
                                                                                                                     trap cleanup EXIT
-                                                                                                                    export TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                    export INIT_STATUS=${ environment-variable 2 } &&
-                                                                                                                    export INIT_GOOD=${ environment-variable 3 } &&
-                                                                                                                    export RELEASE_STATUS=${ environment-variable 4 } &&
-                                                                                                                    export ARGUMENTS=${ environment-variable 5 } &&
-                                                                                                                    export STDIN=${ environment-variable 6 } &&
-                                                                                                                    export HAS_STDIN=${ environment-variable 7 } &&
-                                                                                                                    export TEST_INIT=${ environment-variable 8 } &&
                                                                                                                     if [ "${ environment-variable "HAS_STDIN" }" == "true" ]
                                                                                                                     then
                                                                                                                         if TARGET=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STDIN" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } )
@@ -264,152 +396,22 @@
                                                                                                                     fi &&
                                                                                                                     export TARGET &&
                                                                                                                     export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
-                                                                                                                    if [ ! -d ${ environment-variable "RESOURCE" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not create the RESOURCE directory." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not create the target file." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did create the TARGET." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "INIT_ARGUMENTS" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not write init arguments." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_ARGUMENTS" } )" != "${ environment-variable "ARGUMENTS" }" ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not correctly write the init arguments." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did write the init arguments." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } == true ] && [ ! -f ${ environment-variable "INIT_STDIN" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not write init stdin." &&
-                                                                                                                           exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_STDIN" } ) != ${ environment-variable "STDIN" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not write the init stdin." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_STDIN" } )" &&
-                                                                                                                            export EXPECTED="${ environment-variable "STDIN" }" &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "HAS_STDIN" } != true ] && [ ${ environment-variable "HAS_STDIN" } != false ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not expect that has stdin." &&
-                                                                                                                            export OBSERVED=${ environment-variable "HAS_STDIN" } &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_STDIN" } ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did write the init stdin." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ ${ environment-variable "HAS_STDIN" } != true ] && [ ${ environment-variable "HAS_STDIN" } != false ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not expect that has stdin." &&
-                                                                                                                            export OBSERVED=${ environment-variable "HAS_STDIN" } &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "INIT_TARGET" } ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not create the init target." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) != ${ environment-variable "TARGET" } ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not correctly create the init target." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET" } ) == ${ environment-variable "TARGET" } ]
-                                                                                                                   then
-                                                                                                                       export MESSAGE="We did not correctly create the init target." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "INIT_TARGET" } ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did write the init target." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } ] != false ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not expect that test init." &&
-                                                                                                                            export OBSERVED=${ environment-variable "TEST_INIT" } &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not log init out." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not correctly log init out." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
-                                                                                                                            export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not lock init out." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did log init out." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not log init err." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" != "193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not correctly log init err." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" &&
-                                                                                                                            export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did log init err ." &&
-                                                                                                                           exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not record the init status." &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 0 ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not correctly record the init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
-                                                                                                                            export EXPECTED=0 &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } ==false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 64 ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not correctly record the init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
-                                                                                                                            export EXPECTED=64 &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We were not expecting this INIT_GOOD" &&
-                                                                                                                            export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "400" ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did not lock init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc )" &&
-                                                                                                                            exit 64
-                                                                                                                   elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                                   then
-                                                                                                                        export MESSAGE="We did record the initial status" &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } != false ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We were not expecting this test init." &&
-                                                                                                                            export OBSERVED=${ environment-variable "TEST_INIT" } &&
-                                                                                                                            exit 64
-                                                                                                                   fi &&
-                                                                                                                   ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" } &&
-                                                                                                                   exit 0
+                                                                                                                    ${ pkgs.writeShellScript "check" check } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }
                                                                                                             '' ;
                                                                                                         outer =
                                                                                                             let
                                                                                                                 mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                                 in
                                                                                                                     ''
-                                                                                                                        RELEASE_STATUS=${ environment-variable 3 } &&
+                                                                                                                        export TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                            export INIT_STATUS=${ environment-variable 2 } &&
+                                                                                                                            export INIT_GOOD=${ environment-variable 3 } &&
+                                                                                                                            export RELEASE_STATUS=${ environment-variable 4 } &&
+                                                                                                                            export ARGUMENTS=${ environment-variable 5 } &&
+                                                                                                                            export STDIN=${ environment-variable 6 } &&
+                                                                                                                            export HAS_STDIN=${ environment-variable 7 } &&
+                                                                                                                            export TEST_INIT=${ environment-variable 8 } &&
                                                                                                                             export INIT_ARGUMENTS=$( ${ mktemp } ) &&
                                                                                                                             export INIT_STDIN=$( ${ mktemp } ) &&
                                                                                                                             export INIT_TARGET=$( ${ mktemp } ) &&
