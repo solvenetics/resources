@@ -395,6 +395,11 @@
                                                                                                                    then
                                                                                                                         export MESSAGE="We did record the initial status" &&
                                                                                                                             exit 64
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } != true ] && [ ${ environment-variable "TEST_INIT" } != false ]
+                                                                                                                    then
+                                                                                                                        export MESSAGE="We were not expecting this test init." &&
+                                                                                                                            export OBSERVED=${ environment-variable "TEST_INIT" } &&
+                                                                                                                            exit 64
                                                                                                                    fi &&
                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" } &&
                                                                                                                    exit 0
