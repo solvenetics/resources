@@ -67,6 +67,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     else
@@ -84,7 +85,8 @@
                                                                                                 BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                                 ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                 exit ${ builtins.toString temporary-init-error-code }
                                                                                         fi
                                                                                     fi
@@ -93,8 +95,20 @@
                                                                             ''
                                                                                 RESOURCE=${ environment-variable 1 } &&
                                                                                     PID=${ environment-variable 2 } &&
-                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log
+                                                                                    fi &&
+                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                    fi &&
+                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                    fi &&
                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                     if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                     then
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
@@ -223,11 +237,12 @@
                                                                                                                     fi &&
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
-                                                                                                                        if [ ! -f ${ environment-variable "TARGET" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="We did not create the TARGET file." &&
-                                                                                                                                exit 64
-                                                                                                                        fi &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep &&
+                                                                                                                            if [ ! -f ${ environment-variable "TARGET" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not create the TARGET file." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi &&
                                                                                                                             if [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not log init out." &&
