@@ -237,7 +237,8 @@
                                                                                                                     fi &&
                                                                                                                     if [ ${ environment-variable "TEST_INIT" } == "true" ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo We are sleeping because the locking happens in another thread and if we do not sleep we fail before it has had a chance to lock. &&
+                                                                                                                            ${ pkgs.coreutils }/bin/sleep &&
                                                                                                                             if [ ! -f ${ environment-variable "TARGET" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not create the TARGET file." &&
