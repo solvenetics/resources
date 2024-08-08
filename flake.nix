@@ -454,42 +454,6 @@
                                                                                                                                 export MESSAGE="WTF" &&
                                                                                                                                     exit 64
                                                                                                                             fi
-                                                                                                                    else
-                                                                                                                        if [ -e ${ environment-variable "TARGET" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="We did create the TARGET." &&
-                                                                                                                                exit 64
-                                                                                                                        fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did log init out." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did log init err." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did record the initial status" &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "INIT_ARGUMENTS" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did write the init arguments." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "INIT_STDIN" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did write the init stdin." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "INIT_TARGET" } ]
-                                                                                                                            then
-                                                                                                                                export MESSAGE="We did write the init target." &&
-                                                                                                                                    exit 64
-                                                                                                                            fi
                                                                                                                     fi &&
 
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
