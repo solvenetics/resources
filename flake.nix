@@ -259,7 +259,7 @@
                                                                                                                             export INIT_STATUS=${ environment-variable 2 } &&
                                                                                                                             export INIT_GOOD=${ environment-variable 3 } &&
                                                                                                                             export RELEASE_STATUS=${ environment-variable 4 } &&
-                                                                                                                            export RELEASE_BAD=${ environment-variable 5 } &&
+                                                                                                                            export RELEASE_GOOD=${ environment-variable 5 } &&
                                                                                                                             export ARGUMENTS=${ environment-variable 6 } &&
                                                                                                                             export STDIN=${ environment-variable 7 } &&
                                                                                                                             export HAS_STDIN=${ environment-variable 8 } &&
@@ -277,25 +277,10 @@
                                                                                                                             else
                                                                                                                                 TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             fi &&
-                                                                                                                            RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
+                                                                                                                            export TARGET &&
+                                                                                                                            export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo We have determined that sleep 1 second is too fast because the test for removal happens before the removal has had a chance. &&
-                                                                                                                            ${ pkgs.coreutils }/bin/sleep 10s &&
-                                                                                                                            if [ "${ environment-variable "TEST_RELEASE" }" == "true" ]
-                                                                                                                            then
-                                                                                                                                ${ pkgs.coreutils }/bin/true NOTHING FOR NOW
-                                                                                                                            else
-                                                                                                                                if [ ! -f ${ environment-variable "RELEASE_FLAG" } ]
-                                                                                                                                then
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo outer missing release flag >&2 &&
-                                                                                                                                       exit 64
-                                                                                                                                fi &&
-                                                                                                                                if [ -e ${ environment-variable "RESOURCE" } ]
-                                                                                                                                then
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo outer present resource directory >&2 &&
-                                                                                                                                        exit 64
-                                                                                                                                fi
-                                                                                                                            fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                             ${ pkgs.writeShellScript "persistent" persistent } &&
                                                                                                                             if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
@@ -434,7 +419,7 @@
                                                                                                                     then
                                                                                                                         export MESSAGE="We did write the release target." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } ] != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not expect that release good." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_RELEASE" } &&
@@ -540,7 +525,7 @@
                                                                                                                         export MESSAGE="We were not expecting this test init." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_INIT" } &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } ] != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not expect that release good." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_RELEASE" } &&
@@ -648,7 +633,7 @@
                                                                             fi &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true true true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 47ce8fce72162158377951a30e52a638c2dd87b849d88ce4e4d65622ecda0fcffde884831cd1cca3ad03e46b7bf3cceb3136bcff9b8c55461567c29d20292657 false true true &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true false &&
                                                                             true
                                                                     '' ;
                                                     } ;
