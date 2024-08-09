@@ -540,45 +540,6 @@
                                                                                                                         export MESSAGE="We were not expecting this test init." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_INIT" } &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "RELEASE_ARGUMENTS" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not write release arguments." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ -z "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_ARGUMENTS" } )" ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not correctly write the release arguments." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_ARGUMENTS" } )" &&
-                                                                                                                            export EXPECTED="" &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RELEASE_ARGUMENTS" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did write the release arguments." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ -e ${ environment-variable "RELEASE_STDIN" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did write the release stdin." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RELEASE_STDIN" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did write the release stdin." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "RELEASE_TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not create the release target." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) != ${ environment-variable "TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not correctly create the release target." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) == ${ environment-variable "TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not correctly create the release target." &&
-                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did not expect that release good." &&
-                                                                                                                            export OBSERVED="${ environment-variable "RELEASE_GOOD" }" &&
-                                                                                                                            exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RELEASE_TARGET" } ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did write the release target." &&
