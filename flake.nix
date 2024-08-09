@@ -297,7 +297,11 @@
                                                                                                                                 fi
                                                                                                                             fi &&
                                                                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
-                                                                                                                            ${ pkgs.writeShellScript "persistent" persistent }
+                                                                                                                            ${ pkgs.writeShellScript "persistent" persistent } &&
+                                                                                                                            if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
+                                                                                                                            then
+                                                                                                                                ${ pkgs.writeShellScript "transient" transient }
+                                                                                                                            fi
                                                                                                                     '' ;
                                                                                                         persistent =
                                                                                                             ''
