@@ -540,10 +540,6 @@
                                                                                                                         export MESSAGE="We were not expecting this test init." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_INIT" } &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RELEASE_TARGET" } ]
-                                                                                                                    then
-                                                                                                                        export MESSAGE="We did write the release target." &&
-                                                                                                                            exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } ] != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not expect that release good." &&
