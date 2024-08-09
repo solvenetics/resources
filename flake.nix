@@ -635,10 +635,13 @@
                                                                                 {
                                                                                     beta-00 = scripts : { } ;
                                                                                     beta-01 = scripts : { release = scripts.release.beta.good ; } ;
+                                                                                    beta-02 = scripts : { release = scripts.release.beta.bad ; } ;
                                                                                     beta-10 = scripts : { init = scripts.init.beta.good ; } ;
-                                                                                    beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
                                                                                     beta-11 = scripts : { init = scripts.init.beta.good ; release = scripts.release.beta.good ; } ;
+                                                                                    beta-12 = scripts : { init = scripts.init.beta.good ; release = scripts.release.beta.bad ; } ;
+                                                                                    beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
                                                                                     beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.good ; } ;
+                                                                                    beta-22 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.bad ; } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
