@@ -210,18 +210,25 @@
                                                                                     release =
                                                                                         {
                                                                                             beta =
-                                                                                                { pkgs , environment-variable , has-standard-input , target , ... } :
-                                                                                                    ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "RELEASE_ARGUMENTS" } &&
-                                                                                                            if ${ has-standard-input }
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/tee > ${ environment-variable "RELEASE_STDIN" }
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" }
-                                                                                                    '' ;
+                                                                                                let
+                                                                                                    beta =
+                                                                                                        { pkgs , environment-variable , has-standard-input , target , ... } : exit :
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "RELEASE_ARGUMENTS" } &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/tee > ${ environment-variable "RELEASE_STDIN" }
+                                                                                                                    fi &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" }
+                                                                                                            '' ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            bad = primary : beta primary 64 ;
+                                                                                                            good = primary : beta primary 0 ;
+                                                                                                        } ;
                                                                                         } ;
                                                                                     verification =
                                                                                         {
@@ -627,11 +634,11 @@
                                                                             temporary =
                                                                                 {
                                                                                     beta-00 = scripts : { } ;
-                                                                                    beta-01 = scripts : { release = scripts.release.beta ; } ;
+                                                                                    beta-01 = scripts : { release = scripts.release.beta.good ; } ;
                                                                                     beta-10 = scripts : { init = scripts.init.beta.good ; } ;
                                                                                     beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
-                                                                                    beta-11 = scripts : { init = scripts.init.beta.good ; release = scripts.release.beta ; } ;
-                                                                                    beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta ; } ;
+                                                                                    beta-11 = scripts : { init = scripts.init.beta.good ; release = scripts.release.beta.good ; } ;
+                                                                                    beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.good ; } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
