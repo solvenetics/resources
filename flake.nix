@@ -535,20 +535,6 @@
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) != ${ environment-variable "TARGET" } ]
                                                                                                                         then
-                                                                                                                            # TODO
-                                                                                                                            #
-                                                                                                                            # 1 SIMPLIFY THIS SPEC
-                                                                                                                            # 2 VERIFY THE BROKEN RESOURCE
-                                                                                                                            #
-                                                                                                                            # REMEMBER THIS WAS A MISTAKE
-                                                                                                                            # WHEN THERE IS AN ERROR IN THE RELEASE SCRIPT
-                                                                                                                            # IT DOES NOT CHANGE THE TARGET AT ALL
-                                                                                                                            # THAT IS TOO LATE
-                                                                                                                            # WE NEED TO ADD ANOTHER TEST TO FIND AND VERIFY THE BROKEN RESOURCE
-                                                                                                                            #
-                                                                                                                            # WE NEED TO FIX THIS NOW.  THIS IS NOT A TODO
-                                                                                                                            #
-                                                                                                                            # WE NEED TO FIX THIS AND THEN CHANGE A FEW LATER TESTS.
                                                                                                                             export MESSAGE="We did not correctly create the release target." &&
                                                                                                                                 export OBSERVED=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) &&
                                                                                                                                 export UNEXPECTED=${ environment-variable "TARGET" } &&
