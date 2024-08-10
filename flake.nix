@@ -124,7 +124,7 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                                 else
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" } &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/release.status.asc &&
                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/release.out.log ${ environment-variable "RESOURCE" }/release.err.log ${ environment-variable "RESOURCE" }/release.status.asc &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } $( ${ temporary-broken-directory } )
                                                                                                 fi
@@ -315,13 +315,15 @@
                                                                                                                             export RELEASE_ARGUMENTS=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_STDIN=$( ${ mktemp } ) &&
                                                                                                                             export RELEASE_TARGET=$( ${ mktemp } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force /build/*.broken &&
                                                                                                                             if ${ has-standard-input }
                                                                                                                             then
-                                                                                                                                TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
+                                                                                                                                export TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } ) &&
+                                                                                                                                    export BROKEN=""
                                                                                                                             else
-                                                                                                                                TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
+                                                                                                                                export TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } ) &&
+                                                                                                                                    export BROKEN=$( ${ pkgs.findutils }/bin/find /build -type d -name "*.broken" )
                                                                                                                             fi &&
-                                                                                                                            export TARGET &&
                                                                                                                             export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo We have determined that sleep 1 second is too fast because the test for removal happens before the removal has had a chance. &&
@@ -329,7 +331,7 @@
                                                                                                                             ${ pkgs.writeShellScript "persistent" persistent } &&
                                                                                                                             if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.coreutils }/bin/true ${ pkgs.writeShellScript "transient" transient }
+                                                                                                                                ${ pkgs.writeShellScript "transient" transient }
                                                                                                                             fi
                                                                                                                     '' ;
                                                                                                         persistent =
@@ -603,7 +605,7 @@
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.out.log ) != "400" ]
                                                                                                                     then
-                                                                                                                        export MESSAGE="We did not lock release out." &&
+                                                                                                                        export MESSAGE="We did not lock release out - ${ environment-variable "RESOURCE" }." &&
                                                                                                                             export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.out.log ) &&
                                                                                                                             export EXPECTED=400 &&
                                                                                                                             exit 64
