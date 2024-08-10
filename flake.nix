@@ -199,10 +199,10 @@
                                                                                         { pkgs , environment-variable , has-standard-input , ... } :
                                                                                             ''
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ARGUMENTS_TARGET" } &&
-                                                                                                    # if ${ has-standard-input }
-                                                                                                    # then
-                                                                                                    #    ${ pkgs.coreutils }/bin/tail > ${ environment-variable "STANDARD_INPUT_TARGET" }
-                                                                                                    # fi &&
+                                                                                                    if ${ has-standard-input }
+                                                                                                    then
+                                                                                                       ${ pkgs.coreutils }/bin/tail > ${ environment-variable "STANDARD_INPUT_TARGET" }
+                                                                                                    fi &&
                                                                                                     exit ${ environment-variable "EXIT" }
                                                                                             '' ;
                                                                                     init =
@@ -288,7 +288,7 @@
                                                                                                                     else
                                                                                                                         TEMPORARY_STATUS=${ environment-variable "?" }
                                                                                                                     fi
-                                                                                                                elif [ ${ environment-variable "HAS_STAND_INPUT" } == false ]
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     if ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
                                                                                                                     then
