@@ -231,10 +231,12 @@
                                                                                             gamma =
                                                                                                 let
                                                                                                     gamma =
-                                                                                                        { environment-variable , has-standard-input , pkgs , target , ... } :
+                                                                                                        { constant-hash , environment-variable , epoch-hash , epoch-timestamp , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/touch ${ environment-variable target } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "ARGUMENTS_TARGET" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-timestamp } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-hash } > ${ environment-variable "INIT_EPOCH_HASH" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable constant-hash } > ${ environment-variable "INIT_CONSTANT_HASH" } &&
+                                                                                                                    exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
                                                                                                         {
@@ -264,6 +266,21 @@
                                                                                                         {
                                                                                                             bad = primary : beta primary 64 ;
                                                                                                             good = primary : beta primary 0 ;
+                                                                                                        } ;
+                                                                                            gamma =
+                                                                                                let
+                                                                                                    gamma =
+                                                                                                        { constant-hash , environment-variable , epoch-hash , epoch-timestamp , has-standard-input , pkgs , target , ... } : exit :
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-timestamp } > ${ environment-variable "RELEASE_EPOCH_TIMESTAMP" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-hash } > ${ environment-variable "RELEASE_EPOCH_HASH" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable constant-hash } > ${ environment-variable "RELEASE_CONSTANT_HASH" } &&
+                                                                                                                    exit ${ builtins.toString exit }
+                                                                                                            '' ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            bad = primary : gamma primary 64 ;
+                                                                                                            good = primary : gamma primary 0 ;
                                                                                                         } ;
                                                                                         } ;
                                                                                     verification =
