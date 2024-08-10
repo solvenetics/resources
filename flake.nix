@@ -778,6 +778,9 @@
                                                                                     beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.good ; } ;
                                                                                     beta-22 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.bad ; } ;
                                                                                     gamma-11 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.good ; } ;
+                                                                                    gamma-12 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
+                                                                                    gamma-21 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.good ; } ;
+                                                                                    gamma-22 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.bad ; } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
