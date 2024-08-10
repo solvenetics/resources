@@ -198,7 +198,7 @@
                                                                                     alpha =
                                                                                         { pkgs , environment-variable , has-standard-input , ... } :
                                                                                             ''
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ARGUMENTS_TARGET" } &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "ARGUMENTS_TARGET" } &&
                                                                                                     if ${ has-standard-input }
                                                                                                     then
                                                                                                        ${ pkgs.coreutils }/bin/tail > ${ environment-variable "STANDARD_INPUT_TARGET" }
@@ -227,6 +227,19 @@
                                                                                                         {
                                                                                                             bad = primary : beta primary 64 ;
                                                                                                             good = primary : beta primary 0 ;
+                                                                                                        } ;
+                                                                                            gamma =
+                                                                                                let
+                                                                                                    gamma =
+                                                                                                        { environment-variable , has-standard-input , pkgs , target , ... } :
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/touch ${ environment-variable target } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > ${ environment-variable "ARGUMENTS_TARGET" }
+                                                                                                            '' ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            bad = primary : gamma primary 64 ;
+                                                                                                            good = primary : gamma primary 0 ;
                                                                                                         } ;
                                                                                         } ;
                                                                                     release =
