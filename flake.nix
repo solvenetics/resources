@@ -125,6 +125,7 @@
                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/release.out.log ${ environment-variable "RESOURCE" }/release.err.log ${ environment-variable "RESOURCE" }/release.status.asc &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } $( ${ temporary-broken-directory } )
                                                                                                 fi
                                                                                             '' ;
@@ -236,7 +237,7 @@
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/tee > ${ environment-variable "RELEASE_STDIN" }
                                                                                                                     fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
                                                                                                                     exit ${ builtins.toString exit }
@@ -328,7 +329,7 @@
                                                                                                                             ${ pkgs.writeShellScript "persistent" persistent } &&
                                                                                                                             if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.writeShellScript "transient" transient }
+                                                                                                                                ${ pkgs.coreutils }/bin/true ${ pkgs.writeShellScript "transient" transient }
                                                                                                                             fi
                                                                                                                     '' ;
                                                                                                         persistent =
@@ -447,10 +448,28 @@
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) != ${ environment-variable "TARGET" } ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly create the release target." &&
+                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) &&
+                                                                                                                            export EXPECTED=${ environment-variable "TARGET" } &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) == ${ environment-variable "TARGET" } ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) != ${ environment-variable "TARGET" } ]
                                                                                                                     then
+                                                                                                                        # TODO
+                                                                                                                        #
+                                                                                                                        # 1 SIMPLIFY THIS SPEC
+                                                                                                                        # 2 VERIFY THE BROKEN RESOURCE
+                                                                                                                        #
+                                                                                                                        # REMEMBER THIS WAS A MISTAKE
+                                                                                                                        # WHEN THERE IS AN ERROR IN THE RELEASE SCRIPT
+                                                                                                                        # IT DOES NOT CHANGE THE TARGET AT ALL
+                                                                                                                        # THAT IS TOO LATE
+                                                                                                                        # WE NEED TO ADD ANOTHER TEST TO FIND AND VERIFY THE BROKEN RESOURCE
+                                                                                                                        #
+                                                                                                                        # WE NEED TO FIX THIS NOW.  THIS IS NOT A TODO
+                                                                                                                        #
+                                                                                                                        # WE NEED TO FIX THIS AND THEN CHANGE A FEW LATER TESTS.
                                                                                                                         export MESSAGE="We did not correctly create the release target." &&
+                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET" } ) &&
+                                                                                                                            export UNEXPECTED=${ environment-variable "TARGET" } &&
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
                                                                                                                     then
@@ -486,7 +505,7 @@
                                                                                                                             export MODE=transient &&
                                                                                                                             if [ ${ environment-variable "STATUS" } != 0 ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.findutils }/bin/find ${ environment-variable "RESOURCE" } >&2 &&
+                                                                                                                                ${ pkgs.findutils }/bin/find /build >&2 &&
                                                                                                                                     ${ pkgs.coreutils }/bin/env >&2 &&
                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2
                                                                                                                                     exit 64
@@ -576,11 +595,11 @@
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not log release out." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.out.log )" != "a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly log release out." &&
                                                                                                                             export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.out.log )" &&
-                                                                                                                            export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
+                                                                                                                            export EXPECTED="a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4" &&
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.out.log ) != "400" ]
                                                                                                                     then
@@ -680,6 +699,8 @@
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-00 } 0 true 0 true 44334890f47da05db3917e6a3d1a421777afdc8dc3975897a57fbcf2ddb8c0e85edf006df6555cb5dc644eb01505c227cc2181efb7a2aad9bcfe19b8b405f1a9 d25e1dcda42f12477de86e24831bf31c29005d1989ee79e372dd377d6c6d1c48262d0a5f5b475aef849df2ac7774372c60210aa852ed531442129a48a5b4fb3c false false false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-01 } 0 true 0 true 51a069aca5a245d4a4126f3e72b0948ec95b04d8b71bc6fd0ae32c24cde791e8ccd4614fee864efa07968852c1fb917cb632b4dacc276fa6f37e47d00ed40641 c8eb81542e5be3bb30d9feca1696f09410f3c13f818d3c5e5df0acefca87d6d49f3d313dd2729468c2855bc6e573e2ee7fbb88e0c68d75c96a474973126737b9 true false true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-01 } 0 true 0 true 57276151c295ac304b86ec13adc28688fc4d1a8aace8e5e9d9b4b7f7197d5731dc27b9453b3175ae5064c37512507e3449c531ce0883082642c7b84e830ab5bb 742a4d7c99cd0b323ba5d9cb51124e4d3b07309b7093b5d80e739c284186201e5483fc6fe35476a3cf72f72b833de3bb168169ee92b053968859d2e91136b76f false false true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-02 } 0 true 65 false 918f84be76f1c44fe870388651dc2a99a46307eca68874d0616c200bbde3edea2f1d94e6f0de960cdc59424bcd46683703ea35da4bf2bcb66fbe498f0d8b66d1 380ba759d8e04d9226965e5cda8fbcdd9d33cf46dd25d11689b33b7eba1bf4cc3ae905fe12e7682d9b289c8892bd9d2d3c79675aed85d1f2a74df83c54843287 true false true &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-02 } 0 true 65 false 57276151c295ac304b86ec13adc28688fc4d1a8aace8e5e9d9b4b7f7197d5731dc27b9453b3175ae5064c37512507e3449c531ce0883082642c7b84e830ab5bb 742a4d7c99cd0b323ba5d9cb51124e4d3b07309b7093b5d80e739c284186201e5483fc6fe35476a3cf72f72b833de3bb168169ee92b053968859d2e91136b76f false false true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true true true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 true c8a2d7e7f7683f8f2db452bf311013d17d321a077489e4928f1a95d38a26a5b99942c2b69608238c31816eba23369bab3f43f51c7eb1c954bcaa56a7898d3886 47ce8fce72162158377951a30e52a638c2dd87b849d88ce4e4d65622ecda0fcffde884831cd1cca3ad03e46b7bf3cceb3136bcff9b8c55461567c29d20292657 false true true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false 57e593f977b1be52e9bfdc465811aa7ade6d6d99b202e64fb0a4d0f5bc9ae581244a7eba872cd073ff9bbd374282421ff24590d703d75d4b82596811531344d7 c1cdefe06092f250e1a05013e2d78957927cb865300fb03b86a2788c812f56a29cf074a7d7291b17c965ddddc6f1b7c9d99885a4827a925b5d72cf1b9bb81191 true true false &&
