@@ -291,7 +291,7 @@
                                                                                                                     export TARGET &&
                                                                                                                     export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                     ${ pkgs.writeShellScript "persistent" persistent } &&
-                                                                                                                    ${ pkgs.writeShellScript "transient" transient } &&
+                                                                                                                    ${ pkgs.writeShellScript "transient" transient } ${ environment-variable "RESOURCE" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "TARGET" }
                                                                                                             '' ;
                                                                                                         outer =
@@ -318,11 +318,9 @@
                                                                                                                             ${ pkgs.coreutils }/bin/rm --recursive --force /build/*.broken &&
                                                                                                                             if ${ has-standard-input }
                                                                                                                             then
-                                                                                                                                export TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } ) &&
-                                                                                                                                    export BROKEN=""
+                                                                                                                                export TARGET=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             else
-                                                                                                                                export TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } ) &&
-                                                                                                                                    export BROKEN=$( ${ pkgs.findutils }/bin/find /build -type d -name "*.broken" )
+                                                                                                                                export TARGET=$( ${ pkgs.writeShellScript "inner" inner } ${ environment-variable "@" } )
                                                                                                                             fi &&
                                                                                                                             export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
@@ -331,7 +329,8 @@
                                                                                                                             ${ pkgs.writeShellScript "persistent" persistent } &&
                                                                                                                             if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
                                                                                                                             then
-                                                                                                                                ${ pkgs.writeShellScript "transient" transient }
+                                                                                                                                export BROKEN=$( ${ pkgs.findutils }/bin/find /build -type d -name "*.broken" ) &&
+                                                                                                                                    ${ pkgs.writeShellScript "transient" transient } ${ environment-variable "BROKEN" }
                                                                                                                             fi
                                                                                                                     '' ;
                                                                                                         persistent =
@@ -514,58 +513,59 @@
                                                                                                                             fi
                                                                                                                     } &&
                                                                                                                     trap cleanup EXIT &&
-                                                                                                                    if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                    export ASSET=${ environment-variable "1" } &&
+                                                                                                                    if [ ! -d ${ environment-variable "ASSET" } ]
                                                                                                                     then
-                                                                                                                        export MESSAGE="We did not create the RESOURCE directory." &&
+                                                                                                                        export MESSAGE="We did not create the ASSET directory." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "ASSET" }/init.out.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not log init out." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.out.log )" != "eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly log init out." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.log.out )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.log.out )" &&
                                                                                                                             export EXPECTED="eac99df8ad2fd51672d0504f02c2b1ea4af884a2705273f9653649cb7264c31fbc27e4daa328b3d1651da8b3880434b972b42200670c03f86fd0a77c371fea24" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) != "400" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/init.out.log ) != "400" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not lock init out." &&
-                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) &&
+                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/init.out.log ) &&
                                                                                                                             export EXPECTED=400 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "ASSET" }/init.out.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did log init out." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "ASSET" }/init.err.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not log init err." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" != "193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.err.log )" != "193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly log init err." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log )" &&
-                                                                                                                            export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.err.log )" &&
+                                                                                                                            export EXPECTED="52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "ASSET" }/init.err.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did log init err ." &&
                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ! -f ${ environment-variable "ASSET" }/init.status.asc ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not record the init status." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 0 ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.status.asc ) != 0 ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly record the init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.status.asc )" &&
                                                                                                                             export EXPECTED=0 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) != 64 ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } == false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.status.asc ) != 64 ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly record the init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/init.status.asc )" &&
                                                                                                                             export EXPECTED=64 &&
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_INIT" } == true ] && [ ${ environment-variable "INIT_GOOD" } != true ] && [ ${ environment-variable "INIT_GOOD" } != false ]
@@ -573,13 +573,13 @@
                                                                                                                         export MESSAGE="We did not expect this INIT_GOOD" &&
                                                                                                                             export OBSERVED="${ environment-variable "INIT_GOOD" }" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) != "400" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/init.status.asc ) != "400" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not lock init status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/init.status.asc )" &&
                                                                                                                             export EXPECTED=400 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                    elif [ ${ environment-variable "TEST_INIT" } == false ] && [ -e ${ environment-variable "ASSET" }/init.status.asc ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did record the initial status." &&
                                                                                                                             exit 64
@@ -593,54 +593,54 @@
                                                                                                                         export MESSAGE="We did not expect that release good." &&
                                                                                                                             export OBSERVED=${ environment-variable "TEST_RELEASE" } &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/release.out.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "ASSET" }/release.out.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not log release out." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.out.log )" != "a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.out.log )" != "a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly log release out." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.out.log )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.out.log )" &&
                                                                                                                             export EXPECTED="a92513f231769b19b4529ae89634bfb1593de9a55751805c1ed2a657ae45cde5773de852162d54c82559611d4ce49e58c17a93e2d5c042924832122b5e9985a4" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.out.log ) != "400" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/release.out.log ) != "400" ]
                                                                                                                     then
-                                                                                                                        export MESSAGE="We did not lock release out - ${ environment-variable "RESOURCE" }." &&
-                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.out.log ) &&
+                                                                                                                        export MESSAGE="We did not lock release out - ${ environment-variable "ASSET" }." &&
+                                                                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/release.out.log ) &&
                                                                                                                             export EXPECTED=400 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RESOURCE" }/release.out.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "ASSET" }/release.out.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did log release out." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/release.err.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "ASSET" }/release.err.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not log release err." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.err.log )" != "193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.err.log )" != "52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly log release err." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.err.log )" &&
-                                                                                                                            export EXPECTED="193c8f5b2f5b97ba3ed5cd30c625144f71a361d8f9b225ae6614725ea1b59a8de3d995628902ca8fa5a5d4bb4376258302538eb922d2283fc7894dda1ffa8952" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.err.log )" &&
+                                                                                                                            export EXPECTED="52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RESOURCE" }/release.err.log ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "ASSET" }/release.err.log ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did log release err ." &&
                                                                                                                            exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "RESOURCE" }/release.status.asc ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ! -f ${ environment-variable "ASSET" }/release.status.asc ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not record the release status." &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.status.asc ) != 0 ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } == true ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.status.asc ) != 0 ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly record the release status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.status.asc )" &&
                                                                                                                             export EXPECTED=0 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } ==false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.status.asc ) != 64 ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } ==false ] && [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.status.asc ) != 64 ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not correctly record the release status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/release.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ASSET" }/release.status.asc )" &&
                                                                                                                             export EXPECTED=64 &&
                                                                                                                             exit 64
                                                                                                                     elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ ${ environment-variable "RELEASE_GOOD" } != true ] && [ ${ environment-variable "RELEASE_GOOD" } != false ]
@@ -648,13 +648,13 @@
                                                                                                                         export MESSAGE="We did not expect this RELEASE_GOOD" &&
                                                                                                                             export OBSERVED="${ environment-variable "RELEASE_GOOD" }" &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.status.asc ) != "400" ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == true ] && [ $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/release.status.asc ) != "400" ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did not lock release status." &&
-                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/release.status.asc )" &&
+                                                                                                                            export OBSERVED="$( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "ASSET" }/release.status.asc )" &&
                                                                                                                             export EXPECTED=400 &&
                                                                                                                             exit 64
-                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "RESOURCE" }/release.status.asc ]
+                                                                                                                    elif [ ${ environment-variable "TEST_RELEASE" } == false ] && [ -e ${ environment-variable "ASSET" }/release.status.asc ]
                                                                                                                     then
                                                                                                                         export MESSAGE="We did record the release status." &&
                                                                                                                             exit 64
