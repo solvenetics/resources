@@ -111,27 +111,43 @@
                                                                                         fi
                                                                                  '' ;
                                                                         release =
-                                                                            ''
-                                                                                RESOURCE=${ environment-variable 1 } &&
-                                                                                    PID=${ environment-variable 2 } &&
-                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log
-                                                                                    fi &&
-                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.err.log
-                                                                                    fi &&
-                                                                                    if [ -f ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                    fi &&
-                                                                                    ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                    if [ "${ builtins.typeOf temporary.release }" == null ] || ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
-                                                                                    fi
+                                                                            let
+                                                                                release =
+                                                                                    {
+                                                                                        null =
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
+                                                                                            '' ;
+                                                                                        set =
+                                                                                            ''
+                                                                                                if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
+                                                                                                else
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } $( ${ temporary-broken-directory } )
+                                                                                                fi
+                                                                                            '' ;
+                                                                                    } ;
+                                                                                in
+                                                                                    ''
+                                                                                        RESOURCE=${ environment-variable 1 } &&
+                                                                                            PID=${ environment-variable 2 } &&
+                                                                                            if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log
+                                                                                            fi &&
+                                                                                            if [ -f ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                            fi &&
+                                                                                            if [ -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                            fi &&
+                                                                                            ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                            export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                            ${ if builtins.typeOf temporary.release == "null" then release.null else release.set }
                                                                             '' ;
                                                                         temporary =
                                                                             let
@@ -222,7 +238,8 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo 1fde421ae9408105115c8d8ce99551b3dd427f69e72ed6b3e274bfd5af8e5fd39ebefb00e334c0deb1997908ae402138a711e5856daac0c6b26ef9c2f28782b6 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo 52b1688f54a45391114a3ddcda15b6ac1845b0ec2abc4499aa45fb3b55d472441891a2b044c29df64531d4ca8260c2411deeb92bf2fc256fed055c214c5f99e3 >&2 &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ environment-variable "RELEASE_TARGET" } &&
+                                                                                                                    exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
                                                                                                         {
@@ -659,6 +676,8 @@
                                                                                     ${ resources.scripts.alpha } &&
                                                                                     exit 64
                                                                             fi &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-00 } 0 true 0 true 3dc4203b7bd30561219e4df7fd2a3cd2e9b6c8c704daa3a224649394a30b9eb01bd67d8da271f823abb1c5c66e3810634b68190e3d5e6fee22250a465afa68b0 bdd6b1c7fea2d0a2ad5b32f5ccc8f635e478bf0c32badfae80a15f002ab7c20b7b188df4743eda29d17aa9a592b6a8894474e0c71148fa12d2eb953897d2a132 true false false &&
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-00 } 0 true 0 true 44334890f47da05db3917e6a3d1a421777afdc8dc3975897a57fbcf2ddb8c0e85edf006df6555cb5dc644eb01505c227cc2181efb7a2aad9bcfe19b8b405f1a9 d25e1dcda42f12477de86e24831bf31c29005d1989ee79e372dd377d6c6d1c48262d0a5f5b475aef849df2ac7774372c60210aa852ed531442129a48a5b4fb3c false false false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-01 } 0 true 0 true 51a069aca5a245d4a4126f3e72b0948ec95b04d8b71bc6fd0ae32c24cde791e8ccd4614fee864efa07968852c1fb917cb632b4dacc276fa6f37e47d00ed40641 c8eb81542e5be3bb30d9feca1696f09410f3c13f818d3c5e5df0acefca87d6d49f3d313dd2729468c2855bc6e573e2ee7fbb88e0c68d75c96a474973126737b9 true false true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-01 } 0 true 0 true 57276151c295ac304b86ec13adc28688fc4d1a8aace8e5e9d9b4b7f7197d5731dc27b9453b3175ae5064c37512507e3449c531ce0883082642c7b84e830ab5bb 742a4d7c99cd0b323ba5d9cb51124e4d3b07309b7093b5d80e739c284186201e5483fc6fe35476a3cf72f72b833de3bb168169ee92b053968859d2e91136b76f false false true &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-11 } 0 true 0 true 59eea253e2372353f978847b87e80d02b0568754c503e3718bbc8388ee99bf7381479ca8a2935362188f581cdab6ffb59dc403381b59d66ae1d62eb4802d93f4 5127cbcfc550b084ca27070a3d5b4aeb034cb174fd9aedb19f9e3c85c95f97d138123ca6b826fd5d009e9f24e1c25d6aedefc8c91f92b8284fae94942a488c9d true true true &&
