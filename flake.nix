@@ -45,7 +45,19 @@
                                                                     let
                                                                         cache =
                                                                             ''
+                                                                                export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+                                                                                    EPOCH_TIMESTAMP=$( ${ pkgs.coreutils }/bin/date --date @$(( ( ${ environment-variable cache-timestamp } / ${ temporary.epoch } ) * ${ temporary.epoch } )) +%s &&
+                                                                                    PARENT_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                    if ${ has-standard-input }
+                                                                                    then
+                                                                                        HAS_STANDARD_INPUT="true" &&
+                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                    else
+                                                                                        HAS_STANDARD_INPUT="false" &&
+                                                                                            STANDARD_INPUT="" &&
+                                                                                    fi &&
 
+                                                                                    true
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
                                                                         init =
