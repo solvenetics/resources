@@ -337,6 +337,8 @@
                                                                                     gamma-12 = temporary : { temporary = temporary.gamma-12 ; cache = 10 ; } ;
                                                                                     gamma-21 = temporary : { temporary = temporary.gamma-21 ; cache = 10 ; } ;
                                                                                     gamma-22 = temporary : { temporary = temporary.gamma-22 ; cache = 10 ; } ;
+                                                                                    delta-1 = temporary : { temporary = temporary.gamma ; cache = 5 ; } ;
+                                                                                    delta-2 = temporary : { temporary = temporary.gamma ; cache = 10 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -451,6 +453,11 @@
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                             in
                                                                                             {
+                                                                                                cache =
+                                                                                                    { environment-variable , pkgs , ... } :
+                                                                                                        ''
+                                                                                                            export CACHE=${ environment-variable 1 } &&
+                                                                                                        '' ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
@@ -944,6 +951,7 @@
                                                                                     gamma-12 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
                                                                                     gamma-21 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.good ; } ;
                                                                                     gamma-22 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.bad ; } ;
+                                                                                    delta = scripts : { init = scripts.init.delta ; release = scripts.release.delta ; } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
