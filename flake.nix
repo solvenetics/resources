@@ -60,7 +60,11 @@
                                                                                     ENCODED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 ) &&
                                                                                     export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo "${ constant-hash } ${ environment-variable "EPOCH_TIMESTAMP" } ${ environment-variable "@" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )" | ${ pkgs.coreutils }/bin/sha512 sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-
+                                                                                    if ${ pkgs.flock }/bin/flock 201
+                                                                                    then
+                                                                                        true
+                                                                                    fi &&
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock &&
                                                                                     true
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
