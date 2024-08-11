@@ -62,10 +62,38 @@
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     if ${ pkgs.flock }/bin/flock 201
                                                                                     then
-                                                                                        true
+                                                                                       if [ -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
+                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                        else
+                                                                                            WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "ENCODED_ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ENCODED_STANDARD_INPUT" } ${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIR" } | at now > /dev/null 2>&1 &&
+                                                                                                while [ ! -f ${ environment-variable "WORK_DIR" }/flag
+                                                                                                do
+                                                                                                    ${ pkgs.coreutils }/bin/sleep 0s
+                                                                                                done &&
+                                                                                                if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status ) == 0 ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
+                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                                else
+                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/link &&
+                                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIR" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ cache-instantiation-message }" >&2 &&
+                                                                                                        exit ${ builtins.toString cache-instantiation-exit }
+                                                                                                fi
+                                                                                        fi &&
+                                                                                        ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }.lock
+                                                                                    else
+                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "CACHE_DIRECTORY" } &&
+                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
+                                                                                            exit ${ builtins.toString cache-lock-exit }
                                                                                     fi &&
-                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock &&
-                                                                                    true
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
                                                                         init =
