@@ -382,7 +382,7 @@
                                                                                                             ''
                                                                                                                 HISTORY=${ environment-variable 1 } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo c6cd4182ed72d151477b9971ad258fd4ab436e4b749eb2853cc81bc174ef1683a9872ddfa77939d7dfcf5398fa977a8ea6f2a9956f8f89a7d2c38bf95280a63d >> ${ environment-variable "HISTORY" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n  >> ${ environment-variable "HISTORY" } &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -459,6 +459,8 @@
                                                                                                             export DELTA=${ environment-variable 1 } &&
                                                                                                                 export GAMMA=${ environment-variable 2 } &&
                                                                                                                 export HAS_STDIN=${ environment-variable 3 } &&
+                                                                                                                export ARGUMENTS=${ environment-variable 4 } &&
+                                                                                                                export STANDARD_INPUT=${ environment-variable 5 } &&
                                                                                                                 export HISTORY=$( ${ mktemp } ) &&
                                                                                                                 ${ environment-variable "DELTA" } ${ environment-variable "HISTORY" }
                                                                                                         '' ;
