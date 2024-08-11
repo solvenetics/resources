@@ -61,8 +61,6 @@
                                                                                     export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo "${ constant-hash } ${ environment-variable "EPOCH_TIMESTAMP" } ${ environment-variable "@" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )" | ${ pkgs.coreutils }/bin/sha512 sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
 
-                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic
-                                                                                    ${ pkgs.coreutil }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock &&
                                                                                     true
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
