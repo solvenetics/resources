@@ -70,13 +70,11 @@
                                                                                         else
                                                                                             WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "ENCODED_ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ENCODED_STANDARD_INPUT" } ${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIR" } | at now > /dev/null 2>&1 &&
-                                                                                                while [ ! -f ${ environment-variable "WORK_DIR" }/flag
-                                                                                                do
-                                                                                                    ${ pkgs.coreutils }/bin/sleep 0s
-                                                                                                done &&
+                                                                                                ${ pkgs.inotify-tools }/bin/inotify-wait --monitor --event create ${ environment-variable "WORK_DIR" }/flag &&
                                                                                                 if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status ) == 0 ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+                                                                                                    ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
@@ -122,12 +120,18 @@
                                                                                         fi
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag &&
-                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate --timeout ${ temporary.epoch }
+                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag --timeout $(( epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % epoch )) &&
+                                                                                    if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
+                                                                                    then
+                                                                                        ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
+                                                                                    fi
                                                                             '' ;
                                                                         invalidate =
                                                                             ''
-                                                                                exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
+                                                                                    exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock 201 &&
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-epoch-hash }/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
                                                                                     ${ pkgs.coreutils }/bin/mv ${ cache-directory } ${ environment-variable "INVALIDATION_DIR" } &&
                                                                                     ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-epoch-hash }.lock &&
@@ -140,9 +144,13 @@
                                                                                     done &&
                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" | while read HASH_LINK
                                                                                     do
-                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "HASH_LINK" }/invalidation
-
-                                                                                    done
+                                                                                        if [ -d ${ environment-variable "HASH_LINK" } ]
+                                                                                        then
+                                                                                            ${ environment-variable "HASH_LINK" }/invalidate
+                                                                                        fi &&
+                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
+                                                                                    done &&
+                                                                                    ${ pkgs.coreutils }/bin/rm --recursive-force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
                                                                         temporary =
                                                                             let
