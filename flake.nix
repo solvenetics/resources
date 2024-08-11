@@ -376,11 +376,11 @@
                                                                                             gamma =
                                                                                                 let
                                                                                                     gamma =
-                                                                                                        { constant-hash , environment-variable , epoch-hash , epoch-timestamp , has-standard-input , pkgs , target , ... } : exit :
+                                                                                                        { constant-hash , environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-timestamp } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-hash } > ${ environment-variable "INIT_EPOCH_HASH" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable constant-hash } > ${ environment-variable "INIT_CONSTANT_HASH" } &&
+                                                                                                                HISTORY=${ environment-variable 1 } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo c6cd4182ed72d151477b9971ad258fd4ab436e4b749eb2853cc81bc174ef1683a9872ddfa77939d7dfcf5398fa977a8ea6f2a9956f8f89a7d2c38bf95280a63d >> ${ environment-variable "HISTORY" } &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -389,9 +389,17 @@
                                                                                                             good = primary : gamma primary 0 ;
                                                                                                         } ;
                                                                                             delta =
-                                                                                                { environment-variable , pkgs , ... } :
+                                                                                                { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                     ''
-                                                                                                        ${ environment-variable 1 } &&
+                                                                                                        CACHE=${ environment-variable 1 } &&
+                                                                                                            HISTORY=${ environment-variable 2 } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable target } &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                ${ environment-variable "CACHE" } ${ environment-variable "HISTORY" } ${ environment-variable "@" }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/tee ${ environment-variable "CACHE" } ${ environment-variable "HISTORY" } ${ environment-variable "@" }
+                                                                                                            fi
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -420,11 +428,10 @@
                                                                                             gamma =
                                                                                                 let
                                                                                                     gamma =
-                                                                                                        { constant-hash , environment-variable , epoch-hash , epoch-timestamp , has-standard-input , pkgs , target , ... } : exit :
+                                                                                                        { constant-hash , environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-timestamp } > ${ environment-variable "RELEASE_EPOCH_TIMESTAMP" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable epoch-hash } > ${ environment-variable "RELEASE_EPOCH_HASH" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable constant-hash } > ${ environment-variable "RELEASE_CONSTANT_HASH" } &&
+                                                                                                                HISTORY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 0324fa1677e169b4d704cb9e25b892f058fdbe2a924723d966c20e2a5adf7478d1ea5f85b15635360765a766d060bc577b0a387a9f3834664c382e4dfef6a474 >> ${ environment-variable "HISTORY" }
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -432,6 +439,12 @@
                                                                                                             bad = primary : gamma primary 64 ;
                                                                                                             good = primary : gamma primary 0 ;
                                                                                                         } ;
+                                                                                            delta =
+                                                                                                { environment-variable , target , pkgs , ... } :
+                                                                                                    ''
+                                                                                                        HISTORY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo a579bc8a474b6b96df538faea6638210bb1fd734f636ae1419cf7d4a4289d4c0d11d2388e5a57fc69d9ef82ee80bded83194e7c7cdfadf477664d638b752d1b0 >> ${ environment-variable "HISTORY" }
+                                                                                                    '' ;
                                                                                         } ;
                                                                                     verification =
                                                                                         let
