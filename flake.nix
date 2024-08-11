@@ -331,6 +331,10 @@
                                                                                     ''
                                                                                         ${ pkgs.bash }/bin/bash -c "$( ${ pkgs.coreutils }/bin/tee )" > /dev/null 2>&1 &
                                                                                     '' ;
+                                                                            cache =
+                                                                                {
+                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 60 ; } ;
+                                                                                } ;
                                                                             scripts =
                                                                                 {
                                                                                     alpha =
@@ -381,6 +385,11 @@
                                                                                                             bad = primary : gamma primary 64 ;
                                                                                                             good = primary : gamma primary 0 ;
                                                                                                         } ;
+                                                                                            delta =
+                                                                                                { environment-variable , pkgs , ... } :
+                                                                                                    ''
+                                                                                                        ${ environment-variable 1 } &&
+                                                                                                    '' ;
                                                                                         } ;
                                                                                     release =
                                                                                         {
