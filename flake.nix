@@ -456,7 +456,11 @@
                                                                                                 cache =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
-                                                                                                            export CACHE=${ environment-variable 1 } &&
+                                                                                                            export DELTA=${ environment-variable 1 } &&
+                                                                                                                export GAMMA=${ environment-variable 2 } &&
+                                                                                                                export HAS_STDIN=${ environment-variable 3 } &&
+                                                                                                                export HISTORY=$( ${ mktemp } ) &&
+                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "HISTORY" }
                                                                                                         '' ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
