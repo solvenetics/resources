@@ -13,6 +13,14 @@
                             lib =
                                 {
                                     at ? "/run/wrappers/bin/at" ,
+                                    cache ? { } ,
+                                    cache-directory ? "/tmp" ,
+                                    cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
+                                    cache-instantiation-exit ? 64 ,
+                                    cache-instantiation-message ? "We were unable to instantiate." ,
+                                    cache-lock-exit ? 64 ,
+                                    cache-lock-message ? "We were unable to lock the cache." ,
+                                    cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
                                     invalid-script-throw ?  value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
                                     secondary ? { } ,
@@ -29,6 +37,80 @@
                                         has-standard-input = ''[ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]'' ;
                                         outputs =
                                             {
+                                                cache =
+                                                    let
+                                                        mapper =
+                                                            path : name : value :
+                                                                if builtins.typeOf value == "lambda" then
+                                                                    let
+                                                                        cache =
+                                                                            ''
+
+                                                                            '' ;
+                                                                        constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
+                                                                        init =
+                                                                            ''
+                                                                                ENCODED_ARGUMENTS=${ environment-variable 1 } &&
+                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                    ENCODED_STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                    export ${ cache-epoch-hash }=${ environment-variable 4 } &&
+                                                                                    WORK_DIR=${ environment-variable 5 } &&
+                                                                                    ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_ARGUMENTS" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                    then
+                                                                                        if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                        else
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                        fi
+                                                                                    else
+                                                                                        if ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                        else
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                        fi
+                                                                                    fi &&
+                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag &&
+                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate --timeout ${ temporary.epoch }
+                                                                            '' ;
+                                                                        invalidate =
+                                                                            ''
+                                                                                exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    ${ pkgs.flock }/bin/flock 201 &&
+                                                                                    INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
+                                                                                    ${ pkgs.coreutils }/bin/mv ${ cache-directory } ${ environment-variable "INVALIDATION_DIR" } &&
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    ${ pkgs.flock }/bin/flock -u 201 &&
+                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                    do
+                                                                                        PID=$( ${ pkgs.coreutils }/bin/basename ${ environment-variable "PID_FILE%.*" } ) &&
+                                                                                            ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                    done &&
+                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" | while read HASH_LINK
+                                                                                    do
+                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "HASH_LINK" }/invalidation
+
+                                                                                    done
+                                                                            '' ;
+                                                                        temporary =
+                                                                            let
+                                                                                identity =
+                                                                                    {
+                                                                                        epoch ? builtins.null ,
+                                                                                        temporary ,
+                                                                                    } :
+                                                                                        {
+                                                                                            epoch = builtins.toString ( if builtins.typeOf epoch == "null" then 1 else epoch ) ;
+                                                                                            temporary = temporary ;
+                                                                                        } ;
+                                                                                in identity ( value outputs.temporary ) ;
+                                                                        in pkgs.writeShellScript name cache
+                                                                else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
+                                                        in builtins.mapAttrs ( mapper [ ] ) cache ;
                                                 scripts =
                                                     let
                                                         mapper =
