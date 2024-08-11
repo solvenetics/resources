@@ -333,7 +333,10 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 60 ; } ;
+                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 10 ; } ;
+                                                                                    gamma-12 = temporary : { temporary = temporary.gamma-12 ; cache = 10 ; } ;
+                                                                                    gamma-21 = temporary : { temporary = temporary.gamma-21 ; cache = 10 ; } ;
+                                                                                    gamma-22 = temporary : { temporary = temporary.gamma-22 ; cache = 10 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
