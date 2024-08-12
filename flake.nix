@@ -382,7 +382,7 @@
                                                                                                             ''
                                                                                                                 HISTORY=${ environment-variable 1 } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n  >> ${ environment-variable "HISTORY" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ljseqjbp >> ${ environment-variable "HISTORY" } &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -395,7 +395,7 @@
                                                                                                     ''
                                                                                                         CACHE=${ environment-variable 1 } &&
                                                                                                             HISTORY=${ environment-variable 2 } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable target } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n rqgskyaz ${ environment-variable "HISTORY" } > ${ environment-variable target } &&
                                                                                                             if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ environment-variable "CACHE" } ${ environment-variable "HISTORY" } ${ environment-variable "@" }
@@ -433,7 +433,7 @@
                                                                                                         { constant-hash , environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
                                                                                                                 HISTORY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo 0324fa1677e169b4d704cb9e25b892f058fdbe2a924723d966c20e2a5adf7478d1ea5f85b15635360765a766d060bc577b0a387a9f3834664c382e4dfef6a474 >> ${ environment-variable "HISTORY" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo >> ${ environment-variable "HISTORY" }
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -458,11 +458,14 @@
                                                                                                         ''
                                                                                                             export DELTA=${ environment-variable 1 } &&
                                                                                                                 export GAMMA=${ environment-variable 2 } &&
-                                                                                                                export HAS_STDIN=${ environment-variable 3 } &&
+                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                                 export ARGUMENTS=${ environment-variable 4 } &&
                                                                                                                 export STANDARD_INPUT=${ environment-variable 5 } &&
                                                                                                                 export HISTORY=$( ${ mktemp } ) &&
-                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "HISTORY" }
+                                                                                                                export ARGUMENTS_PRIME=${ environment-variable "ARGUMENTS" }_P &&
+                                                                                                                export STANDARD_INPUT_PRIME=${ environment-variable "STANDARD_INPUT" }_P &&
+                                                                                                                export HISTORY_PRIME=$( ${ mktemp } ) &&
+                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "HISTORY" } ${ environment-variable "ARGUMENTS_PRIME" } ${ environment-variable "STANDARD_INPUT_PRIME" } ${ environment-variable "HISTORY_PRIME" }
                                                                                                         '' ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
