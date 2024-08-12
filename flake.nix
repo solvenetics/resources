@@ -333,12 +333,12 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 10 ; } ;
-                                                                                    gamma-12 = temporary : { temporary = temporary.gamma-12 ; cache = 10 ; } ;
-                                                                                    gamma-21 = temporary : { temporary = temporary.gamma-21 ; cache = 10 ; } ;
-                                                                                    gamma-22 = temporary : { temporary = temporary.gamma-22 ; cache = 10 ; } ;
-                                                                                    delta-1 = temporary : { temporary = temporary.gamma ; cache = 5 ; } ;
-                                                                                    delta-2 = temporary : { temporary = temporary.gamma ; cache = 10 ; } ;
+                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 4 ; } ;
+                                                                                    gamma-12 = temporary : { temporary = temporary.gamma-12 ; cache = 4 ; } ;
+                                                                                    gamma-21 = temporary : { temporary = temporary.gamma-21 ; cache = 4 ; } ;
+                                                                                    gamma-22 = temporary : { temporary = temporary.gamma-22 ; cache = 4 ; } ;
+                                                                                    delta-1 = temporary : { temporary = temporary.gamma ; cache = 2 ; } ;
+                                                                                    delta-2 = temporary : { temporary = temporary.gamma ; cache = 8 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -380,9 +380,16 @@
                                                                                                     gamma =
                                                                                                         { constant-hash , environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                HISTORY=${ environment-variable 1 } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "HISTORY" } > ${ environment-variable "INIT_EPOCH_TIMESTAMP" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ljseqjbp >> ${ environment-variable "HISTORY" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n id_ /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    ${ pkgs.coreutils }/bin/ech -n ${ environment-variable 1 }_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n yr_ >> //tmp/tmp.0iylVLRQdQ
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n $( ${ pkgs.coreutils }/bin/tee )_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo zg_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                    fi &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ra_ /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -393,15 +400,18 @@
                                                                                             delta =
                                                                                                 { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                     ''
-                                                                                                        CACHE=${ environment-variable 1 } &&
-                                                                                                            HISTORY=${ environment-variable 2 } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n rqgskyaz ${ environment-variable "HISTORY" } > ${ environment-variable target } &&
-                                                                                                            if ${ has-standard-input }
+                                                                                                        GAMMA=${ environment-variable 1 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 1 } &&
+                                                                                                            HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n ky_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                            if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
-                                                                                                                ${ environment-variable "CACHE" } ${ environment-variable "HISTORY" } ${ environment-variable "@" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/tee ${ environment-variable "CACHE" } ${ environment-variable "HISTORY" } ${ environment-variable "@" }
-                                                                                                            fi
+                                                                                                                ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n kt_ /tmp/tmp.0iylVLRQdQ
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -432,8 +442,7 @@
                                                                                                     gamma =
                                                                                                         { constant-hash , environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                HISTORY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo >> ${ environment-variable "HISTORY" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n hc_ /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -444,28 +453,27 @@
                                                                                             delta =
                                                                                                 { environment-variable , target , pkgs , ... } :
                                                                                                     ''
-                                                                                                        HISTORY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo a579bc8a474b6b96df538faea6638210bb1fd734f636ae1419cf7d4a4289d4c0d11d2388e5a57fc69d9ef82ee80bded83194e7c7cdfadf477664d638b752d1b0 >> ${ environment-variable "HISTORY" }
+                                                                                                        ${ pkgs.coreutils }/bin/echo -n lt_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
                                                                                         let
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
+                                                                                            wait = "$(( 8 - $( ${ pkgs.coreutils }/bin/date +%s ) % 8 ))" ;
                                                                                             in
                                                                                             {
                                                                                                 cache =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
-                                                                                                            export DELTA=${ environment-variable 1 } &&
-                                                                                                                export GAMMA=${ environment-variable 2 } &&
-                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
-                                                                                                                export ARGUMENTS=${ environment-variable 4 } &&
-                                                                                                                export STANDARD_INPUT=${ environment-variable 5 } &&
-                                                                                                                export HISTORY=$( ${ mktemp } ) &&
-                                                                                                                export ARGUMENTS_PRIME=${ environment-variable "ARGUMENTS" }_P &&
-                                                                                                                export STANDARD_INPUT_PRIME=${ environment-variable "STANDARD_INPUT" }_P &&
-                                                                                                                export HISTORY_PRIME=$( ${ mktemp } ) &&
-                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "HISTORY" } ${ environment-variable "ARGUMENTS_PRIME" } ${ environment-variable "STANDARD_INPUT_PRIME" } ${ environment-variable "HISTORY_PRIME" }
+                                                                                                            DELTA=${ environment-variable 1 } &&
+                                                                                                                export GAMMA=${ environment-variable 1 } &&
+                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                export ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                export STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ wait } &&
+                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "HISTORY" } ${ environment-variable "ARGUMENTS_PRIME" } ${ environment-variable "STANDARD_INPUT_PRIME" } ${ environment-variable "HISTORY_PRIME" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/cat /tmp/tmp.0iylVLRQdQ >&2 &&
+                                                                                                                exit 66
                                                                                                         '' ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
