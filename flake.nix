@@ -47,7 +47,7 @@
                                                                         cache =
                                                                             ''
                                                                                 export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
-                                                                                    EPOCH_TIMESTAMP=$( ${ pkgs.coreutils }/bin/date --date @$(( ( ${ environment-variable cache-timestamp } / ${ temporary.epoch } ) * ${ temporary.epoch } )) +%s &&
+                                                                                    EPOCH_TIMESTAMP=$( ${ pkgs.coreutils }/bin/date --date @$(( ( ${ environment-variable cache-timestamp } / ${ temporary.epoch } ) * ${ temporary.epoch } )) +%s ) &&
                                                                                     PARENT_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                     if ${ has-standard-input }
                                                                                     then
@@ -121,7 +121,7 @@
                                                                                         fi
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag &&
-                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag --timeout $(( epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % epoch )) &&
+                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
                                                                                     if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
                                                                                         ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
