@@ -14,6 +14,7 @@
                                 {
                                     at ? "/run/wrappers/bin/at" ,
                                     cache ? { } ,
+                                    cache-default-epoch ? 1 ,
                                     cache-directory ? "/tmp" ,
                                     cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
                                     cache-instantiation-exit ? 64 ,
@@ -160,7 +161,7 @@
                                                                                         temporary ,
                                                                                     } :
                                                                                         {
-                                                                                            epoch = builtins.toString ( if builtins.typeOf epoch == "null" then 1 else epoch ) ;
+                                                                                            epoch = builtins.toString ( if builtins.typeOf cache == "null" then cache-default-epoch else epoch ) ;
                                                                                             temporary = temporary ;
                                                                                         } ;
                                                                                 in identity ( value outputs.temporary ) ;
@@ -307,7 +308,7 @@
                                             } ;
                                         in
                                             {
-                                                cache = cache ;
+                                                cache = outputs.cache ;
                                                 scripts = outputs.scripts ;
                                                 temporary = outputs.temporary ;
                                             } ;
@@ -334,12 +335,12 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; cache = 4 ; } ;
-                                                                                    gamma-12 = temporary : { temporary = temporary.gamma-12 ; cache = 4 ; } ;
-                                                                                    gamma-21 = temporary : { temporary = temporary.gamma-21 ; cache = 4 ; } ;
-                                                                                    gamma-22 = temporary : { temporary = temporary.gamma-22 ; cache = 4 ; } ;
-                                                                                    delta-1 = temporary : { temporary = temporary.gamma ; cache = 2 ; } ;
-                                                                                    delta-2 = temporary : { temporary = temporary.gamma ; cache = 8 ; } ;
+                                                                                    gamma-11 = temporary : { temporary = temporary.gamma-11 ; epoch = 4 ; } ;
+                                                                                    gamma-12 = temporary : { temporary = temporary.gamma-12 ; epoch = 4 ; } ;
+                                                                                    gamma-21 = temporary : { temporary = temporary.gamma-21 ; epoch = 4 ; } ;
+                                                                                    gamma-22 = temporary : { temporary = temporary.gamma-22 ; epoch = 4 ; } ;
+                                                                                    delta-1 = temporary : { temporary = temporary.delta ; epoch = 2 ; } ;
+                                                                                    delta-2 = temporary : { temporary = temporary.delta ; epoch = 8 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -402,9 +403,9 @@
                                                                                                 { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                     ''
                                                                                                         GAMMA=${ environment-variable 1 } &&
-                                                                                                            ARGUMENTS=${ environment-variable 1 } &&
-                                                                                                            HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                            STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                            HAS_STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n ky_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
@@ -412,7 +413,7 @@
                                                                                                             else
                                                                                                                 ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n kt_ /tmp/tmp.0iylVLRQdQ
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n kt_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -997,7 +998,7 @@
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false bc133c0bc62432eff66d388dc6c4894ba0cb6d9f35a124541a5536d9a6da812e5f2238bbf3f1230ec0ce1184c7973d375a28678fc839f9de2bbede82bc4c9b24 b99f61d249e11db2fcb6e0459235961a34158643836e7fb36f183fccd5b56a353c099e8776b5dbb423144a68619d41b03b19edafad85467644885991483f6274  false true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 1f3daa30c141d3b438262d4a48e8ba4bb71f08b7890d798ed30ef5f106019417edff26e3b2150752e8c3f059b3527f386c865e49e4bc4ae7e5b171d41c9b0d20 0cb519a4a9617ec43916a8c5f29a5bf040a2ad50bbf166ab7b934ce678949ab0c45687e9e5c354467b72c1eeec1f517de5d9d6218b711e5414ea2d56b50e5611 true true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 2a6047bffdcb4d27b75f19aa40eaf5d9de2b89aa587f5d8b06beaa0a3deb2e46bd6235c43d77cebecd2aeb4279c3fe3c868b488acc243c7bb572d9b3adb37447 00ef4851e7c5df918ca18a81a3475ce16fcfce9caa8ed767b36762056584b43c95be535a302771d042dc301571a482192fac490a9db5bd8f9ae29bc70731bcf3 false true false &&
-                                                                            ${ resources.scripts.verification.cache } "${ pkgs.coreutils }/bin/true" "${ pkgs.coreutils }/bin/true" qn true ij
+                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.delta-1 } "${ pkgs.coreutils }/bin/true" qn true ij
                                                                     '' ;
                                                     } ;
                                         } ;
