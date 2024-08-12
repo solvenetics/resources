@@ -161,7 +161,7 @@
                                                                                         temporary ,
                                                                                     } :
                                                                                         {
-                                                                                            epoch = builtins.toString ( if builtins.typeOf cache == "null" then cache-default-epoch else epoch ) ;
+                                                                                            epoch = builtins.toString ( if builtins.typeOf epoch == "null" then cache-default-epoch else epoch ) ;
                                                                                             temporary = temporary ;
                                                                                         } ;
                                                                                 in identity ( value outputs.temporary ) ;
