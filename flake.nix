@@ -55,7 +55,7 @@
                                                                                             STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
                                                                                     else
                                                                                         HAS_STANDARD_INPUT="false" &&
-                                                                                            STANDARD_INPUT="" &&
+                                                                                            STANDARD_INPUT=""
                                                                                     fi &&
                                                                                     ENCODED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/base64 ) &&
                                                                                     ENCODED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 ) &&
@@ -70,7 +70,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                         else
                                                                                             WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "ENCODED_ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ENCODED_STANDARD_INPUT" } ${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIR" } | at now > /dev/null 2>&1 &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "ENCODED_ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ENCODED_STANDARD_INPUT" } ${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIR" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                 ${ pkgs.inotify-tools }/bin/inotify-wait --monitor --event create ${ environment-variable "WORK_DIR" }/flag &&
                                                                                                 if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status ) == 0 ]
                                                                                                 then
@@ -94,7 +94,7 @@
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock
                                                                             '' ;
-                                                                        constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary ) ] ] ) ) ;
+                                                                        constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
                                                                         init =
                                                                             ''
                                                                                 ENCODED_ARGUMENTS=${ environment-variable 1 } &&
