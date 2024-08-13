@@ -38,7 +38,7 @@
                                         has-standard-input = ''[ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]'' ;
                                         outputs =
                                             {
-                                                cache =
+                                                cache2 =
                                                     let
                                                         mapper =
                                                             path : name : value :
@@ -174,7 +174,7 @@
                                                                                             temporary = temporary ;
                                                                                         } ;
                                                                                 in identity ( value outputs.temporary ) ;
-                                                                        in pkgs.writeShellScript name cache
+                                                                        in builtins.toFile name "${ pkgs.coreutils }/bin/true"
                                                                 else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                         in builtins.mapAttrs ( mapper [ ] ) cache ;
                                                 scripts =
@@ -474,18 +474,29 @@
                                                                                             in
                                                                                             {
                                                                                                 cache =
+                                                                                                    { ... } :
+                                                                                                        ''
+                                                                                                        '' ;
+                                                                                                cache2 =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
-                                                                                                            DELTA=${ environment-variable 1 } &&
-                                                                                                                export GAMMA=${ environment-variable 1 } &&
-                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                export ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                            export CACHE=${ environment-variable 1 } &&
+                                                                                                                export ARGUMENTS=${ environment-variable 1 } &&
+                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                                 export STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ wait } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo THIS IS IT &&
-                                                                                                                ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/cat /tmp/tmp.0iylVLRQdQ >&2 &&
-                                                                                                                exit 66
+                                                                                                                export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
+                                                                                                                export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
+                                                                                                                ${ pkgs.writeShellScript "wait" wait } &&
+                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                else
+                                                                                                                    ${ pkgs.coreutils }/bin/echo We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" } >&2 &&
+                                                                                                                        exit 64
+                                                                                                                fi
                                                                                                         '' ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
@@ -976,7 +987,7 @@
                                                                                     beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
                                                                                     beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.good ; } ;
                                                                                     beta-22 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.bad ; } ;
-                                                                                    gamma-11 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.good ; } ;
+                                                                                    gamma-11 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
                                                                                     gamma-12 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
                                                                                     gamma-21 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.good ; } ;
                                                                                     gamma-22 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.bad ; } ;
@@ -986,7 +997,9 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                        /*
+                                                                            echo ${ resources.scripts.verification.cache } >&2 &&
+                                                                            echo WTF >&2 &&
+                                                                            exit 74 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true 043eedc4fd488a0b3d332a8b73879ab47eeaf9f32f73dd800233b92f02b56a50ae575dcfc15de8f6f0adc02e8e0049d5e0689dcf7050ce4809d030f5f34b2005 6b9f78c864afdadae4f1aa1222e3cad9dfb6d4eb5c2cfd2b8da4e84177cd0346233e4564013970c3ea53a90eda89aa3f9a1734f06a671cfd7515657ae9f4dff4 65 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } false b2cb54440691821c8520a3d2419e79224c725c04ce686eb5dc4300458c96c354797ad8460917eb85f8155d76a56af681912f0c3eade398ea3f3563aba790b543 981f61ca06127c8f119a46760412c050ed7a98ee11b1b5107bd0dece4a9d206f6c70a6c6ae05d6860707397013b27dfaef6c77b0fb7661e44eaf2c60ccfad2fd 0 &&
@@ -1008,11 +1021,8 @@
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false 25ae6bbfb942a3c9840bcd0b5adaa23d8090a02f10d75b20767be230b6fadab63479c4af85923d05c85ce99461101c8f36b20970268593c840d97d885b9aeb74 65c8c75c2c0bb7cc07ee2c305c1ffffad7fb31daffd0ba70d6fdc9d700e1de91a4f6684a1f780c74272dce4d9c0725502084db3842d2ad413d8504ec85261794 true true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false bc133c0bc62432eff66d388dc6c4894ba0cb6d9f35a124541a5536d9a6da812e5f2238bbf3f1230ec0ce1184c7973d375a28678fc839f9de2bbede82bc4c9b24 b99f61d249e11db2fcb6e0459235961a34158643836e7fb36f183fccd5b56a353c099e8776b5dbb423144a68619d41b03b19edafad85467644885991483f6274  false true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 1f3daa30c141d3b438262d4a48e8ba4bb71f08b7890d798ed30ef5f106019417edff26e3b2150752e8c3f059b3527f386c865e49e4bc4ae7e5b171d41c9b0d20 0cb519a4a9617ec43916a8c5f29a5bf040a2ad50bbf166ab7b934ce678949ab0c45687e9e5c354467b72c1eeec1f517de5d9d6218b711e5414ea2d56b50e5611 true true false &&
-                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 2a6047bffdcb4d27b75f19aa40eaf5d9de2b89aa587f5d8b06beaa0a3deb2e46bd6235c43d77cebecd2aeb4279c3fe3c868b488acc243c7bb572d9b3adb37447 00ef4851e7c5df918ca18a81a3475ce16fcfce9caa8ed767b36762056584b43c95be535a302771d042dc301571a482192fac490a9db5bd8f9ae29bc70731bcf3 false true false &&
-                                                                        */
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.delta-1 } "${ pkgs.coreutils }/bin/true" qn true ij
-                                                                            ${ pkgs.coreutils }/bin/true
-                                                                    '' ;
+                                                                            ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 2a6047bffdcb4d27b75f19aa40eaf5d9de2b89aa587f5d8b06beaa0a3deb2e46bd6235c43d77cebecd2aeb4279c3fe3c868b488acc243c7bb572d9b3adb37447 00ef4851e7c5df918ca18a81a3475ce16fcfce9caa8ed767b36762056584b43c95be535a302771d042dc301571a482192fac490a9db5bd8f9ae29bc70731bcf3 false true false
+                                                                     '' ;
                                                     } ;
                                         } ;
                                     lib = lib ;
