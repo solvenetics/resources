@@ -997,8 +997,8 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            echo ${ resources.scripts.verification.cache } >&2 &&
-                                                                            echo WTF >&2 &&
+                                                                            ${ pkgs.coreutils }/bin/echo ${ resources.scripts.verification.cache } >&2 &&
+                                                                            ${ pkgs.coreutils }/bin/echo WTF >&2 &&
                                                                             exit 74 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true 043eedc4fd488a0b3d332a8b73879ab47eeaf9f32f73dd800233b92f02b56a50ae575dcfc15de8f6f0adc02e8e0049d5e0689dcf7050ce4809d030f5f34b2005 6b9f78c864afdadae4f1aa1222e3cad9dfb6d4eb5c2cfd2b8da4e84177cd0346233e4564013970c3ea53a90eda89aa3f9a1734f06a671cfd7515657ae9f4dff4 65 &&
