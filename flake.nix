@@ -475,7 +475,18 @@
                                                                                                 cache =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
-                                                                                                            export CACHE=${ environment-variable 1 } &&
+                                                                                                            cleanup()
+                                                                                                                {
+                                                                                                                    export STATUS=${ environment-variable "?" } &&
+                                                                                                                        export FLAG=pfnehsli &&
+                                                                                                                        if [ ${ environment-variable "STATUS" } != 0 ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        fi
+                                                                                                                } &&
+                                                                                                                trap cleanup EXIT &&
+                                                                                                                export CACHE=${ environment-variable 1 } &&
                                                                                                                 export ARGUMENTS=${ environment-variable 2 } &&
                                                                                                                 export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                                 export STANDARD_INPUT=${ environment-variable 4 } &&
@@ -485,43 +496,40 @@
                                                                                                                 ${ pkgs.coreutils }/bin/env >&2 &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                        VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
+                                                                                                                    export VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        export VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
+                                                                                                                        export VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        export VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                                        VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                                        VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-/*
+                                                                                                                        export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "We did not cache the temporary directory." >&2 &&
+                                                                                                                            export MESSAGE="We did not cache the temporary directory." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by the ARGUMENTS." >&2 &&
+                                                                                                                            export MESSAGE="The cache should be affected by the ARGUMENTS." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_3" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by the STANDARD_INPUT." >&2 &&
+                                                                                                                            export MESSAGE="The cache should be affected by the STANDARD_INPUT." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_4" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by both the ARGUMENTS and STANDARD_INPUT." >&2 &&
+                                                                                                                            export "The cache should be affected by both the ARGUMENTS and STANDARD_INPUT." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should persist." >&2 &&
+                                                                                                                            export MESSAGE="The cache should persist." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should desist." >&2 &&
+                                                                                                                            export MESSAGE="The cache should desist." &&
                                                                                                                                 exit 64
                                                                                                                         fi
-                                                                                                                        */
-                                                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
@@ -534,23 +542,23 @@
 
                                                                                                                         if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "We did not cache the temporary directory." >&2 &&
+                                                                                                                            export MESSAGE="We did not cache the temporary directory." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by the ARGUMENTS." >&2 &&
+                                                                                                                            export MESSAGE="The cache should be affected by the ARGUMENTS." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should persist." >&2 &&
+                                                                                                                            export MESSAGE="The cache should persist." &&
                                                                                                                                 exit 64
                                                                                                                         elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should desist." >&2 &&
+                                                                                                                            export MESSAGE="The cache should desist." &&
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                 else
-                                                                                                                    ${ pkgs.coreutils }/bin/echo We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" } >&2 &&
+                                                                                                                    export MESSAGE="We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }" &&
                                                                                                                         exit 64
                                                                                                                 fi
                                                                                                         '' ;
