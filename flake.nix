@@ -83,10 +83,7 @@
                                                                                                 if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status ) == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
-${ pkgs.coreutils }/bin/echo AAAA 0002000 >&2 &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
-${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
-
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
@@ -353,8 +350,8 @@ ${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
                                                                                     gamma-12 = temporary : { temporary = temporary.gamma-12 ; epoch = 4 ; } ;
                                                                                     gamma-21 = temporary : { temporary = temporary.gamma-21 ; epoch = 4 ; } ;
                                                                                     gamma-22 = temporary : { temporary = temporary.gamma-22 ; epoch = 4 ; } ;
-                                                                                    delta-1 = temporary : { temporary = temporary.delta ; epoch = 2 ; } ;
-                                                                                    delta-2 = temporary : { temporary = temporary.delta ; epoch = 8 ; } ;
+                                                                                    gamma-31 = temporary : { temporary = temporary.gamma-11 ; epoch = 2 ; } ;
+                                                                                    gamma-32 = temporary : { temporary = temporary.gamma-11 ; epoch = 8 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -492,9 +489,10 @@ ${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
                                                                                                                 } &&
                                                                                                                 trap cleanup EXIT &&
                                                                                                                 export CACHE=${ environment-variable 1 } &&
-                                                                                                                export ARGUMENTS=${ environment-variable 2 } &&
-                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
-                                                                                                                export STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                export EVICT=${ environment-variable 2 } &&
+                                                                                                                export ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                export HAS_STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                export STANDARD_INPUT=${ environment-variable 5 } &&
                                                                                                                 export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                 export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                 ${ pkgs.coreutils }/bin/sleep ${ wait } &&
@@ -534,8 +532,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
                                                                                                                         then
                                                                                                                             export MESSAGE="The cache should desist." &&
                                                                                                                                 exit 64
-                                                                                                                        fi &&
-                                                                                                                        exit 74
+                                                                                                                        fi
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
@@ -1067,9 +1064,8 @@ ${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } ejgqjypw true qaaafmiu &&
+                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } ${ resources.cache.gamma-31 } ejgqjypw true qaaafmiu &&
                                                                             # ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } wdcduzmy false jxbktpxq &&
-                                                                            exit 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true 043eedc4fd488a0b3d332a8b73879ab47eeaf9f32f73dd800233b92f02b56a50ae575dcfc15de8f6f0adc02e8e0049d5e0689dcf7050ce4809d030f5f34b2005 6b9f78c864afdadae4f1aa1222e3cad9dfb6d4eb5c2cfd2b8da4e84177cd0346233e4564013970c3ea53a90eda89aa3f9a1734f06a671cfd7515657ae9f4dff4 65 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } false b2cb54440691821c8520a3d2419e79224c725c04ce686eb5dc4300458c96c354797ad8460917eb85f8155d76a56af681912f0c3eade398ea3f3563aba790b543 981f61ca06127c8f119a46760412c050ed7a98ee11b1b5107bd0dece4a9d206f6c70a6c6ae05d6860707397013b27dfaef6c77b0fb7661e44eaf2c60ccfad2fd 0 &&
