@@ -65,7 +65,10 @@
                                                                                     then
                                                                                        if [ -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                         then
-                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
+                                                                                            if [ ! -z ${ environment-variable "PARENT_HASH" } ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
+                                                                                            fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
                                                                                                 ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                         else
@@ -80,7 +83,10 @@
                                                                                                 if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status ) == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+${ pkgs.coreutils }/bin/echo AAAA 0002000 >&2 &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+${ pkgs.coreutils }/bin/echo AAAA 0003000 >&2 &&
+
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
@@ -501,11 +507,7 @@
                                                                                                                         export VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         export VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 3s &&
-                                                                                                                        # export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                        TEMP=$( ${ pkgs.coreutils }/bin/mktemp -d ) &&
-                                                                                                                        ( ! ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" > ${ environment-variable "TEMP" }/out 2> ${ environment-variable "TEMP" }/err ) &&
-                                                                                                                        export VALUE_5_OUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMP" }/out ) &&
-                                                                                                                        export VALUE_5_ERR=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMP" }/err ) &&
+                                                                                                                        export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 2s &&
                                                                                                                         export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
