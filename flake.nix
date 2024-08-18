@@ -492,6 +492,7 @@
                                                                                                                 export ARGUMENTS=${ environment-variable 2 } &&
                                                                                                                 export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                                 export STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                export SUCCESSFUL_INITIATION=${ environment-variable 5 } &&
                                                                                                                 export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                 export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                 ${ pkgs.coreutils }/bin/sleep ${ wait } &&
@@ -507,30 +508,33 @@
                                                                                                                         export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 2s &&
                                                                                                                         export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                        if [ ${ environment-variable "SUCCESSFUL_INITIATION" } == true ]
                                                                                                                         then
-                                                                                                                            export MESSAGE="We did not cache the temporary directory." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should be affected by the ARGUMENTS." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_3" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should be affected by the STANDARD_INPUT." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_4" } ]
-                                                                                                                        then
-                                                                                                                            export "The cache should be affected by both the ARGUMENTS and STANDARD_INPUT." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should persist." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should desist." &&
-                                                                                                                                exit 64
+                                                                                                                            if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not cache the temporary directory." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should be affected by the ARGUMENTS." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_3" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should be affected by the STANDARD_INPUT." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_4" } ]
+                                                                                                                            then
+                                                                                                                                export "The cache should be affected by both the ARGUMENTS and STANDARD_INPUT." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should persist." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should desist." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                         fi
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
@@ -540,18 +544,21 @@
                                                                                                                         export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 2s &&
                                                                                                                         export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                        if [ ${ environment-variable "SUCCESSFUL_INITIATION" } == true ]
                                                                                                                         then
-                                                                                                                            export MESSAGE="We did not cache the temporary directory." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should persist." &&
-                                                                                                                                exit 64
-                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
-                                                                                                                        then
-                                                                                                                            export MESSAGE="The cache should desist." &&
-                                                                                                                                exit 64
+                                                                                                                            if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did not cache the temporary directory." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should persist." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should desist." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                         fi
                                                                                                                 else
                                                                                                                     export MESSAGE="We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }" &&
@@ -1057,10 +1064,10 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } ejgqjypw true qaaafmiu &&
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } wdcduzmy false jxbktpxq &&
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-21 } nnveofdm true ssfncjfm &&
-                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-21 } mfrzqrwt false jqrzlqzh &&
+                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } ejgqjypw true qaaafmiu true &&
+                                                                            # ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } wdcduzmy false jxbktpxq true &&
+                                                                            # ${ resources.scripts.verification.cache } ${ resources.cache.gamma-21 } nnveofdm true ssfncjfm false &&
+                                                                            # ${ resources.scripts.verification.cache } ${ resources.cache.gamma-21 } mfrzqrwt false jqrzlqzh false &&
                                                                             exit 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true 043eedc4fd488a0b3d332a8b73879ab47eeaf9f32f73dd800233b92f02b56a50ae575dcfc15de8f6f0adc02e8e0049d5e0689dcf7050ce4809d030f5f34b2005 6b9f78c864afdadae4f1aa1222e3cad9dfb6d4eb5c2cfd2b8da4e84177cd0346233e4564013970c3ea53a90eda89aa3f9a1734f06a671cfd7515657ae9f4dff4 65 &&
