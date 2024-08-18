@@ -38,7 +38,7 @@
                                         has-standard-input = ''[ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]'' ;
                                         outputs =
                                             {
-                                                cache2 =
+                                                cache =
                                                     let
                                                         mapper =
                                                             path : name : value :
@@ -67,7 +67,7 @@
                                                                                         then
                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
-                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                                ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                         else
                                                                                             WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIR" }/flag &&
@@ -83,21 +83,20 @@
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
-                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                                    ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/link &&
                                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIR" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo "${ cache-instantiation-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-instantiation-exit }
                                                                                                 fi
-                                                                                        fi &&
-                                                                                        ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }.lock
+                                                                                        fi
                                                                                     else
-                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "CACHE_DIRECTORY" } &&
+                                                                                        ${ pkgs.coreutils }/bin/echo ${ cache-directory }/${ environment-variable cache-epoch-hash }/link &&
                                                                                             ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                             exit ${ builtins.toString cache-lock-exit }
                                                                                     fi &&
-                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_DIRECTORY" }.lock
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
                                                                         init =
@@ -125,7 +124,7 @@
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
                                                                                         fi
                                                                                     fi &&
-                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/FLAG &&
+                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
                                                                                     while [ -f ${ environment-variable cache-epoch-hash }/flag/FLAG ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
@@ -174,7 +173,7 @@
                                                                                             temporary = temporary ;
                                                                                         } ;
                                                                                 in identity ( value outputs.temporary ) ;
-                                                                        in builtins.toFile name "${ pkgs.coreutils }/bin/true"
+                                                                        in pkgs.writeShellScript name cache
                                                                 else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                         in builtins.mapAttrs ( mapper [ ] ) cache ;
                                                 scripts =
@@ -474,27 +473,38 @@
                                                                                             in
                                                                                             {
                                                                                                 cache =
-                                                                                                    { ... } :
-                                                                                                        ''
-                                                                                                        '' ;
-                                                                                                cache2 =
                                                                                                     { environment-variable , pkgs , ... } :
                                                                                                         ''
                                                                                                             export CACHE=${ environment-variable 1 } &&
-                                                                                                                export ARGUMENTS=${ environment-variable 1 } &&
+                                                                                                                export ARGUMENTS=${ environment-variable 2 } &&
                                                                                                                 export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                                 export STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                 export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                 export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
-                                                                                                                ${ pkgs.writeShellScript "wait" wait } &&
+                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ wait } &&
+                                                                                                                ${ pkgs.coreutils }/bin/env >&2 &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        VALUE_1=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        VALUE_2=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
+                                                                                                                        VALUE_3=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        VALUE_4=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                        VALUE_5=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                        VALUE_5=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" )
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" } >&2 &&
+                                                                                                                        exit 64
+                                                                                                                fi &&
+                                                                                                                if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "We did not cache the temporary directory." >&2 &&
                                                                                                                         exit 64
                                                                                                                 fi
                                                                                                         '' ;
@@ -997,9 +1007,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/echo ${ resources.scripts.verification.cache } >&2 &&
-                                                                            ${ pkgs.coreutils }/bin/echo WTF >&2 &&
-                                                                            exit 74 &&
+                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-11 } ejgqjypw false qaaafmiu &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true 043eedc4fd488a0b3d332a8b73879ab47eeaf9f32f73dd800233b92f02b56a50ae575dcfc15de8f6f0adc02e8e0049d5e0689dcf7050ce4809d030f5f34b2005 6b9f78c864afdadae4f1aa1222e3cad9dfb6d4eb5c2cfd2b8da4e84177cd0346233e4564013970c3ea53a90eda89aa3f9a1734f06a671cfd7515657ae9f4dff4 65 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } false b2cb54440691821c8520a3d2419e79224c725c04ce686eb5dc4300458c96c354797ad8460917eb85f8155d76a56af681912f0c3eade398ea3f3563aba790b543 981f61ca06127c8f119a46760412c050ed7a98ee11b1b5107bd0dece4a9d206f6c70a6c6ae05d6860707397013b27dfaef6c77b0fb7661e44eaf2c60ccfad2fd 0 &&
