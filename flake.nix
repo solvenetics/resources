@@ -770,7 +770,7 @@
                                                                                                                         export RESOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TARGET" } ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo RESOURCE=${ environment-variable "RESOURCE" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo We have determined that sleep 1 second is too fast because the test for removal happens before the removal has had a chance. &&
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep 10s &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 2s &&
                                                                                                                         ${ pkgs.writeShellScript "persistent" persistent } &&
                                                                                                                         if [ ${ environment-variable "INIT_GOOD" } != true ] || [ ${ environment-variable "RELEASE_GOOD" } != true ]
                                                                                                                         then
