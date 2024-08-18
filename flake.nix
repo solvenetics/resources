@@ -494,17 +494,37 @@
                                                                                                                         VALUE_5=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1s &&
                                                                                                                         VALUE_5=$( ${ pkgs.bash }/bin/bash -c"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "We did not cache the temporary directory." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by the ARGUMENTS." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_3" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by the STANDARD_INPUT." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_4" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should be affected by both the ARGUMENTS and STANDARD_INPUT." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should persist." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "The cache should desist." >&2 &&
+                                                                                                                                exit 64
+                                                                                                                        fi
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" )
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" } >&2 &&
-                                                                                                                        exit 64
-                                                                                                                fi &&
-                                                                                                                if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "We did not cache the temporary directory." >&2 &&
                                                                                                                         exit 64
                                                                                                                 fi
                                                                                                         '' ;
