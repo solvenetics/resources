@@ -567,6 +567,7 @@
                                                                                                                 then
                                                                                                                     export VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         export VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+                                                                                                                        export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 3s &&
                                                                                                                         export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 2s &&
@@ -576,6 +577,10 @@
                                                                                                                             if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did not cache the temporary directory." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should be affected by the ARGUMENTS." &&
                                                                                                                                     exit 64
                                                                                                                             elif [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_5" } ]
                                                                                                                             then
@@ -591,6 +596,10 @@
                                                                                                                             if [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_1" } ]
                                                                                                                             then
                                                                                                                                 export MESSAGE="We did cache the temporary directory." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_2" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should be affected by the ARGUMENTS and it should not be cached anyway." &&
                                                                                                                                     exit 64
                                                                                                                             elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_5" } ]
                                                                                                                             then
