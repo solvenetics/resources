@@ -562,6 +562,9 @@
                                                                                                                                 export MESSAGE="The cache should not have been." &&
                                                                                                                                     exit 64
                                                                                                                             fi
+                                                                                                                        else
+                                                                                                                            export MESSAGE="Unexpected SUCCESSFUL_INITIATION=${ environment-variable "SUCCESSFUL_INITIATION" }" &&
+                                                                                                                                exit 64
                                                                                                                         fi
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
@@ -610,6 +613,9 @@
                                                                                                                                 export MESSAGE="The cache should desist because it should not have been cached." &&
                                                                                                                                     exit 64
                                                                                                                             fi
+                                                                                                                        else
+                                                                                                                            export MESSAGE="Unexpected SUCCESSFUL_INITIATION=${ environment-variable "SUCCESSFUL_INITIATION" }" &&
+                                                                                                                                exit 64
                                                                                                                         fi
                                                                                                                 else
                                                                                                                     export MESSAGE="We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }" &&
