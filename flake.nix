@@ -478,7 +478,6 @@
                                                                                                             cleanup()
                                                                                                                 {
                                                                                                                     export STATUS=${ environment-variable "?" } &&
-                                                                                                                        export FLAG=pfnehsli &&
                                                                                                                         if [ ${ environment-variable "STATUS" } != 0 ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/env >&2 &&
@@ -501,9 +500,13 @@
                                                                                                                         export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                         export VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         export VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                                        export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 3s &&
+                                                                                                                        # export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
+                                                                                                                        TEMP=$( ${ pkgs.coreutils }/bin/mktemp -d ) &&
+                                                                                                                        ( ! ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" > ${ environment-variable "TEMP" }/out 2> ${ environment-variable "TEMP" }/err ) &&
+                                                                                                                        export VALUE_5_OUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMP" }/out ) &&
+                                                                                                                        export VALUE_5_ERR=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMP" }/err ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 2s &&
                                                                                                                         export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                         if [ ${ environment-variable "VALUE_0" } != ${ environment-variable "VALUE_1" } ]
                                                                                                                         then
@@ -529,7 +532,8 @@
                                                                                                                         then
                                                                                                                             export MESSAGE="The cache should desist." &&
                                                                                                                                 exit 64
-                                                                                                                        fi
+                                                                                                                        fi &&
+                                                                                                                        exit 74
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
