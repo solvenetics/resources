@@ -1150,7 +1150,7 @@
                                                                             ${ resources.scripts.verification.cache } ${ resources.cache.gamma-12 } tgifcnlt true iycmvgaa true &&
                                                                             ${ resources.scripts.verification.cache } ${ resources.cache.gamma-12 } dzleeenq false qykqewfl true &&
                                                                             ${ resources.scripts.verification.cache } ${ resources.cache.gamma-22 } eyppwncd true skxapipp false &&
-                                                                            # ${ resources.scripts.verification.cache } ${ resources.cache.gamma-22 } kydrntfv false dpugnyat false &&
+                                                                            ${ resources.scripts.verification.cache } ${ resources.cache.gamma-22 } kydrntfv false dpugnyat false &&
                                                                             ${ pkgs.coreutils }/bin/true
                                                                      '' ;
                                                     } ;
