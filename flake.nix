@@ -586,6 +586,21 @@
                                                                                                                                 export MESSAGE="The cache should desist." &&
                                                                                                                                     exit 64
                                                                                                                             fi
+                                                                                                                        elif [ ${ environment-variable "SUCCESSFUL_INITIATION" } == false ]
+                                                                                                                        then
+                                                                                                                            if [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_1" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="We did cache the temporary directory." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_5" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should not persist." &&
+                                                                                                                                    exit 64
+                                                                                                                            elif [ ${ environment-variable "VALUE_0" } == ${ environment-variable "VALUE_6" } ]
+                                                                                                                            then
+                                                                                                                                export MESSAGE="The cache should desist because it should not have been cached." &&
+                                                                                                                                    exit 64
+                                                                                                                            fi
                                                                                                                         fi
                                                                                                                 else
                                                                                                                     export MESSAGE="We did not expect that HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }" &&
