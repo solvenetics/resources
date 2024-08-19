@@ -469,6 +469,9 @@
                                                                                         } ;
                                                                                     verification =
                                                                                         let
+                                                                                            current-time =
+                                                                                                environment-variable : label :
+                                                                                                    ''CURRENT_TIME=$( ${ pkgs.coreutils }/bin/date +%s ) && export AAA_${ builtins.toString label }="${ environment-variable "CURRENT_TIME" } - $(( ${ environment-variable "CURRENT_TIME" } / 8 )) - $(( ${ environment-variable "CURRENT_TIME" } % 8 ))"'' ;
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                             wait-to = offset : "${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) - ${ builtins.toString offset } ) % 8 ))s" ;
                                                                                             in
@@ -496,9 +499,9 @@
                                                                                                                         export SUCCESSFUL_INITIATION=${ environment-variable 5 } &&
                                                                                                                         export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                         export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
-                                                                                                                        export AAAA_1=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+${ current-time environment-variable 0 } &&
                                                                                                                         ${ wait-to 0 } &&
-                                                                                                                        export AAAA_2=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+${ current-time environment-variable 1 } &&
                                                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                         then
                                                                                                                             export VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
@@ -506,12 +509,13 @@
                                                                                                                                 export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                                 export VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 export VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                        export AAAA_30="${ wait-to 3 }" &&
+${ current-time environment-variable 12 } &&
                                                                                                                                 ${ wait-to 3 } &&
-                                                                                                                        export AAAA_31=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+${ current-time environment-variable 13 } &&
                                                                                                                                 export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
+${ current-time environment-variable 14 } &&
                                                                                                                                 ${ wait-to 5 } &&
-                                                                                                                        export AAAA_4=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+${ current-time environment-variable 15 } &&
                                                                                                                                 export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 if [ ${ environment-variable "SUCCESSFUL_INITIATION" } == true ]
                                                                                                                                 then
@@ -576,9 +580,14 @@
                                                                                                                             export VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 export VALUE_1=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                                ${ pkgs.coreutils }/bin/sleep 3s &&
+${ current-time environment-variable 22 } &&
+                                                                                                                                ${ wait-to 3 } &&
+${ current-time environment-variable 23 } &&
+
                                                                                                                                 export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                                ${ pkgs.coreutils }/bin/sleep 2s &&
+${ current-time environment-variable 24 } &&
+                                                                                                                                ${ wait-to 5 } &&
+${ current-time environment-variable 25 } &&                                                                                                                                                                                                                                                                
                                                                                                                                 export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 if [ ${ environment-variable "SUCCESSFUL_INITIATION" } == true ]
                                                                                                                                 then
@@ -1158,7 +1167,8 @@
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-12 } tgifcnlt true iycmvgaa true &&
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-12 } dzleeenq false qykqewfl true &&
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-22 } eyppwncd true skxapipp false &&
-                                                                            ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-22 } kydrntfv false dpugnyat false
+                                                                            ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-22 } kydrntfv false dpugnyat false &&
+                                                                            exit 99
                                                                      '' ;
                                                     } ;
                                         } ;
