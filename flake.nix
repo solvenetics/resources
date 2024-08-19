@@ -391,11 +391,11 @@
                                                                                                     gamma =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n id_ /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n id_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable 1 }_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n yr_ >> //tmp/tmp.0iylVLRQdQ
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n yr_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n $( ${ pkgs.coreutils }/bin/tee )_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/echo zg_ >> /tmp/tmp.0iylVLRQdQ
@@ -413,16 +413,16 @@
                                                                                                     ''
                                                                                                         GAMMA=${ environment-variable 1 } &&
                                                                                                             ARGUMENTS=${ environment-variable 2 } &&
-                                                                                                            HAS_STANDARD_INPUT=${ environment-variable 3 } &&
-                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n ky_ > /tmp/tmp.0iylVLRQdQ &&
-                                                                                                            if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n ki_ > /tmp/tmp.0iylVLRQdQ &&
+                                                                                                            if ${ has-standard-input }
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n pt_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/tee ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
                                                                                                             else
-                                                                                                                ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n fl_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    ${ pkgs.bash }/bin/bash -c "${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n kt_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n mu_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
