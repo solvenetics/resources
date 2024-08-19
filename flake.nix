@@ -69,7 +69,7 @@
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
                                                                                             fi &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
                                                                                                 ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                         else
                                                                                             WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
@@ -84,8 +84,11 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable "PARENT_HASH" }/${ environment-variable "PPID" }.pid &&
+                                                                                                    if [ ! -z "${ environment-variable "PARENT_HASH" }" ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
+                                                                                                    fi &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/link &&
@@ -350,6 +353,8 @@
                                                                                     gamma-12 = temporary : { temporary = temporary.gamma-12 ; epoch = 4 ; } ;
                                                                                     gamma-21 = temporary : { temporary = temporary.gamma-21 ; epoch = 4 ; } ;
                                                                                     gamma-22 = temporary : { temporary = temporary.gamma-22 ; epoch = 4 ; } ;
+                                                                                    delta-1 = temporary : { temporary = temporary.delta ; epoch = 4 ; } ;
+                                                                                    delta-2 = temporary : { temporary = temporary.delta ; epoch = 8 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -391,7 +396,7 @@
                                                                                                     gamma =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n id_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n jz_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable 1 }_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
@@ -400,7 +405,7 @@
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/echo zg_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                                     fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ra_ /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ra_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -417,7 +422,7 @@
                                                                                                             if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n pt_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                    ${ pkgs.coreutils }/bin/tee ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    ${ pkgs.coreutils }/bin/tee | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" } >> /tmp/tmp.0iylVLRQdQ
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n fl_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
@@ -453,7 +458,7 @@
                                                                                                     gamma =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n hc_ /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n hc_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -646,7 +651,17 @@
                                                                                                                         ${ wait-to 0 } &&
                                                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
+export AAAA1=true &&
+                                                                                                                            if BROKEN=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }" )
+                                                                                                                            then
+                                                                                                                                ${ pkgs.coreutils }/bin/true
+                                                                                                                            else
+                                                                                                                                ${ pkgs.coreutils }/bin/echo >&2 &&
+                                                                                                                                ${ pkgs.findutils }/bin/find $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "BROKEN" } ) >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "BROKEN" } )/init.err.log >&2 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo >&2
+                                                                                                                            fi
+export AAAA2=true
                                                                                                                         elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                         then
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
@@ -1160,7 +1175,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ resources.scripts.verification.cache.ordering } &&
+                                                                            ${ resources.scripts.verification.cache.ordering } ${ resources.cache.delta-1 } ${ resources.cache.gamma-11 } qw true vq "WRONG" &&
                                                                             exit 0 &&
                                                                             ${ pkgs.coreutils }/bin/echo ${ resources.scripts.verification.script } >&2 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
