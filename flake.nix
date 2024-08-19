@@ -642,6 +642,8 @@
                                                                                                                         export ARGUMENTS=${ environment-variable 3 } &&
                                                                                                                         export HAS_STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                         export STANDARD_INPUT=${ environment-variable 5 } &&
+                                                                                                                        export EXPECTED=${ environment-variable 6 } &&
+                                                                                                                        ${ wait-to 0 } &&
                                                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                         then
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
@@ -649,6 +651,13 @@
                                                                                                                         then
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                                         fi &&
+                                                                                                                        ${ wait-to 0 } &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat /tmp/tmp.0iylVLRQdQ )" &&
+                                                                                                                        if [ "${ environment-variable "EXPECTED" }" != "${ environment-variable "OBSERVED" }" ]
+                                                                                                                        then
+                                                                                                                            export MESSAGE="We expected the ordering to be different." &&
+                                                                                                                                exit 64
+                                                                                                                        fi
                                                                                                                 '' ;
                                                                                                     } ;
                                                                                                 script =
