@@ -350,8 +350,6 @@
                                                                                     gamma-12 = temporary : { temporary = temporary.gamma-12 ; epoch = 4 ; } ;
                                                                                     gamma-21 = temporary : { temporary = temporary.gamma-21 ; epoch = 4 ; } ;
                                                                                     gamma-22 = temporary : { temporary = temporary.gamma-22 ; epoch = 4 ; } ;
-                                                                                    gamma-31 = temporary : { temporary = temporary.gamma-11 ; epoch = 2 ; } ;
-                                                                                    gamma-32 = temporary : { temporary = temporary.gamma-11 ; epoch = 8 ; } ;
                                                                                 } ;
                                                                             scripts =
                                                                                 {
@@ -472,7 +470,7 @@
                                                                                     verification =
                                                                                         let
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
-                                                                                            wait = "$(( 8 - $( ${ pkgs.coreutils }/bin/date +%s ) % 8 ))" ;
+                                                                                            wait-to = offset : "${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) - ${ builtins.toString offset } ) % 8 ))s" ;
                                                                                             in
                                                                                             {
                                                                                                 cache =
@@ -486,6 +484,7 @@
                                                                                                                                 if [ ${ environment-variable "STATUS" } != 0 ]
                                                                                                                                 then
                                                                                                                                     ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2 &&
                                                                                                                                         exit 64
                                                                                                                                 fi
                                                                                                                         } &&
@@ -497,8 +496,9 @@
                                                                                                                         export SUCCESSFUL_INITIATION=${ environment-variable 5 } &&
                                                                                                                         export ARGUMENT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
                                                                                                                         export STANDARD_INPUT_PRIME=${ environment-variable "ARGUMENTS" }_PRIME &&
-                                                                                                                        ${ pkgs.coreutils }/bin/sleep ${ wait } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                        export AAAA_1=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+                                                                                                                        ${ wait-to 0 } &&
+                                                                                                                        export AAAA_2=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
                                                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                         then
                                                                                                                             export VALUE_0=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
@@ -506,9 +506,12 @@
                                                                                                                                 export VALUE_2=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
                                                                                                                                 export VALUE_3=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 export VALUE_4=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT_PRIME" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS_PRIME" }" ) &&
-                                                                                                                                ${ pkgs.coreutils }/bin/sleep 3s &&
+                                                                                                                        export AAAA_30="${ wait-to 3 }" &&
+                                                                                                                                ${ wait-to 3 } &&
+                                                                                                                        export AAAA_31=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
                                                                                                                                 export VALUE_5=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
-                                                                                                                                ${ pkgs.coreutils }/bin/sleep 2s &&
+                                                                                                                                ${ wait-to 5 } &&
+                                                                                                                        export AAAA_4=$(( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
                                                                                                                                 export VALUE_6=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }" ) &&
                                                                                                                                 if [ ${ environment-variable "SUCCESSFUL_INITIATION" } == true ]
                                                                                                                                 then
@@ -651,19 +654,20 @@
                                                                                                                 then
                                                                                                                     if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
                                                                                                                     then
-                                                                                                                        export TEMPORARY_STATUS=${ environment-variable "?" }
+                                                                                                                        TEMPORARY_STATUS=${ environment-variable "?" }
                                                                                                                     else
-                                                                                                                        export TEMPORARY_STATUS=${ environment-variable "?" }
+                                                                                                                        TEMPORARY_STATUS=${ environment-variable "?" }
                                                                                                                     fi
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     if ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
                                                                                                                     then
-                                                                                                                        export TEMPORARY_STATUS=${ environment-variable "?" }
+                                                                                                                        TEMPORARY_STATUS=${ environment-variable "?" }
                                                                                                                     else
-                                                                                                                        export TEMPORARY_STATUS=${ environment-variable "?" }
+                                                                                                                        TEMPORARY_STATUS=${ environment-variable "?" }
                                                                                                                     fi
                                                                                                                 fi &&
+                                                                                                                export TEMPORARY_STATUS=${ environment-variable "TEMPORARY_STATUS" } &&
                                                                                                                 if [ ! -f ${ environment-variable "ARGUMENTS_TARGET" } ]
                                                                                                                 then
                                                                                                                      export MESSAGE="We did not write the ARGUMENTS_TARGET." &&
@@ -693,11 +697,11 @@
                                                                                                                     export MESSAGE="We did not expect this STANDARD_INPUT." &&
                                                                                                                         export OBSERVED=${ environment-variable "STANDARD_INPUT" } &&
                                                                                                                         exit 64
-                                                                                                                elif [ ${ environment-variable "TEMPORARY_STATUS" } != ${ environment-variable "STATUS" } ]
+                                                                                                                elif [ "${ environment-variable "TEMPORARY_STATUS" }" != "${ environment-variable "EXIT" }" ]
                                                                                                                 then
                                                                                                                     export MESSAGE="We did not expect this status." &&
                                                                                                                         export OBSERVED=${ environment-variable "TEMPORARY_STATUS" } &&
-                                                                                                                        export EXPECTED=${ environment-variable "STATUS" } &&
+                                                                                                                        export EXPECTED=${ environment-variable "EXIT" } &&
                                                                                                                         exit 64
                                                                                                                 fi
                                                                                                         '' ;
@@ -1147,7 +1151,6 @@
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-21 } 65 false 0 false bc133c0bc62432eff66d388dc6c4894ba0cb6d9f35a124541a5536d9a6da812e5f2238bbf3f1230ec0ce1184c7973d375a28678fc839f9de2bbede82bc4c9b24 b99f61d249e11db2fcb6e0459235961a34158643836e7fb36f183fccd5b56a353c099e8776b5dbb423144a68619d41b03b19edafad85467644885991483f6274  false true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 1f3daa30c141d3b438262d4a48e8ba4bb71f08b7890d798ed30ef5f106019417edff26e3b2150752e8c3f059b3527f386c865e49e4bc4ae7e5b171d41c9b0d20 0cb519a4a9617ec43916a8c5f29a5bf040a2ad50bbf166ab7b934ce678949ab0c45687e9e5c354467b72c1eeec1f517de5d9d6218b711e5414ea2d56b50e5611 true true false &&
                                                                             ${ resources.scripts.verification.temporary } ${ resources.temporary.beta-22 } 65 false 65 false 2a6047bffdcb4d27b75f19aa40eaf5d9de2b89aa587f5d8b06beaa0a3deb2e46bd6235c43d77cebecd2aeb4279c3fe3c868b488acc243c7bb572d9b3adb37447 00ef4851e7c5df918ca18a81a3475ce16fcfce9caa8ed767b36762056584b43c95be535a302771d042dc301571a482192fac490a9db5bd8f9ae29bc70731bcf3 false true false &&
-                                                                            exit 0 &&
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-11 } ejgqjypw true qaaafmiu true &&
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-11 } wdcduzmy false jxbktpxq true &&
                                                                             ${ resources.scripts.verification.cache.caching } ${ resources.cache.gamma-21 } nnveofdm true ssfncjfm false &&
