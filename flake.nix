@@ -623,6 +623,26 @@
                                                                                                                                 exit 64
                                                                                                                         fi
                                                                                                                 '' ;
+                                                                                                        order =
+                                                                                                            { environment-variable , ... } :
+                                                                                                                ''
+                                                                                                                    cleanup()
+                                                                                                                        {
+                                                                                                                            export STATUS=${ environment-variable "?" } &&
+                                                                                                                                if [ ${ environment-variable "STATUS" } != 0 ]
+                                                                                                                                then
+                                                                                                                                    ${ pkgs.coreutils }/bin/env >&2 &&
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2 &&
+                                                                                                                                        exit 64
+                                                                                                                                fi
+                                                                                                                        } &&
+                                                                                                                        trap cleanup EXIT &&
+                                                                                                                        export CACHE=${ environment-variable 1 } &&
+                                                                                                                        export ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                                        export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                                        export STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                        export SUCCESSFUL_INITIATION=${ environment-variable 5 } &&
+                                                                                                                '' ;
                                                                                                     } ;
                                                                                                 script =
                                                                                                     { environment-variable , pkgs , ... } :
