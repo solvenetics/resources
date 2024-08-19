@@ -422,7 +422,8 @@
                                                                                                             if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n pt_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                    ${ pkgs.coreutils }/bin/tee | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" } >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                    ${ pkgs.coreutils }/bin/tee | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" } &&
+                                                                                                                     ${ pkgs.coreutils }/bin/echo -n wc_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n fl_ >> /tmp/tmp.0iylVLRQdQ &&
                                                                                                                     ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
@@ -667,6 +668,8 @@ export AAAA2=true
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
                                                                                                                         fi &&
                                                                                                                         ${ wait-to 0 } &&
+                                                                                                                        ${ wait-to 7 } &&
+                                                                                                                        ${ wait-to 7 } &&
                                                                                                                         export OBSERVED="$( ${ pkgs.coreutils }/bin/cat /tmp/tmp.0iylVLRQdQ )" &&
                                                                                                                         if [ "${ environment-variable "EXPECTED" }" != "${ environment-variable "OBSERVED" }" ]
                                                                                                                         then
