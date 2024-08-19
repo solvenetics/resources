@@ -417,10 +417,10 @@
                                                                                                             if ${ has-standard-input }
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n pt_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                    ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/tee ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
+                                                                                                                    ${ pkgs.coreutils }/bin/tee ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n fl_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                    ${ pkgs.bash }/bin/bash -c "${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n mu_ >> /tmp/tmp.0iylVLRQdQ
                                                                                                     '' ;
@@ -637,11 +637,18 @@
                                                                                                                                 fi
                                                                                                                         } &&
                                                                                                                         trap cleanup EXIT &&
-                                                                                                                        export CACHE=${ environment-variable 1 } &&
-                                                                                                                        export ARGUMENTS=${ environment-variable 2 } &&
-                                                                                                                        export HAS_STANDARD_INPUT=${ environment-variable 3 } &&
-                                                                                                                        export STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                        export SUCCESSFUL_INITIATION=${ environment-variable 5 } &&
+                                                                                                                        export DELTA=${ environment-variable 1 } &&
+                                                                                                                        export GAMMA=${ environment-variable 2 } &&
+                                                                                                                        export ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                        export HAS_STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                        export STANDARD_INPUT=${ environment-variable 5 } &&
+                                                                                                                        if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
+                                                                                                                        elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                        fi &&
                                                                                                                 '' ;
                                                                                                     } ;
                                                                                                 script =
