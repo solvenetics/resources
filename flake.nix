@@ -83,7 +83,6 @@
                                                                                                 if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status )" == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
                                                                                                     if [ ! -z "${ environment-variable "PARENT_HASH" }" ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
@@ -114,6 +113,7 @@
                                                                                     WORK_DIR=${ environment-variable 5 } &&
                                                                                     ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_ARGUMENTS" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
                                                                                     STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ environment-variable "WORK_DIR" }/invalidate &&
                                                                                     if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                     then
                                                                                         if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
@@ -131,13 +131,14 @@
                                                                                         fi
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
-                                                                                    while [ -f ${ environment-variable cache-epoch-hash }/flag/FLAG ]
+                                                                                    while [ -f ${ environment-variable "WORK_DIR" }/flag/flag ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
-                                                                                    # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/FLAG --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
-                                                                                    if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
+                                                                                    # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
+                                                                                    if [ -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
+${ pkgs.coreutils }/bin/echo -n AAAA0007710_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                         ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
                                                                                     fi
                                                                             '' ;
@@ -146,10 +147,11 @@
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock 201 &&
-                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-epoch-hash }/flag &&
+${ pkgs.coreutils }/bin/echo -n AAAA0004000_ >>  /tmp/tmp.0iylVLRQdQ &&
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
-                                                                                    ${ pkgs.coreutils }/bin/mv ${ cache-directory } ${ environment-variable "INVALIDATION_DIR" } &&
-                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
+                                                                                    ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock -u 201 &&
                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                     do
@@ -165,6 +167,7 @@
                                                                                         fi &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
                                                                                     done &&
+${ pkgs.coreutils }/bin/echo -n AAAA0012000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                     ${ pkgs.coreutils }/bin/rm --recursive-force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
                                                                         temporary =
@@ -652,7 +655,6 @@
                                                                                                                         ${ wait-to 0 } &&
                                                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                         then
-export AAAA1=true &&
                                                                                                                             if BROKEN=$( ${ pkgs.bash }/bin/bash -c "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }" )
                                                                                                                             then
                                                                                                                                 ${ pkgs.coreutils }/bin/true
@@ -662,7 +664,6 @@ export AAAA1=true &&
                                                                                                                                 ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "BROKEN" } )/init.err.log >&2 &&
                                                                                                                                 ${ pkgs.coreutils }/bin/echo >&2
                                                                                                                             fi
-export AAAA2=true
                                                                                                                         elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                         then
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
