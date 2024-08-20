@@ -487,8 +487,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo MESSAGE=${ environment-variable "MESSAGE" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED=${ environment-variable "EXPECTED" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED=${ environment-variable "OBSERVED" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo >&2 &&
-                                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 1 -type f | while read LOG
+                                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 1 -type f | while read FILE
                                                                                                                             do
                                                                                                                                 if [ ! -z "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } )" ]
                                                                                                                                 then
