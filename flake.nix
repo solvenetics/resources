@@ -493,8 +493,8 @@
                                                                                                                                 if [ ! -z "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } )" ]
                                                                                                                                 then
                                                                                                                                     ${ pkgs.coreutils }/bin/echo >&2 &&
-          `                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >&2 &&
-                                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } >&2`
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >&2 &&
+                                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } >&2
                                                                                                                                 fi
                                                                                                                             done &&
                                                                                                                             exit 64
