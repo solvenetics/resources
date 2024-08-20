@@ -486,14 +486,11 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo MESSAGE=${ environment-variable "MESSAGE" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo EXPECTED=${ environment-variable "EXPECTED" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo OBSERVED=${ environment-variable "OBSERVED" } &&
-                                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 1 -maxdepth 1 -type d -name "*.broken" | while read BROKEN
+                                                                                                                            ${ pkgs.coreutils }/bin/echo >&2 &&
+                                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 1 -maxdepth 2 -type f -name "*.log" | while read LOG
                                                                                                                             do
-                                                                                                                                ${ pkgs.coreutils }/bin/echo >&2 &&
-                                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "BROKEN" } -mindepth 1 -maxdepth 1 -type f -name "*.log" | while read LOG
-                                                                                                                                    do
-                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } &&
-                                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" }
-                                                                                                                                    done
+                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >&2 &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } >&2
                                                                                                                             done &&
                                                                                                                             exit 64
                                                                                                                     else
