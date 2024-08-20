@@ -138,7 +138,6 @@
                                                                                     # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
                                                                                     if [ -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
-${ pkgs.coreutils }/bin/echo -n AAAA0007710_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                         ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
                                                                                     fi
                                                                             '' ;
@@ -147,7 +146,6 @@ ${ pkgs.coreutils }/bin/echo -n AAAA0007710_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock 201 &&
-${ pkgs.coreutils }/bin/echo -n AAAA0004000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
                                                                                     ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
@@ -167,7 +165,6 @@ ${ pkgs.coreutils }/bin/echo -n AAAA0004000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                         fi &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo -n AAAA0012000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                     ${ pkgs.coreutils }/bin/rm --recursive-force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
                                                                         temporary =
@@ -478,6 +475,32 @@ ${ pkgs.coreutils }/bin/echo -n AAAA0012000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                         } ;
                                                                                     verification =
                                                                                         let
+                                                                                            cleanup =
+                                                                                                { environment-variable , pkgs , ... } :
+                                                                                                    ''
+                                                                                                        cleanup ( )
+                                                                                                            {
+                                                                                                                STATUS=${ environment-variable "?" } &&
+                                                                                                                    if [ ${ environment-variable "STATUS" } != 0 ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo MESSAGE=${ environment-variable "MESSAGE" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo EXPECTED=${ environment-variable "EXPECTED" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo OBSERVED=${ environment-variable "OBSERVED" } &&
+                                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 1 -maxdepth 1 -type d -name "*.broken" | while read BROKEN
+                                                                                                                            do
+                                                                                                                                ${ pkgs.coreutils }/bin/echo >&2 &&
+                                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "BROKEN" } -mindepth 1 -maxdepth 1 -type f -name "*.log" | while read LOG
+                                                                                                                                    do
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } &&
+                                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" }
+                                                                                                                                    done
+                                                                                                                            done &&
+                                                                                                                            exit 64
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force /build /tmp
+                                                                                                                    fi
+                                                                                                            }'' ;
+                                                                                            logging-directory = "/build/ff842b2feb62d4758edff3eca36278968a16ad562f3a2ccaa0138aa6a5d24debb34d1e0d8abfa677dee6b6ab5044f6e1239dbefd8546c176231fcd3f82b5c15c.log" ;
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                             wait-to = offset : "${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) - ${ builtins.toString offset } ) % 8 ))s" ;
                                                                                             in
@@ -633,18 +656,9 @@ ${ pkgs.coreutils }/bin/echo -n AAAA0012000_ >>  /tmp/tmp.0iylVLRQdQ &&
                                                                                                                         fi
                                                                                                                 '' ;
                                                                                                         ordering =
-                                                                                                            { environment-variable , ... } :
+                                                                                                            { environment-variable , ... } @primary :
                                                                                                                 ''
-                                                                                                                    cleanup()
-                                                                                                                        {
-                                                                                                                            export STATUS=${ environment-variable "?" } &&
-                                                                                                                                if [ ${ environment-variable "STATUS" } != 0 ]
-                                                                                                                                then
-                                                                                                                                    ${ pkgs.coreutils }/bin/env >&2 &&
-                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "MESSAGE" } >&2 &&
-                                                                                                                                        exit 64
-                                                                                                                                fi
-                                                                                                                        } &&
+                                                                                                                    ${ cleanup primary } &&
                                                                                                                         trap cleanup EXIT &&
                                                                                                                         export DELTA=${ environment-variable 1 } &&
                                                                                                                         export GAMMA=${ environment-variable 2 } &&
