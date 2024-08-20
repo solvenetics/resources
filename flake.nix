@@ -150,7 +150,6 @@ ${ pkgs.coreutils }/bin/echo init AFTER invalidation >> /build/AAAA.log
                                                                             '' ;
                                                                         invalidate =
                                                                             ''
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 1 >> /build/AAAA.log &&
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock 201 &&
