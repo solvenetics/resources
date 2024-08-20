@@ -419,6 +419,7 @@
                                                                                                     ''
                                                                                                         GAMMA=${ environment-variable 1 } &&
                                                                                                             ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo THIS IS THE GAMMA USED BY DELTA. &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n ki_ > ${ logging-file } &&
                                                                                                             if ${ has-standard-input }
                                                                                                             then
@@ -492,7 +493,8 @@
                                                                                                                                 if [ ! -z "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } )" ]
                                                                                                                                 then
                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >&2 &&
-                                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } >&2
+                                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } >&2 &&
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo >&2
                                                                                                                                 fi
                                                                                                                             done &&
                                                                                                                             exit 64
