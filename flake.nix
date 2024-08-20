@@ -338,6 +338,7 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
+                                                                logging-file = "/build/ff842b2feb62d4758edff3eca36278968a16ad562f3a2ccaa0138aa6a5d24debb34d1e0d8abfa677dee6b6ab5044f6e1239dbefd8546c176231fcd3f82b5c15c.log" ;
                                                                 resources =
                                                                     lib
                                                                         {
@@ -396,16 +397,16 @@
                                                                                                     gamma =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n jz_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable 1 }_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n jz_ >> ${ logging-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable 1 }_ >> ${ logging-file } &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n yr_ >> /tmp/tmp.0iylVLRQdQ &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n $( ${ pkgs.coreutils }/bin/tee )_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n yr_ >> ${ logging-file } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n $( ${ pkgs.coreutils }/bin/tee )_ >> ${ logging-file }
                                                                                                                     else
-                                                                                                                        ${ pkgs.coreutils }/bin/echo zg_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                        ${ pkgs.coreutils }/bin/echo zg_ >> ${ logging-file }
                                                                                                                     fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ra_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ra_ >> ${ logging-file } &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -418,17 +419,17 @@
                                                                                                     ''
                                                                                                         GAMMA=${ environment-variable 1 } &&
                                                                                                             ARGUMENTS=${ environment-variable 2 } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n ki_ > /tmp/tmp.0iylVLRQdQ &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n ki_ > ${ logging-file } &&
                                                                                                             if ${ has-standard-input }
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n pt_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n pt_ >> ${ logging-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/tee | ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" } &&
-                                                                                                                     ${ pkgs.coreutils }/bin/echo -n wc_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                                     ${ pkgs.coreutils }/bin/echo -n wc_ >> ${ logging-file }
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n fl_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n fl_ >> ${ logging-file } &&
                                                                                                                     ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n mu_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n mu_ >> ${ logging-file }
                                                                                                     '' ;
                                                                                         } ;
                                                                                     release =
@@ -459,7 +460,7 @@
                                                                                                     gamma =
                                                                                                         { environment-variable , has-standard-input , pkgs , target , ... } : exit :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n hc_ >> /tmp/tmp.0iylVLRQdQ &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n hc_ >> ${ logging-file } &&
                                                                                                                     exit ${ builtins.toString exit }
                                                                                                             '' ;
                                                                                                     in
@@ -470,7 +471,7 @@
                                                                                             delta =
                                                                                                 { environment-variable , target , pkgs , ... } :
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo -n lt_ >> /tmp/tmp.0iylVLRQdQ
+                                                                                                        ${ pkgs.coreutils }/bin/echo -n lt_ >> ${ logging-file }
                                                                                                     '' ;
                                                                                         } ;
                                                                                     verification =
@@ -497,7 +498,6 @@
                                                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force /build /tmp
                                                                                                                     fi
                                                                                                             }'' ;
-                                                                                            logging-directory = "/build/ff842b2feb62d4758edff3eca36278968a16ad562f3a2ccaa0138aa6a5d24debb34d1e0d8abfa677dee6b6ab5044f6e1239dbefd8546c176231fcd3f82b5c15c.log" ;
                                                                                             mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                             wait-to = offset : "${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) - ${ builtins.toString offset } ) % 8 ))s" ;
                                                                                             in
@@ -682,7 +682,7 @@
                                                                                                                         ${ wait-to 0 } &&
                                                                                                                         ${ wait-to 7 } &&
                                                                                                                         ${ wait-to 7 } &&
-                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat /tmp/tmp.0iylVLRQdQ )" &&
+                                                                                                                        export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ logging-file } )" &&
                                                                                                                         if [ "${ environment-variable "EXPECTED" }" != "${ environment-variable "OBSERVED" }" ]
                                                                                                                         then
                                                                                                                             export MESSAGE="We expected the ordering to be different." &&
