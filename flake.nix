@@ -110,18 +110,29 @@
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
                                                                         init =
                                                                             ''
+${ pkgs.coreutils }/bin/echo AAA-0000000 >> /build/AAAA.log &&
                                                                                 ENCODED_ARGUMENTS=${ environment-variable 1 } &&
+${ pkgs.coreutils }/bin/echo AAA-0001000 >> /build/AAAA.log &&
                                                                                     HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+${ pkgs.coreutils }/bin/echo AAA-0002000 >> /build/AAAA.log &&
                                                                                     ENCODED_STANDARD_INPUT=${ environment-variable 3 } &&
+${ pkgs.coreutils }/bin/echo AAA-0003000 >> /build/AAAA.log &&
                                                                                     export ${ cache-epoch-hash }=${ environment-variable 4 } &&
+${ pkgs.coreutils }/bin/echo AAA-0004000 >> /build/AAAA.log &&
                                                                                     WORK_DIR=${ environment-variable 5 } &&
+${ pkgs.coreutils }/bin/echo AAA-0005000 >> /build/AAAA.log &&
                                                                                     ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_ARGUMENTS" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+${ pkgs.coreutils }/bin/echo AAA-0006000 >> /build/AAAA.log &&
                                                                                     STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+${ pkgs.coreutils }/bin/echo AAA-0007000 >> /build/AAAA.log &&
                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ environment-variable "WORK_DIR" }/invalidate &&
+${ pkgs.coreutils }/bin/echo AAA-0008000 >> /build/AAAA.log &&
                                                                                     if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                     then
+${ pkgs.coreutils }/bin/echo AAA-0009100 >> /build/AAAA.log &&
                                                                                         if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
                                                                                         then
+${ pkgs.coreutils }/bin/echo AAA-0009110 >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
                                                                                         else
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
@@ -134,20 +145,27 @@
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
                                                                                         fi
                                                                                     fi &&
+${ pkgs.coreutils }/bin/echo AAA-0010000 >> /build/AAAA.log &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
+${ pkgs.coreutils }/bin/echo AAA-0011000 >> /build/AAAA.log &&
                                                                                     while [ -f ${ environment-variable "WORK_DIR" }/flag/flag ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
+${ pkgs.coreutils }/bin/echo AAA-0012000 >> /build/AAAA.log &&
                                                                                     while [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
+${ pkgs.coreutils }/bin/echo AAA-0013000 >> /build/AAAA.log &&
                                                                                     # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
                                                                                     if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
-                                                                                        ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
-                                                                                    fi
+${ pkgs.coreutils }/bin/echo AAA-0014100 >> /build/AAAA.log &&
+                                                                                        ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate >> /build/AAAA.log 2>&1 &&
+${ pkgs.coreutils }/bin/echo AAA-0014200 >> /build/AAAA.log
+                                                                                    fi &&
+${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ environment-variable "$" } >> /build/AAAA.log
                                                                             '' ;
                                                                         invalidate =
                                                                             ''
