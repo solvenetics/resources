@@ -51,17 +51,17 @@
                                                                                     PARENT_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                     if ${ has-standard-input }
                                                                                     then
-                                                                                        HAS_STANDARD_INPUT="true" &&
+                                                                                        HAS_STANDARD_INPUT=true &&
                                                                                             STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
                                                                                     else
-                                                                                        HAS_STANDARD_INPUT="false" &&
+                                                                                        HAS_STANDARD_INPUT=false &&
                                                                                             STANDARD_INPUT=""
                                                                                     fi &&
                                                                                     ENCODED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/base64 ) &&
                                                                                     ENCODED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 ) &&
                                                                                     export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo "${ constant-hash } ${ environment-variable "EPOCH_TIMESTAMP" } ${ environment-variable "@" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                    exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                    if ${ pkgs.flock }/bin/flock 201
+                                                                                    exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    if ${ pkgs.flock }/bin/flock 3
                                                                                     then
                                                                                        if [ -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                         then
@@ -104,7 +104,7 @@
                                                                                             ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                             exit ${ builtins.toString cache-lock-exit }
                                                                                     fi &&
-                                                                                    ${ pkgs.flock }/bin/flock -u 201
+                                                                                    ${ pkgs.flock }/bin/flock -u 3
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock
                                                                             '' ;
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
@@ -166,28 +166,14 @@
                                                                                             ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAAB0000000 >> /build/AAAA.log &&
                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" -exec ${ pkgs.coreutils }/bin/readlink {} \; | while read HASH_LINK
                                                                                     do
-${ pkgs.coreutils }/bin/echo AAAB0011000 >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo ${ environment-variable "HASH_LINK" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo AAAB0011100 >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/ls -lah ${ environment-variable "HASH_LINK" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/ls -lah ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo AAAB0011300 >> /build/AAAA.log &&
                                                                                         if [ -d ${ environment-variable "HASH_LINK" } ] && [ -x ${ environment-variable "HASH_LINK" }/invalidate ]
                                                                                         then
-${ pkgs.coreutils }/bin/echo AAAB0011100 >> /build/AAAA.log &&
-                                                                                            ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log 2>&1 &&
-${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log
-else
-${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log
+                                                                                            ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log 2>&1
                                                                                         fi &&
-${ pkgs.coreutils }/bin/echo AAAB0012000 >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAAB0020000 >> /build/AAAA.log
                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
                                                                         temporary =
