@@ -162,15 +162,17 @@ ${ pkgs.coreutils }/bin/echo AAAA0003000 >> /build/AAAA.log &&
                                                                             ''
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 1 ${ environment-variable 0 } >> /build/AAAA.log &&
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
-                                                                                    exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                    ${ pkgs.flock }/bin/flock 201 &&
+${ pkgs.coreutils }/bin/echo "exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock" >> /build/AAAA.log &&
+                                                                                    exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    ${ pkgs.flock }/bin/flock 3 &&
+${ pkgs.findutils }/bin/find /tmp  >> /build/AAAA.log
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
                                                                                     ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 7 >> /build/AAAA.log &&
-                                                                                    ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                    # WHY THE FUCK DOES NOT THE BELOW WORK?
+                                                                                    # ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 8 >> /build/AAAA.log &&
-                                                                                    ${ pkgs.flock }/bin/flock -u 201 &&
+                                                                                    ${ pkgs.flock }/bin/flock -u 3 &&
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 9 >> /build/AAAA.log &&
                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                     do
