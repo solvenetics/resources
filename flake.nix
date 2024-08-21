@@ -70,9 +70,6 @@
                                                                                                 ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
                                                                                             fi &&
                                                                                             GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
-${ pkgs.coreutils }/bin/echo OUT CACHE EXIST ${ environment-variable "$" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo OUT CACHE EXIST ${ environment-variable "PPID" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo OUT CACHE EXIST ${ environment-variable "GRANDPARENT_PID" } >> /build/AAAA.log &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "GRANDPARENT_PID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "GRANDPARENT_PID" }.pid &&
                                                                                                 ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
@@ -94,9 +91,6 @@ ${ pkgs.coreutils }/bin/echo OUT CACHE EXIST ${ environment-variable "GRANDPAREN
                                                                                                     fi &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
                                                                                                     GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
-${ pkgs.coreutils }/bin/echo OUT CACHE ABSENT $ ${ environment-variable "$" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo OUT CACHE ABSENT PPID ${ environment-variable "PPID" } >> /build/AAAA.log &&
-${ pkgs.coreutils }/bin/echo OUT CACHE ABSENT GRANDPARENT ${ environment-variable "GRANDPARENT_PID" } >> /build/AAAA.log &&
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/link &&
@@ -141,17 +135,14 @@ ${ pkgs.coreutils }/bin/echo OUT CACHE ABSENT GRANDPARENT ${ environment-variabl
                                                                                         fi
                                                                                     fi &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
-${ pkgs.coreutils }/bin/echo AAAA0001000 >> /build/AAAA.log &&
                                                                                     while [ -f ${ environment-variable "WORK_DIR" }/flag/flag ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAAA0002000 >> /build/AAAA.log &&
                                                                                     while [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAAA0003000 >> /build/AAAA.log &&
                                                                                     # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
                                                                                     if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
@@ -160,37 +151,44 @@ ${ pkgs.coreutils }/bin/echo AAAA0003000 >> /build/AAAA.log &&
                                                                             '' ;
                                                                         invalidate =
                                                                             ''
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 1 ${ environment-variable 0 } >> /build/AAAA.log &&
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
-${ pkgs.coreutils }/bin/echo "exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock" >> /build/AAAA.log &&
                                                                                     exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                     ${ pkgs.flock }/bin/flock 3 &&
-${ pkgs.findutils }/bin/find /tmp  >> /build/AAAA.log
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
                                                                                     ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
                                                                                     # WHY THE FUCK DOES NOT THE BELOW WORK?
                                                                                     # ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 8 >> /build/AAAA.log &&
                                                                                     ${ pkgs.flock }/bin/flock -u 3 &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 9 >> /build/AAAA.log &&
                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                     do
                                                                                         PID=$( ${ pkgs.coreutils }/bin/basename ${ environment-variable "PID_FILE%.*" } ) &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 10 PID=${ environment-variable "PID" } >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 11 >> /build/AAAA.log &&
-                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" | while read HASH_LINK
+${ pkgs.coreutils }/bin/echo AAAB0000000 >> /build/AAAA.log &&
+                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" -exec ${ pkgs.coreutils }/bin/readlink {} \; | while read HASH_LINK
                                                                                     do
-                                                                                        if [ -d ${ environment-variable "HASH_LINK" } ]
+${ pkgs.coreutils }/bin/echo AAAB0011000 >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/echo ${ environment-variable "HASH_LINK" } >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/echo AAAB0011100 >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/ls -lah ${ environment-variable "HASH_LINK" } >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/ls -lah ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log &&
+${ pkgs.coreutils }/bin/echo AAAB0011300 >> /build/AAAA.log &&
+                                                                                        if [ -d ${ environment-variable "HASH_LINK" } ] && [ -x ${ environment-variable "HASH_LINK" }/invalidate ]
                                                                                         then
-                                                                                            ${ environment-variable "HASH_LINK" }/invalidate
+${ pkgs.coreutils }/bin/echo AAAB0011100 >> /build/AAAA.log &&
+                                                                                            ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log 2>&1 &&
+${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log
+else
+${ pkgs.coreutils }/bin/echo AAAB0011200 >> /build/AAAA.log
                                                                                         fi &&
+${ pkgs.coreutils }/bin/echo AAAB0012000 >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
                                                                                     done &&
-                                                                                    ${ pkgs.coreutils }/bin/rm --recursive-force ${ environment-variable "INVALIDATION_DIR" }
+${ pkgs.coreutils }/bin/echo AAAB0020000 >> /build/AAAA.log
+                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
                                                                         temporary =
                                                                             let
