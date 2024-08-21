@@ -162,22 +162,12 @@ ${ pkgs.coreutils }/bin/echo AAAA0003000 >> /build/AAAA.log &&
                                                                             ''
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 1 ${ environment-variable 0 } >> /build/AAAA.log &&
                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 2 >> /build/AAAA.log &&
                                                                                     exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 3 >> /build/AAAA.log &&
                                                                                     ${ pkgs.flock }/bin/flock 201 &&
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
                                                                                     INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
-${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 6 >> /build/AAAA.log &&
                                                                                     ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 7 >> /build/AAAA.log &&
-if [ -e ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
-then
-    ${ pkgs.coreutils }/bin/echo YES >> /build/AAAA.log
-else
-    ${ pkgs.coreutils }/bin/echo NO >> /build/AAAA.log &&
-        ${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } >> /build/AAAA.log
-fi &&
                                                                                     ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
 ${ pkgs.coreutils }/bin/echo WE ARE USING THE INVALIDATE SCRIPT 8 >> /build/AAAA.log &&
                                                                                     ${ pkgs.flock }/bin/flock -u 201 &&
