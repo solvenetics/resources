@@ -698,7 +698,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                         then
                                                                                                                             ${ pkgs.bash }/bin/bash -c "${ environment-variable "DELTA" } ${ environment-variable "GAMMA" } ${ environment-variable "ARGUMENTS" }"
                                                                                                                         fi &&
-                                                                                                                        ${ wait-to 3 } &&
+                                                                                                                        ${ wait-to 5 } &&
                                                                                                                         export OBSERVED="$( ${ pkgs.coreutils }/bin/cat ${ logging-file } )" &&
                                                                                                                         if [ "${ environment-variable "EXPECTED" }" != "${ environment-variable "OBSERVED" }" ]
                                                                                                                         then
