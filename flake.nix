@@ -110,29 +110,18 @@
                                                                         constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
                                                                         init =
                                                                             ''
-${ pkgs.coreutils }/bin/echo AAA-0000000 >> /build/AAAA.log &&
                                                                                 ENCODED_ARGUMENTS=${ environment-variable 1 } &&
-${ pkgs.coreutils }/bin/echo AAA-0001000 >> /build/AAAA.log &&
                                                                                     HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-${ pkgs.coreutils }/bin/echo AAA-0002000 >> /build/AAAA.log &&
                                                                                     ENCODED_STANDARD_INPUT=${ environment-variable 3 } &&
-${ pkgs.coreutils }/bin/echo AAA-0003000 >> /build/AAAA.log &&
                                                                                     export ${ cache-epoch-hash }=${ environment-variable 4 } &&
-${ pkgs.coreutils }/bin/echo AAA-0004000 >> /build/AAAA.log &&
                                                                                     WORK_DIR=${ environment-variable 5 } &&
-${ pkgs.coreutils }/bin/echo AAA-0005000 >> /build/AAAA.log &&
                                                                                     ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_ARGUMENTS" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
-${ pkgs.coreutils }/bin/echo AAA-0006000 >> /build/AAAA.log &&
                                                                                     STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
-${ pkgs.coreutils }/bin/echo AAA-0007000 >> /build/AAAA.log &&
                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ environment-variable "WORK_DIR" }/invalidate &&
-${ pkgs.coreutils }/bin/echo AAA-0008000 >> /build/AAAA.log &&
                                                                                     if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                     then
-${ pkgs.coreutils }/bin/echo AAA-0009100 >> /build/AAAA.log &&
                                                                                         if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
                                                                                         then
-${ pkgs.coreutils }/bin/echo AAA-0009110 >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
                                                                                         else
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
@@ -145,25 +134,19 @@ ${ pkgs.coreutils }/bin/echo AAA-0009110 >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
                                                                                         fi
                                                                                     fi &&
-${ pkgs.coreutils }/bin/echo AAA-0010000 >> /build/AAAA.log &&
                                                                                     ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
-${ pkgs.coreutils }/bin/echo AAA-0011000 >> /build/AAAA.log &&
                                                                                     while [ -f ${ environment-variable "WORK_DIR" }/flag/flag ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAA-0012000 >> /build/AAAA.log &&
                                                                                     while [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     do
                                                                                         ${ pkgs.coreutils }/bin/sleep 0s
                                                                                     done &&
-${ pkgs.coreutils }/bin/echo AAA-0013000 >> /build/AAAA.log &&
                                                                                     # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
                                                                                     if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
                                                                                     then
-${ pkgs.coreutils }/bin/echo AAA-0014100 >> /build/AAAA.log &&
-                                                                                        ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate >> /build/AAAA.log 2>&1 &&
-${ pkgs.coreutils }/bin/echo AAA-0014200 >> /build/AAAA.log
+                                                                                        ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate >> /build/AAAAB.log 2>&1
                                                                                     fi &&
 ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ environment-variable "$" } >> /build/AAAA.log
                                                                             '' ;
@@ -190,7 +173,7 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                         then
                                                                                             ${ environment-variable "HASH_LINK" }/invalidate >> /build/AAAA.log 2>&1
                                                                                         fi &&
-                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
                                                                                     done &&
                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "INVALIDATION_DIR" }
                                                                             '' ;
@@ -230,13 +213,13 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                         {
                                                                                             does-not-have-standard-input =
                                                                                                 ''
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2>&1
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 '' ;
                                                                                             has-standard-input =
                                                                                                 ''
                                                                                                     GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 '' ;
                                                                                         }
@@ -265,7 +248,7 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
                                                                                                             GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "GRANDPARENT_PID" } | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                     else
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
@@ -312,6 +295,7 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                     } ;
                                                                                 in
                                                                                     ''
+${ pkgs.coreutils }/bin/echo TEMPORARY RELEASE >> /build/AAAA.log &&
                                                                                         RESOURCE=${ environment-variable 1 } &&
                                                                                             PID=${ environment-variable 2 } &&
                                                                                             if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
@@ -326,7 +310,9 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                             fi &&
+${ pkgs.coreutils }/bin/echo TEMPORARY IS WAITING FOR ${ environment-variable "2" } >> /build/AAAA.log &&
                                                                                             ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+${ pkgs.coreutils }/bin/echo TEMPORARY FINISHED WAITING FOR ${ environment-variable "2" } >> /build/AAAA.log &&
                                                                                             export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                             ${ if builtins.typeOf temporary.release == "null" then release.null else release.set }
                                                                             '' ;
@@ -524,6 +510,7 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                                                                         ${ pkgs.coreutils }/bin/echo >&2
                                                                                                                                 fi
                                                                                                                             done &&
+                                                                                                                            ${ pkgs.findutils }/bin/find /build &&
                                                                                                                             exit 64
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force /build /tmp
@@ -1210,7 +1197,7 @@ ${ pkgs.coreutils }/bin/echo AAA-0015000 PID OF PROCESS THAT TEMPORARY INIT ${ e
                                                                                     beta-20 = scripts : { init = scripts.init.beta.bad ; } ;
                                                                                     beta-21 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.good ; } ;
                                                                                     beta-22 = scripts : { init = scripts.init.beta.bad ; release = scripts.release.beta.bad ; } ;
-                                                                                    gamma-11 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
+                                                                                    gamma-11 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.good ; } ;
                                                                                     gamma-12 = scripts : { init = scripts.init.gamma.good ; release = scripts.release.gamma.bad ; } ;
                                                                                     gamma-21 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.good ; } ;
                                                                                     gamma-22 = scripts : { init = scripts.init.gamma.bad ; release = scripts.release.gamma.bad ; } ;
