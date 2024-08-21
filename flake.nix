@@ -212,11 +212,13 @@
                                                                                         {
                                                                                             does-not-have-standard-input =
                                                                                                 ''
+${ pkgs.coreutils }/bin/echo AAAA 0003000 >> /build/AAAA.log &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2>&1
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 '' ;
                                                                                             has-standard-input =
                                                                                                 ''
+${ pkgs.coreutils }/bin/echo AAAA 0004000 >> /build/AAAA.log &&
                                                                                                     GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PARENT_PID" } ) &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -228,11 +230,14 @@
                                                                                                 ''
                                                                                                     if [ "${ builtins.typeOf temporary.init }" == "null" ] || ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                                     then
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PARENT_PID" } | ${ at } now > /dev/null 2>&1
+                                                                                                        GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+${ pkgs.coreutils }/bin/echo AAAA 0001000 >> /build/AAAA.log &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "$" } | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                     else
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                             BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ temporary-init-error-message "${ environment-variable "RESOURCE" }" } >&2 &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
@@ -413,7 +418,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo -n yr_ >> ${ logging-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n $( ${ pkgs.coreutils }/bin/tee )_ >> ${ logging-file }
                                                                                                                     else
-                                                                                                                        ${ pkgs.coreutils }/bin/echo zg_ >> ${ logging-file }
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n zg_ >> ${ logging-file }
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ra_ >> ${ logging-file } &&
                                                                                                                     exit ${ builtins.toString exit }
@@ -1204,6 +1209,7 @@
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ resources.scripts.verification.cache.ordering } ${ resources.cache.delta-1 } ${ resources.cache.gamma-11 } qw true vq "ki_pt_jz_qw_yr_vq_ra_wc_mu_hc_lt_" &&
+                                                                            ${ resources.scripts.verification.cache.ordering } ${ resources.cache.delta-1 } ${ resources.cache.gamma-11 } qw false vq "ki_fl_jz_qw_zg_ra_hc_mu_lt_" &&
                                                                             exit 0 &&
                                                                             ${ pkgs.coreutils }/bin/echo ${ resources.scripts.verification.script } >&2 &&
                                                                             ${ resources.scripts.verification.script } ${ resources.scripts.alpha } true bf3422439178649ee4005ed7fd80dba8e8e115400d5a6cee7c5f133c0946f66b7b37df18d2fff6683a846229898dbcafd22acce14d27e1731dda5b128b360e58 56f8b13200cbf7e4239210a6041537a1bfd100eaf0a0e6473085ecc6817c3b2634e1c6ac3d32271c3ac3a94ccbfa7462a7e6902851901fdc45e59fc639f5ea98 0 &&
