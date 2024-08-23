@@ -414,12 +414,26 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 STANDARD_OUTPUT_FILE=${ environment-variable 10 } &&
                                                                                                                 EXPECTED_STANDARD_ERROR=${ environment-variable 11 } &&
                                                                                                                 EXPECTED_ARGUMENTS=${ environment-variable "ARGUMENTS" } &&
-
+                                                                                                                EXPECTED_STANDARD_INPUT="" &&
+                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                then
+                                                                                                                    EXPECTED_STANDARD_INPUT=${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_EXIT_STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }"
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                then
+                                                                                                                    EXPECTED_STANDARD_INPUT="" &&
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_EXIT_STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }"
+                                                                                                                else
+                                                                                                                    fail "We were expecting HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" } to be either true or false."
+                                                                                                                fi &&
+                                                                                                                assert_equals ${ environment-variable "EXPECTED_LOG" } $( util_log ${ environment-variable "LOG_FILE" } ) "We expect the log to match exactly." &&
+                                                                                                                assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } $( util_log ${ environment-variable "ARGUMENTS_FILE" } ) "We expected the arguments to match exactly." &&
+                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_INPUT" } $( util_log ${ environment-variable "STANDARD_INPUT_FILE" } ) "We expected the standard input to match exactly." &&
                                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
-                                                                                                            fun_script ${ resources.scripts.verification.scripts.bad } tssleqyw true iumlndhx 74 /build/S4yZ0wvb.confirm WRONG /build/UoD7FSCq.confirm tssleqyw /build/DHaDXwfZ.confirm mthtinsu
+                                                                                                            fun_script ${ resources.scripts.verification.scripts.bad } tssleqyw true iumlndhx 74 /build/S4yZ0wvb.confirm pzwrrzvp_tumitvjy_tssleqyw_iuimpsqg_iuxydcak_iumlndhx_hlnrbtjm_wdplvhdq_ /build/UoD7FSCq.confirm /build/DHaDXwfZ.confirm mthtinsu
                                                                                                         }
                                                                                             '' ;
                                                                                     init =
@@ -548,7 +562,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                     standard-error ,
                                                                                                     standard-error-file ,
                                                                                                     target-file ,
-                                                                                                    exit-code
+                                                                                                    exit-status-code
                                                                                                 } :
                                                                                                     { environment-variable , has-standard-input , pkgs , target , ... } :
                                                                                                         ''
@@ -562,12 +576,12 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 logit ${ begin-log-script } ${ log-file } &&
                                                                                                                 if [ -z "${ environment-variable "ARGUMENTS" }" ]
                                                                                                                 then
+                                                                                                                    logit ${ no-arguments } ${ log-file }
+                                                                                                                else
                                                                                                                     logit ${ begin-log-arguments } ${ log-file } &&
                                                                                                                         logit ${ environment-variable "ARGUMENTS" } ${ log-file } &&
                                                                                                                         logit ${ end-log-arguments } ${ log-file } &&
-                                                                                                                        logit ${ environment-variable "ARGUMENTS" } ${ arguments-file }
-                                                                                                                else
-                                                                                                                    logit ${ no-arguments } ${ log-file }
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ arguments-file }
                                                                                                                 fi &&
                                                                                                                 if ${ has-standard-input }
                                                                                                                 then
@@ -575,7 +589,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                         logit ${ begin-log-standard-input } ${ log-file } &&
                                                                                                                         logit ${ environment-variable "STANDARD_INPUT" } ${ log-file } &&
                                                                                                                         logit ${ end-log-standard-input } ${ log-file } &&
-                                                                                                                        logit ${ environment-variable "STANDARD_INPUT" } ${ standard-input-file }
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ standard-input-file }
                                                                                                                 else
                                                                                                                     logit ${ no-standard-input } ${ log-file }
                                                                                                                 fi &&
@@ -583,7 +597,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
                                                                                                                 logit ${ end-log-script } ${ log-file } &&
-                                                                                                                exit ${ builtins.toString exit-code }
+                                                                                                                exit ${ builtins.toString exit-status-code }
                                                                                                         '' ;
                                                                                             in
                                                                                                 {
@@ -608,7 +622,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                         standard-error = "ttcohcae" ;
                                                                                                                         standard-error-file = "/build/uTNOaaPb.confirm" ;
                                                                                                                         target-file = "/build/qSsy5Gng.confirm" ;
-                                                                                                                        exit-code = 74 ;
+                                                                                                                        exit-status-code = 74 ;
                                                                                                                     } ;
                                                                                                         } ;
                                                                                                 } ;
