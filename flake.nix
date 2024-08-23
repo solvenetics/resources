@@ -411,6 +411,7 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 EXPECTED_LOG=${ environment-variable 7 } &&
                                                                                                                 ARGUMENTS_FILE=${ environment-variable 8 } &&
                                                                                                                 STANDARD_INPUT_FILE=${ environment-variable 9 } &&
+                                                                                                                EXPECTED_STANDARD_OUTPUT=${ environment-variable 10 } &&
                                                                                                                 STANDARD_OUTPUT_FILE=${ environment-variable 10 } &&
                                                                                                                 EXPECTED_STANDARD_ERROR=${ environment-variable 11 } &&
                                                                                                                 EXPECTED_ARGUMENTS=${ environment-variable "ARGUMENTS" } &&
@@ -428,12 +429,11 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 fi &&
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_LOG" } $( util_log ${ environment-variable "LOG_FILE" } ) "We expect the log to match exactly." &&
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } $( util_log ${ environment-variable "ARGUMENTS_FILE" } ) "We expected the arguments to match exactly." &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_INPUT" } $( util_log ${ environment-variable "STANDARD_INPUT_FILE" } ) "We expected the standard input to match exactly." &&
-                                                                                                                ${ pkgs.coreutils }/bin/true
+                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_INPUT" } $( util_log ${ environment-variable "STANDARD_INPUT_FILE" } ) "We expected the standard input to match exactly."
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
-                                                                                                            fun_script ${ resources.scripts.verification.scripts.bad } tssleqyw true iumlndhx 74 /build/S4yZ0wvb.confirm pzwrrzvp_tumitvjy_tssleqyw_iuimpsqg_iuxydcak_iumlndhx_hlnrbtjm_wdplvhdq_ /build/UoD7FSCq.confirm /build/DHaDXwfZ.confirm mthtinsu
+                                                                                                            fun_script ${ resources.scripts.verification.scripts.bad } tssleqyw true iumlndhx 74 /build/S4yZ0wvb.confirm pzwrrzvp_tumitvjy_tssleqyw_iuimpsqg_iuxydcak_iumlndhx_hlnrbtjm_wdplvhdq_ /build/UoD7FSCq.confirm /build/DHaDXwfZ.confirm mthtinsu /build/C4nWimZf.confirm
                                                                                                         }
                                                                                             '' ;
                                                                                     init =
