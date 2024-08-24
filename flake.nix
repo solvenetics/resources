@@ -429,11 +429,12 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                 fi &&
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_LOG" } $( util_log ${ environment-variable "LOG_FILE" } ) "We expect the log to match exactly." &&
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } $( util_log ${ environment-variable "ARGUMENTS_FILE" } ) "We expected the arguments to match exactly." &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_INPUT" } $( util_log ${ environment-variable "STANDARD_INPUT_FILE" } ) "We expected the standard input to match exactly."
+                                                                                                                assert_equals "${ environment-variable "EXPECTED_STANDARD_INPUT" }" "$( util_log ${ environment-variable "STANDARD_INPUT_FILE" } )" "We expected the standard input to match exactly."
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
                                                                                                             fun_script ${ resources.scripts.verification.scripts.bad } tssleqyw true iumlndhx 74 /build/S4yZ0wvb.confirm pzwrrzvp_tumitvjy_tssleqyw_iuimpsqg_iuxydcak_iumlndhx_hlnrbtjm_wdplvhdq_ /build/UoD7FSCq.confirm /build/DHaDXwfZ.confirm mthtinsu /build/C4nWimZf.confirm
+                                                                                                                fun_script ${ resources.scripts.verification.scripts.bad } czqvmwkc false kfgrzohq 74 /build/S4yZ0wvb.confirm  pzwrrzvp_tumitvjy_czqvmwkc_iuimpsqg_dsyfzfsc_wdplvhdq_ /build/UoD7FSCq.confirm /build/DHaDXwfZ.confirm mthtinsu /build/C4nWimZf.confirm
                                                                                                         }
                                                                                             '' ;
                                                                                     init =
@@ -623,6 +624,27 @@ ${ pkgs.coreutils }/bin/echo AAAA 0002000 >> /build/AAAA.log &&
                                                                                                                         standard-error-file = "/build/uTNOaaPb.confirm" ;
                                                                                                                         target-file = "/build/qSsy5Gng.confirm" ;
                                                                                                                         exit-status-code = 74 ;
+                                                                                                                    } ;
+                                                                                                            good =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        begin-log-script = "uyeerczx" ;
+                                                                                                                        log-file = "/build/90yunhW8.confirm" ;
+                                                                                                                        end-log-script = "iginbiht" ;
+                                                                                                                        begin-log-arguments = "igxjfodr" ;
+                                                                                                                        end-log-arguments = "ldpocylq" ;
+                                                                                                                        no-arguments = "lxhzrnbg";
+                                                                                                                        arguments-file = "/build/AZYAwIw8.confirm" ;
+                                                                                                                        begin-log-standard-input = "qwzihijk" ;
+                                                                                                                        end-log-standard-input = "ohoqaabj" ;
+                                                                                                                        no-standard-input = "xeuvdlzy" ;
+                                                                                                                        standard-input-file = "/build/RueRnD4g.confirm" ;
+                                                                                                                        standard-output = "sftexuus" ;
+                                                                                                                        standard-output-file = "/build/pbMvmgH2.confirm" ;
+                                                                                                                        standard-error = "iacdzgje" ;
+                                                                                                                        standard-error-file = "/build/oYCx7Boe.confirm" ;
+                                                                                                                        target-file = "dhsjbbmd" ;
+                                                                                                                        exit-status-code = 0 ;
                                                                                                                     } ;
                                                                                                         } ;
                                                                                                 } ;
