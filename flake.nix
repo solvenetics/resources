@@ -119,7 +119,8 @@
                                                                         } ;
                                                                 in
                                                                     ''
-                                                                        ${ pkgs.coreutils }/bin/mkdir $out
+                                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                            ${ pkgs.coreutils }/bin/echo ${ resources }
                                                                      '' ;
                                                     } ;
                                         } ;
