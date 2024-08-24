@@ -107,10 +107,11 @@
                                                     in
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                export ${ out }=$out &&
                                                                 write_it ( )
                                                                     {
-                                                                        ${ pkgs.coreutils }/bin/mkdir --parents $out/${ environment-variable 1 } &&
-                                                                            makeWrapper ${ environment-variable 2 } $out/${ environment-variable 1 }/${ environment-variable 3 } --set ${ environment-variable out } $out
+                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
+                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --set ${ environment-variable out } $out
                                                                     } &&
                                                                 ${ write }
                                                         '' ;
