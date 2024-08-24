@@ -119,7 +119,7 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
-                                                                    builtins.trace ( builtins.typeOf resources )
+                                                                    builtins.trace ( builtins.concatStringsSep " ; " ( builtins.attrNames resources ) )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out
                                                                      '' ;
