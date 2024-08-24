@@ -111,7 +111,7 @@
                                                                 write_it ( )
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
-                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --set ${ environment-variable out } $out
+                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --set ${ out } $out
                                                                     } &&
                                                                 ${ write }
                                                         '' ;
@@ -133,10 +133,10 @@
                                                                         {
                                                                             scripts =
                                                                                 {
-                                                                                    test =
+                                                                                    test_my_stuff =
                                                                                         { ... } : { ... } :
                                                                                             ''
-                                                                                                test ( )
+                                                                                                test_my_stuff ( )
                                                                                                     {
                                                                                                         fail "no reason"
                                                                                                     }
@@ -147,7 +147,7 @@
                                                                     builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test_my_stu
                                                                      '' ;
                                                     } ;
                                         } ;
