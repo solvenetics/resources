@@ -110,11 +110,17 @@
                                                                 resources =
                                                                     lib
                                                                         {
+                                                                            scripts =
+                                                                                {
+                                                                                    test =
+                                                                                        { ... } : { ... } :
+                                                                                            ''
+                                                                                            '' ;
+                                                                                } ;
                                                                         } ;
                                                                 in
                                                                     ''
-                                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/true
+                                                                        ${ pkgs.coreutils }/bin/mkdir $out
                                                                      '' ;
                                                     } ;
                                         } ;
