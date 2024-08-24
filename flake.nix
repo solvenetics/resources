@@ -39,7 +39,8 @@
                                         {
                                             name = "implementation" ;
                                             src = ./. ;
-                                            installPhase =
+                                            nativeBuildInputs = [ pkgs.makeWrapper ] ;
+                                            buildCommand =
                                                 let
                                                     environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
                                                     mappers =
@@ -108,8 +109,8 @@
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                 write_it ( )
                                                                     {
-                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
-                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --env ${ environment-variable out } $out
+                                                                        ${ pkgs.coreutils }/bin/mkdir --parents $out/${ environment-variable 1 } &&
+                                                                            makeWrapper ${ environment-variable 2 } $out/${ environment-variable 1 }/${ environment-variable 3 } --set ${ environment-variable out } $out
                                                                     } &&
                                                                 ${ write }
                                                         '' ;
@@ -142,10 +143,9 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
-                                                                    builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.bash_unit }/bin/bash_unit
+                                                                            ${ pkgs.findutils }/bin/find ${ resources }
                                                                      '' ;
                                                     } ;
                                         } ;
