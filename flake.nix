@@ -49,7 +49,7 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ name }
+                                                                                write_it ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value {} {} ) } ${ name }
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -91,10 +91,18 @@
                                                                     strip = strip ;
                                                                 } ;
                                                     write =
-                                                        set : mapper :
-                                                            let
-                                                                m = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs m value ) ) else [ ( builtins.toString value ) ] ;
-                                                                in builtins.concatStringsSep "&&\n" ( builtins.concatLists ( builtins.mapAttrs m ( builtins.mapAttrs mapper set ) ) ) ;
+                                                        let
+                                                            input =
+                                                                {
+                                                                    "${ environment-variable out }" =
+                                                                        {
+                                                                            scripts = builtins.mapAttrs mappers.script scripts ;
+                                                                        } ;
+                                                                } ;
+                                                            list = builtins.concatLists ( builtins.attrValues output ) ;
+                                                            mapper = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper value ) ) else [ ( builtins.toString value ) ] ;
+                                                            output = builtins.mapAttrs mapper input ;
+                                                            in builtins.concatStringsSep "&&\n" list ;
                                                     in
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
@@ -102,7 +110,8 @@
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
                                                                             makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --env ${ environment-variable out } $out
-                                                                    }
+                                                                    } &&
+                                                                ${ write }
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -122,14 +131,7 @@
                                                                         {
                                                                             scripts =
                                                                                 {
-                                                                                    test =
-                                                                                        { ... } : { ... } :
-                                                                                            ''
-                                                                                                test ( )
-                                                                                                    {
-                                                                                                        fail "no reason"
-                                                                                                    }
-                                                                                            '' ;
+
                                                                                 } ;
                                                                         } ;
                                                                 in
