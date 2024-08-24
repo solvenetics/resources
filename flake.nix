@@ -47,9 +47,8 @@
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
-                                                                        strip
                                                                             ''
-                                                                                write_it ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value {} {} ) } ${ name }
+                                                                                write_it ${ builtins.concatStringsSep "/" path } "${ pkgs.writeShellScript name ( value secondary tertiary ) }" ${ name }
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -96,7 +95,7 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            scripts = "true" ; # builtins.mapAttrs mappers.script scripts ;
+                                                                            scripts = builtins.mapAttrs mappers.script scripts ;
                                                                         } ;
                                                                 } ;
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
