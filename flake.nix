@@ -99,10 +99,10 @@
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                         } ;
                                                                 } ;
-                                                            list = builtins.concatLists ( builtins.attrValues output ) ;
+                                                            list = [ "true" ] ; # builtins.concatLists ( builtins.attrValues output ) ;
                                                             mapper = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper value ) ) else [ ( builtins.toString value ) ] ;
                                                             output = builtins.mapAttrs mapper input ;
-                                                            in builtins.concatStringsSep "&&\n" [ "${ pkgs.coreutils }/bin/true" ] ;
+                                                            in builtins.concatStringsSep "&&\n" list ;
                                                     in
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
