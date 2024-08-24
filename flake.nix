@@ -77,6 +77,7 @@
                                                                 } ;
                                                     writers =
                                                         let
+                                                            list = builtins.concatLists [ ( builtins.getAttr ( environment-variable out ) ( builtins.mapAttrs ( script [ ( environment-variable out ) "scripts" ] ) ) ) ] ;
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
@@ -89,7 +90,7 @@
                                                                     else if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.concatStringsSep "&& \n" ( builtins.attrValues ( builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ) )
                                                                     else builtins.throw ( invalid-script-throw value ) ;
                                                             in
-                                                                builtins.concatStringsSep " &&\n" [ ] ;
+                                                                builtins.concatStringsSep " &&\n" list ;
                                                     in
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
