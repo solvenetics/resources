@@ -110,7 +110,8 @@
                                                                 write_it ( )
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 2 } &&
-                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable 1 } ${ environment-variable 2 }/${ environment-variable 3 }.sh
+                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable 1 } ${ environment-variable 2 }/${ environment-variable 3 }.sh &&
+                                                                             makeWrapper ${ environment-variable 2 }/${ environment-variable 3 }.sh ${ environment-variable 2 }/${ environment-variable 3 } --set ${ out } $out
                                                                     } &&
                                                                 ${ write }
                                                         '' ;
@@ -150,7 +151,7 @@
                                                                                                     } &&
                                                                                                     test_script ( )
                                                                                                         {
-                                                                                                            true
+                                                                                                             assert_status_code 71 ${ scripts.verification.script.bad }
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
@@ -209,6 +210,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                            export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
