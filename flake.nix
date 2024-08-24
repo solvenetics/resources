@@ -83,7 +83,6 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                            strip = strip ;
                                                             in
                                                                 {
                                                                     environment-variable = environment-variable ;
@@ -131,24 +130,87 @@
                                                                 resources =
                                                                     lib
                                                                         {
+                                                                            secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 {
-                                                                                    test_my_stuff =
-                                                                                        { ... } : { ... } :
+                                                                                    test=
+                                                                                        { ... } : { environment-variable , scripts , ... } :
                                                                                             ''
-                                                                                                test_my_stuff ( )
+                                                                                                para_script ( )
                                                                                                     {
-                                                                                                        fail "no reason"
-                                                                                                    }
+                                                                                                        SCRIPT=${ environment-variable 1 } &&
+                                                                                                            HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                            if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }                                                                                                            else
+                                                                                                                ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }
+                                                                                                            fi
+                                                                                                    } &&
+                                                                                                    test_script ( )
+                                                                                                        {
+                                                                                                            true
+                                                                                                        }
                                                                                             '' ;
+                                                                                    verification =
+                                                                                        let
+                                                                                            script =
+                                                                                                 { log-file , status-code , log-begin , log-end , arguments-begin , arguments-end , arguments-no , standard-input-begin , standard-input-end , standard-input-no , standard-output , standard-error , ... } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip } :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
+                                                                                                            if [ -z "${ environment-variable "@" }" ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
+                                                                                                            fi &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
+                                                                                                            exit ${ builtins.toString status-code }
+                                                                                                    '' ;
+                                                                                            in
+                                                                                                {
+                                                                                                    script =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        log-file = "/build/UhVGqTXa.confirm" ;
+                                                                                                                        status-code = 71 ;
+                                                                                                                        log-begin = "bvq" ;
+                                                                                                                        log-end = "fsk" ;
+                                                                                                                        log-no = "ses" ;
+                                                                                                                        arguments-begin = "qyr" ;
+                                                                                                                        arguments-end = "yfp" ;
+                                                                                                                        arguments-no = "neb" ;
+                                                                                                                        standard-input-begin = "lmc" ;
+                                                                                                                        standard-input-end = "tsp" ;
+                                                                                                                        standard-input-no = "yzr" ;
+                                                                                                                        standard-output = "nqt" ;
+                                                                                                                        standard-error = "yun" ;
+                                                                                                                    } ;
+                                                                                                        } ;
+                                                                                                } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
-                                                                    builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test_my_stuff.sh
-                                                                     '' ;
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test.sh
+                                                                    '' ;
                                                     } ;
                                         } ;
                                     lib = lib ;
