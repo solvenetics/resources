@@ -143,6 +143,7 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
+                                                                    builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources }
