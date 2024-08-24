@@ -60,10 +60,10 @@
                                                         string :
                                                             let
                                                                 first = builtins.substring 0 1 string ;
-                                                                head = builtins.substring 0 ( last - 1 ) string ;
-                                                                last = builtins.substring ( last - 1 ) 1 string ;
+                                                                head = builtins.substring 0 ( length - 1 ) string ;
+                                                                last = builtins.substring ( length - 1 ) 1 string ;
                                                                 length = builtins.stringLength string ;
-                                                                tail = builtins.substring 1 ( last - 1 ) string ;
+                                                                tail = builtins.substring 1 ( length - 1 ) string ;
                                                                 whitespace = [ " " "\t" "\n" "\r" "\f" ] ;
                                                                 in
                                                                     if length == 0 then string
