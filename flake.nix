@@ -77,7 +77,11 @@
                                                                 } ;
                                                     writers =
                                                         let
-                                                            list = builtins.concatLists [ ( builtins.getAttr ( environment-variable out ) ( builtins.mapAttrs ( script [ ( environment-variable out ) "scripts" ] ) ) ) ] ;
+                                                            list =
+                                                                builtins.concatLists
+                                                                    [
+                                                                        ( builtins.getAttr ( environment-variable out ) ( builtins.mapAttrs ( script [ ( environment-variable out ) "scripts" ] ) ) )
+                                                                    ] ;
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
