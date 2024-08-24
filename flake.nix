@@ -92,8 +92,13 @@
                                                                 } ;
                                                     write =
                                                         let
-                                                            input = { } ;
-
+                                                            input =
+                                                                {
+                                                                    "${ environment-variable out }" =
+                                                                        {
+                                                                            scripts = "true" ; # builtins.mapAttrs mappers.script scripts ;
+                                                                        } ;
+                                                                } ;
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
                                                             mapper = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper value ) ) else [ ( builtins.toString value ) ] ;
                                                             output = builtins.mapAttrs mapper input ;
