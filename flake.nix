@@ -92,16 +92,11 @@
                                                                 } ;
                                                     write =
                                                         let
-                                                            input =
-                                                                {
-                                                                    "${ environment-variable out }" =
-                                                                        {
-                                                                            scripts = builtins.mapAttrs mappers.script scripts ;
-                                                                        } ;
-                                                                } ;
+                                                            input = { } ;
+
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
                                                             mapper = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper value ) ) else [ ( builtins.toString value ) ] ;
-                                                            output = { } ; # builtins.mapAttrs mapper input ;
+                                                            output = builtins.mapAttrs mapper input ;
                                                             in builtins.concatStringsSep "&&\n" list ;
                                                     in
                                                         ''
