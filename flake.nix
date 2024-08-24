@@ -86,6 +86,7 @@
                                                                 {
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
+                                                                    scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
                                                                     strip = strip ;
                                                                 } ;
                                                     in
@@ -106,6 +107,10 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
+                                                                resources =
+                                                                    lib
+                                                                        {
+                                                                        } ;
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
