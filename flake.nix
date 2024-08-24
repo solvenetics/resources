@@ -47,6 +47,7 @@
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
+                                                                        strip
                                                                             ''
                                                                                 write_it ${ builtins.concatStringsSep "/" path } "${ pkgs.writeShellScript name ( value secondary tertiary ) }" ${ name }
                                                                             ''
@@ -68,7 +69,7 @@
                                                                 in
                                                                     if length == 0 then string
                                                                     else if builtins.any ( w : w == first ) whitespace then strip tail
-                                                                    else if builtins.any ( w : w == last ) whitespace then string head
+                                                                    else if builtins.any ( w : w == last ) whitespace then strip head
                                                                     else string ;
                                                     tertiary =
                                                         let
