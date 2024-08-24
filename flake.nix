@@ -91,8 +91,7 @@
                                                                 } ;
                                                     in
                                                         ''
-                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                ${ builtins.mapAttrs ( mappers.script [ ( environment-variable out ) "scripts" ] ) scripts }
+                                                            ${ pkgs.coreutils }/bin/mkdir $out
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -119,7 +118,6 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
-                                                                    builtins.trace ( builtins.concatStringsSep " ; " ( builtins.attrNames resources ) )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out
                                                                      '' ;
