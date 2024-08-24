@@ -119,6 +119,7 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
+                                                                    builtins.trace ( builtins.typeOf resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out
                                                                      '' ;
