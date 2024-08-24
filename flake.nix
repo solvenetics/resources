@@ -83,7 +83,7 @@
                                                                         [
                                                                             strip
                                                                                 ''
-                                                                                    write_script ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) }
+                                                                                    write_script ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ name }
                                                                                 ''
                                                                         ]
                                                                     else if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.concatStringsSep "&& \n" ( builtins.attrValues ( builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ) )
