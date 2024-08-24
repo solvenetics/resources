@@ -39,24 +39,23 @@
                                         {
                                             name = "implementation" ;
                                             src = ./. ;
-                                            buildPhase =
+                                            installPhase =
                                                 let
                                                     environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
-                                                    mappers =
-                                                        let
-                                                            script =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then
-                                                                        ''
-                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ builtins.concatStringsSep "/" path } &&
-                                                                            makeWrapper ${ value secondary tertiary }  ${ builtins.concatStringsSep "/" path }/${ name } --prefix ${ out } $out
-                                                                        ''
-                                                                    else if builtins.typeOf value == "set" then builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
-                                                                    else builtins.throw ( invalid-script-throw value ) ;
-                                                            in
-                                                                {
-                                                                    script = script ;
-                                                                } ;
+                                                    strip =
+                                                        string :
+                                                            let
+                                                                first = builtins.substring 0 1 string ;
+                                                                head = builtins.substring 0 ( last - 1 ) string ;
+                                                                last = builtins.substring ( last - 1 ) 1 string ;
+                                                                length = builtins.stringLength string ;
+                                                                tail = builtins.substring 1 ( last - 1 ) string ;
+                                                                whitespace = [ " " "\t" "\n" "\r" "\f" ] ;
+                                                                in
+                                                                    if length == 0 then string
+                                                                    else if builtins.any ( w : w == first ) whitespace then strip tail
+                                                                    else if builtins.any ( w : w == last ) whitespace then string head
+                                                                    else string ;
                                                     tertiary =
                                                         let
                                                             has-standard-input =
@@ -68,20 +67,7 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                            strip =
-                                                                string :
-                                                                    let
-                                                                        first = builtins.substring 0 1 string ;
-                                                                        head = builtins.substring 0 ( last - 1 ) string ;
-                                                                        last = builtins.substring ( last - 1 ) 1 string ;
-                                                                        length = builtins.stringLength string ;
-                                                                        tail = builtins.substring 1 ( last - 1 ) string ;
-                                                                        whitespace = [ " " "\t" "\n" "\r" "\f" ] ;
-                                                                        in
-                                                                            if length == 0 then string
-                                                                            else if builtins.any ( w : w == first ) whitespace then strip tail
-                                                                            else if builtins.any ( w : w == last ) whitespace then string head
-                                                                            else string ;
+                                                            strip = strip ;
                                                             in
                                                                 {
                                                                     environment-variable = environment-variable ;
@@ -89,9 +75,29 @@
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
                                                                     strip = strip ;
                                                                 } ;
+                                                    writers =
+                                                        let
+                                                            script =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then
+                                                                        [
+                                                                            strip
+                                                                                ''
+                                                                                    write_script ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) }
+                                                                                ''
+                                                                        ]
+                                                                    else if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.concatStringsSep "&& \n" ( builtins.attrValues ( builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ) )
+                                                                    else builtins.throw ( invalid-script-throw value ) ;
+                                                            in
+                                                                builtins.concatStringsSep " &&\n" [ ] ;
                                                     in
                                                         ''
-                                                            ${ pkgs.coreutils }/bin/mkdir $out
+                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                write_script ( )
+                                                                    {
+                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
+                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --env ${ environment-variable out } $out
+                                                                    }
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -120,7 +126,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/echo ${ resources }/scripts/test
+                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test
                                                                      '' ;
                                                     } ;
                                         } ;
