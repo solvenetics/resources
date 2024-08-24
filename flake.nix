@@ -42,6 +42,21 @@
                                             installPhase =
                                                 let
                                                     environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
+                                                    mappers =
+                                                        let
+                                                            script =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then
+                                                                        strip
+                                                                            ''
+                                                                                write_it ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ name }
+                                                                            ''
+                                                                    else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                    else builtins.throw ( invalid-script-throw value ) ;
+                                                            in
+                                                                {
+                                                                    script = script [ ( environment-variable out ) "scripts" ] ;
+                                                                } ;
                                                     strip =
                                                         string :
                                                             let
@@ -76,30 +91,10 @@
                                                                     strip = strip ;
                                                                 } ;
                                                     write =
-                                                        let
-                                                            list = builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) set ) ) ;
-                                                            mapper =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then
-                                                                        [
-                                                                            (
-                                                                                strip
-                                                                                    ''
-                                                                                        write_it ${ builtins.concatStringsSep "/" path } ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ name }
-                                                                                    ''
-                                                                            )
-                                                                        ]
-                                                                    else if builtins.typeOf value == "set" then builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value )
-                                                                    else builtins.throw ( invalid-script-throw value ) ;
-                                                            set =
-                                                                {
-                                                                    "${ environment-variable out }" =
-                                                                        {
-                                                                            scripts = scripts ;
-                                                                        } ;
-                                                                } ;
-                                                            in builtins.concatStringsSep "&&\n" list ;
-                                                            # in "${ pkgs.coreutils }/bin/true" ;
+                                                        set : mapper :
+                                                            let
+                                                                m = name : value : if builtins.typeOf value == "set" then builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs m value ) ) else [ ( builtins.toString value ) ] ;
+                                                                in builtins.concatStringsSep "&&\n" ( builtins.concatLists ( builtins.mapAttrs m ( builtins.mapAttrs mapper set ) ) ) ;
                                                     in
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
@@ -107,8 +102,7 @@
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
                                                                             makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --env ${ environment-variable out } $out
-                                                                    } &&
-                                                                ${ write }
+                                                                    }
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -139,6 +133,7 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
+                                                                    builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ pkgs.coreutils }/bin/true ${ pkgs.bash_unit }/bin/bash_unit
