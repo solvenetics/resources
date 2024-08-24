@@ -147,7 +147,7 @@
                                                                     builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources }
+                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test
                                                                      '' ;
                                                     } ;
                                         } ;
