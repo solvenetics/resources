@@ -40,7 +40,7 @@
                                             name = "implementation" ;
                                             src = ./. ;
                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
-                                            buildCommand =
+                                            installPhase =
                                                 let
                                                     environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
                                                     mappers =
@@ -50,7 +50,7 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ builtins.concatStringsSep "/" path } "${ pkgs.writeShellScript name ( value secondary tertiary ) }" ${ name }
+                                                                                write_it ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -110,8 +110,8 @@
                                                                 export ${ out }=$out &&
                                                                 write_it ( )
                                                                     {
-                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 1 } &&
-                                                                            makeWrapper ${ environment-variable 2 } ${ environment-variable 1 }/${ environment-variable 3 } --set ${ out } $out
+                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 2 } &&
+                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable 1 } ${ environment-variable 2 }/${ environment-variable 3 }.sh
                                                                     } &&
                                                                 ${ write }
                                                         '' ;
@@ -147,7 +147,7 @@
                                                                     builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test_my_stu
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test_my_stuff.sh
                                                                      '' ;
                                                     } ;
                                         } ;
