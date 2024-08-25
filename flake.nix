@@ -161,8 +161,10 @@
                                                                                                     test_script ( )
                                                                                                         {
                                                                                                              para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft &&
-                                                                                                                para_script ${ scripts.verification.script.script.bad } false 71 /build/UhVGqTXa.confirm bvq_qyr_jue_yfp_yzr_fsk_ jue djz
-                                                                                                        }
+                                                                                                                para_script ${ scripts.verification.script.script.bad } false 71 /build/UhVGqTXa.confirm bvq_qyr_jue_yfp_yzr_fsk_ jue djz &&
+                                                                                                                para_script ${ scripts.verification.script.script.good } true 0 /build/dFz88Etj.confirm miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj &&
+                                                                                                                para_script ${ scripts.verification.script.script.good } false 0 /build/dFz88Etj.confirm miv_nma_gkw_zgm_jmu_kjo_ gkw hdd
+                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
                                                                                         let
@@ -214,6 +216,23 @@
                                                                                                                                 standard-input-no = "yzr" ;
                                                                                                                                 standard-output = "nqt" ;
                                                                                                                                 standard-error = "yun" ;
+                                                                                                                            } ;
+                                                                                                                    good =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/dFz88Etj.confirm" ;
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "miv" ;
+                                                                                                                                log-end = "kjo" ;
+                                                                                                                                log-no = "uer" ;
+                                                                                                                                arguments-begin = "nma" ;
+                                                                                                                                arguments-end = "zgm" ;
+                                                                                                                                arguments-no = "pjc" ;
+                                                                                                                                standard-input-begin = "ytw" ;
+                                                                                                                                standard-input-end = "eod" ;
+                                                                                                                                standard-input-no = "jmu" ;
+                                                                                                                                standard-output = "itp" ;
+                                                                                                                                standard-error = "nbg" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
