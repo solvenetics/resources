@@ -129,6 +129,18 @@
                                                                                         '' ;
                                                                                     in
                                                                                         ''
+                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
+                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                                if ${ has-standard-input }
+                                                                                                then
+                                                                                                    ${ init.has-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.has-standard-input }
+                                                                                                else
+                                                                                                    ${ init.does-not-have-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }
+                                                                                                fi &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
 
                                                                                                 true
                                                                                          '' ;
