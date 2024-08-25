@@ -154,11 +154,12 @@
                                                                                                                 assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }"
                                                                                                             else
                                                                                                                 fail "We did not expect STATUS_CODE=${ environment-variable "STATUS_CODE" }"
-                                                                                                            fi
+                                                                                                            fi &&
+                                                                                                            assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file to match exactly."
                                                                                                     } &&
                                                                                                     test_script ( )
                                                                                                         {
-                                                                                                             para_script ${ scripts.verification.script.bad } true 71 /build/UhVGqTXa.confirm "" izw vft
+                                                                                                             para_script ${ scripts.verification.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
