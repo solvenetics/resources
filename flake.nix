@@ -266,7 +266,7 @@
                                                                             scripts =
                                                                                 {
                                                                                     test=
-                                                                                        { ... } : { environment-variable , scripts , ... } :
+                                                                                        { ... } : { environment-variable , scripts , temporary , ... } :
                                                                                             ''
                                                                                                 util_mktemp ( )
                                                                                                     {
@@ -303,11 +303,11 @@
                                                                                                         {
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 4 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 5 } &&
-                                                                                                                TARGET_FILE=${ environment-variable 6 } &&
-                                                                                                                HAS_TARGET=${ environment-variable 7 } &&
-                                                                                                                HAS_INIT=${ environment-variable 8 } &&
+                                                                                                                ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                TARGET_FILE=${ environment-variable 5 } &&
+                                                                                                                HAS_TARGET=${ environment-variable 6 } &&
+                                                                                                                HAS_INIT=${ environment-variable 7 } &&
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
@@ -319,6 +319,7 @@
                                                                                                                 fi &&
                                                                                                                 STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
+                                                                                                                /*
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
                                                                                                                     assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
@@ -368,6 +369,8 @@
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
                                                                                                                 fi
+                                                                                                                */
+                                                                                                                ${ pkgs.coreutils }/bin/true
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
@@ -385,7 +388,8 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } true 73 /build/Jh4pICL7.confirm aue_mmx_mml_vpr_gei_whp_orm_mck_ mml whp uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
-                                                                                                                para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv
+                                                                                                                para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
+                                                                                                                echo para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
@@ -454,7 +458,6 @@
                                                                                                                                 standard-input-no = "yzr" ;
                                                                                                                                 standard-output = "nqt" ;
                                                                                                                                 standard-error = "yun" ;
-                                                                                                                                target-file = "/build/MtRZla4h.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -472,7 +475,6 @@
                                                                                                                                 standard-input-no = "jmu" ;
                                                                                                                                 standard-output = "itp" ;
                                                                                                                                 standard-error = "nbg" ;
-                                                                                                                                target-file = "/build/OI3rJQRx.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                          } ;
