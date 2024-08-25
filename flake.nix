@@ -284,10 +284,26 @@
                                                                                                             then
                                                                                                                 assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }"
                                                                                                             else
-                                                                                                                fail "We did not expect STATUS_CODE=${ environment-variable "STATUS_CODE" }"
+                                                                                                                fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                             fi &&
                                                                                                             assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file to match exactly."
                                                                                                     } &&
+                                                                                                    para_temporary ( )
+                                                                                                        {
+                                                                                                            TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                ARGUMENTS=${ environment-variable 4 } &&
+                                                                                                                STANDARD_INPUT=${ environment-variable 5 } &&
+                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                then
+                                                                                                                    ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                fi
+                                                                                                        } &&
                                                                                                     test_script ( )
                                                                                                         {
                                                                                                              para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft &&
