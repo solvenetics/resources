@@ -53,12 +53,10 @@
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
-builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }" ) (
                                                                         strip
                                                                             ''
                                                                                 write_it ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
-)
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
                                                             temporary =
@@ -104,31 +102,31 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                                             has-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } )" ;
                                                                                         } ;
                                                                                     in
-                                                                                            ''
-                                                                                                RESOURCE=$( ${ temporary-resource-directory } ) &&
-                                                                                                    export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                                    if ${ has-standard-input }
-                                                                                                    then
-                                                                                                        ${ init.has-standard-input } &&
-                                                                                                            INVALIDATE="${ invalidate.has-standard-input }
-                                                                                                    else
-                                                                                                        ${ init.does-not-have-standard-input } &&
-                                                                                                            INVALIDATE="${ invalidate.does-not-have-standard-input }
-                                                                                                    fi &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
-                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
-                                                                                                    if [ ${ environment-variable "STATUS" } == 0 ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
-                                                                                                    else
-                                                                                                        BROKEN=$( ${ temporary-broken-directory } ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
-                                                                                                            exit ${ builtins.toString temporary-init-error-code }
-                                                                                                    fi
-                                                                                             '' ;
+                                                                                        ''
+                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
+                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                                if ${ has-standard-input }
+                                                                                                then
+                                                                                                    ${ init.has-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.has-standard-input }
+                                                                                                else
+                                                                                                    ${ init.does-not-have-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }
+                                                                                                fi &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                                else
+                                                                                                    BROKEN=$( ${ temporary-broken-directory } ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
+                                                                                                        exit ${ builtins.toString temporary-init-error-code }
+                                                                                                fi
+                                                                                         '' ;
                                                                             release =
                                                                                 let
                                                                                     release =
@@ -168,7 +166,7 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                                                 ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 ${ if builtins.typeOf temporary.release == "null" then release.null else release.set }
-                                                                                '' ;
+                                                                                        '' ;
                                                                             temporary =
                                                                                 let
                                                                                     identity =
@@ -180,10 +178,14 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity ( value {} ) ;
-                                                                            in pkgs.writeShellScript name init
-                                                               else if builtins.typeOf value == "set" then builtins.mapAttrs ( temporary ( builtins.concatLists [ path [ name ] ] ) ) value
-                                                                    else builtins.throw ( invalid-temporary-throw value ) ;
+                                                                                    in identity ( value tertiary.scripts ) ;
+                                                                            in
+                                                                                strip
+                                                                                    ''
+                                                                                        write_it ${ pkgs.writeShellScript name "true" } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                    ''
+                                                                else if builtins.typeOf value == "set" then builtins.mapAttrs ( temporary ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
@@ -224,6 +226,7 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                     "${ environment-variable out }" =
                                                                         {
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
+                                                                            temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
                                                                 } ;
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
@@ -452,18 +455,19 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                 } ;
-                                                                                        temporary =
-                                                                                            {
-                                                                                                bad =
-                                                                                                    {
-                                                                                                    } ;
-                                                                                                good =
-                                                                                                    {
-                                                                                                    } ;
-                                                                                                null =
-                                                                                                    {
-                                                                                                    } ;
-                                                                                            } ;
+                                                                                } ;
+                                                                            temporary =
+                                                                                {
+                                                                                    bad =
+                                                                                        {
+                                                                                        } ;
+                                                                                    good =
+                                                                                        {
+                                                                                        } ;
+                                                                                    null =
+                                                                                        {
+                                                                                            null = scripts : { } ;
+                                                                                        } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
