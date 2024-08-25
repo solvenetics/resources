@@ -319,7 +319,6 @@
                                                                                                                 fi &&
                                                                                                                 STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
-                                                                                                                /*
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
                                                                                                                     assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
@@ -369,8 +368,6 @@
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
                                                                                                                 fi
-                                                                                                                */
-                                                                                                                ${ pkgs.coreutils }/bin/true
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
