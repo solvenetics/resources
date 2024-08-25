@@ -471,6 +471,7 @@
                                                                                 } ;
                                                                         } ;
                                                                 in
+builtins.trace "${ builtins.toString resources }"
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
