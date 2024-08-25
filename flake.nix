@@ -104,7 +104,6 @@ builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }"
                                                                                             has-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } )" ;
                                                                                         } ;
                                                                                     in
-                                                                                        { ... } : { ... } :
                                                                                             ''
                                                                                                 RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                     export ${ target }=${ environment-variable "RESOURCE" }/target &&
