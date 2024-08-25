@@ -307,6 +307,7 @@
                                                                                                                 STANDARD_INPUT=${ environment-variable 5 } &&
                                                                                                                 TARGET_FILE=${ environment-variable 6 } &&
                                                                                                                 HAS_TARGET=${ environment-variable 7 } &&
+                                                                                                                HAS_INIT=${ environment-variable 8 } &&
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
@@ -335,6 +336,26 @@
                                                                                                                         if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                         then
                                                                                                                             fail "We expected the RESOURCE directory to exist."
+                                                                                                                        fi &&
+                                                                                                                        if [ ${ environment-variable "HAS_INIT" } == true ]
+                                                                                                                        then
+                                                                                                                            true
+                                                                                                                        elif [ ${ environment-variable "HAS_INIT" } == false ]
+                                                                                                                        then
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                            then
+                                                                                                                                fail "We were not expecting any output."
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                                            then
+                                                                                                                                fail "We were not expecting any init error."
+                                                                                                                            fi &&
+                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                            then
+                                                                                                                                fail "We were not expecting any init status."
+                                                                                                                            fi
+                                                                                                                        else
+                                                                                                                            fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
                                                                                                                         fi
                                                                                                                 elif [ ${ environment-variable "HAS_TARGET" } == false ]
                                                                                                                 then
