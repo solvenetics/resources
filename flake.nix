@@ -150,7 +150,7 @@
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
-
+                                                                                                        exit ${ builtins.toString temporary-init-error-code } &&
                                                                                                         true
                                                                                                 fi &&
                                                                                                 true
