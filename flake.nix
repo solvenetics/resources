@@ -326,14 +326,14 @@
                                                                                                          } &&
                                                                                                      test_temporary ( )
                                                                                                         {
-                                                                                                             para_script ${ scripts.verification.script.temporary.init.bad } true 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.init.bad } false 72 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.init.good } true 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_ hwi khh &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.init.good } false 0 /build/dDmoVMf4.confirm zvu_nvv_exh_eyg_nrq_xne_ exh iej &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.release.bad } true 73 /build/Jh4pICL7.confirm aue_mmx_mml_vpr_gei_whp_orm_mck_ mml whp &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc &&
-                                                                                                                para_script ${ scripts.verification.script.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd
+                                                                                                             para_script ${ scripts.verification.temporary.init.bad } true 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf &&
+                                                                                                                para_script ${ scripts.verification.temporary.init.bad } false 72 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
+                                                                                                                para_script ${ scripts.verification.temporary.init.good } true 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_ hwi khh &&
+                                                                                                                para_script ${ scripts.verification.temporary.init.good } false 0 /build/dDmoVMf4.confirm zvu_nvv_exh_eyg_nrq_xne_ exh iej &&
+                                                                                                                para_script ${ scripts.verification.temporary.release.bad } true 73 /build/Jh4pICL7.confirm aue_mmx_mml_vpr_gei_whp_orm_mck_ mml whp &&
+                                                                                                                para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm &&
+                                                                                                                para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc &&
+                                                                                                                para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
@@ -405,82 +405,82 @@
                                                                                                                                 standard-error = "nbg" ;
                                                                                                                             } ;
                                                                                                                 } ;
-                                                                                                            temporary =
+                                                                                                         } ;
+                                                                                                    temporary =
+                                                                                                        {
+                                                                                                            init =
                                                                                                                 {
-                                                                                                                    init =
-                                                                                                                        {
-                                                                                                                            bad =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        log-file = "/build/LuSCtrEw.confirm" ;
-                                                                                                                                        status-code = 72 ;
-                                                                                                                                        log-begin = "rtw" ;
-                                                                                                                                        log-end = "zpp" ;
-                                                                                                                                        log-no = "lce" ;
-                                                                                                                                        arguments-begin = "rlc" ;
-                                                                                                                                        arguments-end = "hgb" ;
-                                                                                                                                        arguments-no = "qnj" ;
-                                                                                                                                        standard-input-begin = "wmp" ;
-                                                                                                                                        standard-input-end = "bww" ;
-                                                                                                                                        standard-input-no = "xtn" ;
-                                                                                                                                        standard-output = "epz" ;
-                                                                                                                                        standard-error = "vdl" ;
-                                                                                                                                    } ;
-                                                                                                                            good =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        log-file = "/build/dDmoVMf4.confirm" ;
-                                                                                                                                        status-code = 0 ;
-                                                                                                                                        log-begin = "zvu" ;
-                                                                                                                                        log-end = "xne" ;
-                                                                                                                                        log-no = "hkh" ;
-                                                                                                                                        arguments-begin = "nvv" ;
-                                                                                                                                        arguments-end = "eyg" ;
-                                                                                                                                        arguments-no = "srv" ;
-                                                                                                                                        standard-input-begin = "doe" ;
-                                                                                                                                        standard-input-end = "baj" ;
-                                                                                                                                        standard-input-no = "nrq" ;
-                                                                                                                                        standard-output = "zus" ;
-                                                                                                                                        standard-error = "qki" ;
-                                                                                                                                    } ;
-                                                                                                                        } ;
-                                                                                                                    release =
-                                                                                                                        {
-                                                                                                                            bad =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        log-file = "/build/Jh4pICL7.confirm" ;
-                                                                                                                                        status-code = 73 ;
-                                                                                                                                        log-begin = "aue" ;
-                                                                                                                                        log-end = "mck" ;
-                                                                                                                                        log-no = "uya" ;
-                                                                                                                                        arguments-begin = "mmx" ;
-                                                                                                                                        arguments-end = "vpr" ;
-                                                                                                                                        arguments-no = "xdj" ;
-                                                                                                                                        standard-input-begin = "gei" ;
-                                                                                                                                        standard-input-end = "orm" ;
-                                                                                                                                        standard-input-no = "toa" ;
-                                                                                                                                        standard-output = "uoz" ;
-                                                                                                                                        standard-error = "jtg" ;
-                                                                                                                                    } ;
-                                                                                                                            good =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        log-file = "/build/ODb8uwnZ.confirm" ;
-                                                                                                                                        status-code = 0 ;
-                                                                                                                                        log-begin = "eiz" ;
-                                                                                                                                        log-end = "hex" ;
-                                                                                                                                        log-no = "zgc" ;
-                                                                                                                                        arguments-begin = "nos" ;
-                                                                                                                                        arguments-end = "sae" ;
-                                                                                                                                        arguments-no = "gku" ;
-                                                                                                                                        standard-input-begin = "keb" ;
-                                                                                                                                        standard-input-end = "yho" ;
-                                                                                                                                        standard-input-no = "lql" ;
-                                                                                                                                        standard-output = "eec" ;
-                                                                                                                                        standard-error = "jxv" ;
-                                                                                                                                    } ;
-                                                                                                                        } ;
+                                                                                                                    bad =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/LuSCtrEw.confirm" ;
+                                                                                                                                status-code = 72 ;
+                                                                                                                                log-begin = "rtw" ;
+                                                                                                                                log-end = "zpp" ;
+                                                                                                                                log-no = "lce" ;
+                                                                                                                                arguments-begin = "rlc" ;
+                                                                                                                                arguments-end = "hgb" ;
+                                                                                                                                arguments-no = "qnj" ;
+                                                                                                                                standard-input-begin = "wmp" ;
+                                                                                                                                standard-input-end = "bww" ;
+                                                                                                                                standard-input-no = "xtn" ;
+                                                                                                                                standard-output = "epz" ;
+                                                                                                                                standard-error = "vdl" ;
+                                                                                                                            } ;
+                                                                                                                    good =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/dDmoVMf4.confirm" ;
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "zvu" ;
+                                                                                                                                log-end = "xne" ;
+                                                                                                                                log-no = "hkh" ;
+                                                                                                                                arguments-begin = "nvv" ;
+                                                                                                                                arguments-end = "eyg" ;
+                                                                                                                                arguments-no = "srv" ;
+                                                                                                                                standard-input-begin = "doe" ;
+                                                                                                                                standard-input-end = "baj" ;
+                                                                                                                                standard-input-no = "nrq" ;
+                                                                                                                                standard-output = "zus" ;
+                                                                                                                                standard-error = "qki" ;
+                                                                                                                            } ;
+                                                                                                                } ;
+                                                                                                            release =
+                                                                                                                {
+                                                                                                                    bad =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/Jh4pICL7.confirm" ;
+                                                                                                                                status-code = 73 ;
+                                                                                                                                log-begin = "aue" ;
+                                                                                                                                log-end = "mck" ;
+                                                                                                                                log-no = "uya" ;
+                                                                                                                                arguments-begin = "mmx" ;
+                                                                                                                                arguments-end = "vpr" ;
+                                                                                                                                arguments-no = "xdj" ;
+                                                                                                                                standard-input-begin = "gei" ;
+                                                                                                                                standard-input-end = "orm" ;
+                                                                                                                                standard-input-no = "toa" ;
+                                                                                                                                standard-output = "uoz" ;
+                                                                                                                                standard-error = "jtg" ;
+                                                                                                                            } ;
+                                                                                                                    good =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/ODb8uwnZ.confirm" ;
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "eiz" ;
+                                                                                                                                log-end = "hex" ;
+                                                                                                                                log-no = "zgc" ;
+                                                                                                                                arguments-begin = "nos" ;
+                                                                                                                                arguments-end = "sae" ;
+                                                                                                                                arguments-no = "gku" ;
+                                                                                                                                standard-input-begin = "keb" ;
+                                                                                                                                standard-input-end = "yho" ;
+                                                                                                                                standard-input-no = "lql" ;
+                                                                                                                                standard-output = "eec" ;
+                                                                                                                                standard-error = "jxv" ;
+                                                                                                                            } ;
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                 } ;
