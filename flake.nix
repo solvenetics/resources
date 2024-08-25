@@ -141,7 +141,15 @@
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
+                                                                                                        true
+                                                                                                else
 
+                                                                                                        true
+                                                                                                fi &&
                                                                                                 true
                                                                                          '' ;
                                                                             release =
