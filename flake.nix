@@ -146,6 +146,7 @@
                                                                                                             EXPECTED=${ environment-variable 5 } &&
                                                                                                             ARGUMENTS=${ environment-variable 6 } &&
                                                                                                             STANDARD_INPUT=${ environment-variable 7 } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
                                                                                                                 assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" }"
@@ -159,7 +160,8 @@
                                                                                                     } &&
                                                                                                     test_script ( )
                                                                                                         {
-                                                                                                             para_script ${ scripts.verification.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft
+                                                                                                             para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft &&
+                                                                                                                para_script ${ scripts.verification.script.script.bad } false 71 /build/UhVGqTXa.confirm bvq_qyr_jue_yfp_yzr_fsk_ jue djz
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
@@ -194,23 +196,26 @@
                                                                                                 {
                                                                                                     script =
                                                                                                         {
-                                                                                                            bad =
-                                                                                                                script
-                                                                                                                    {
-                                                                                                                        log-file = "/build/UhVGqTXa.confirm" ;
-                                                                                                                        status-code = 71 ;
-                                                                                                                        log-begin = "bvq" ;
-                                                                                                                        log-end = "fsk" ;
-                                                                                                                        log-no = "ses" ;
-                                                                                                                        arguments-begin = "qyr" ;
-                                                                                                                        arguments-end = "yfp" ;
-                                                                                                                        arguments-no = "neb" ;
-                                                                                                                        standard-input-begin = "lmc" ;
-                                                                                                                        standard-input-end = "tsp" ;
-                                                                                                                        standard-input-no = "yzr" ;
-                                                                                                                        standard-output = "nqt" ;
-                                                                                                                        standard-error = "yun" ;
-                                                                                                                    } ;
+                                                                                                            script =
+                                                                                                                {
+                                                                                                                    bad =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/UhVGqTXa.confirm" ;
+                                                                                                                                status-code = 71 ;
+                                                                                                                                log-begin = "bvq" ;
+                                                                                                                                log-end = "fsk" ;
+                                                                                                                                log-no = "ses" ;
+                                                                                                                                arguments-begin = "qyr" ;
+                                                                                                                                arguments-end = "yfp" ;
+                                                                                                                                arguments-no = "neb" ;
+                                                                                                                                standard-input-begin = "lmc" ;
+                                                                                                                                standard-input-end = "tsp" ;
+                                                                                                                                standard-input-no = "yzr" ;
+                                                                                                                                standard-output = "nqt" ;
+                                                                                                                                standard-error = "yun" ;
+                                                                                                                            } ;
+                                                                                                                } ;
                                                                                                         } ;
                                                                                                 } ;
                                                                                 } ;
