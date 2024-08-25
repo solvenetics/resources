@@ -43,6 +43,11 @@
                                             installPhase =
                                                 let
                                                     environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
+                                                    has-standard-input =
+                                                        strip
+                                                            ''
+                                                                [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
+                                                            '' ;
                                                     mappers =
                                                         let
                                                             script =
@@ -54,9 +59,133 @@
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
+                                                            temporary =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then
+                                                                        let
+                                                                            init =
+                                                                                let
+                                                                                    init =
+                                                                                        if builtins.typeOf temporary.init == "null" then
+                                                                                            {
+                                                                                                does-not-have-standard-input = "STATUS=0" ;
+                                                                                                has-standard-input = "STATUS=0" ;
+                                                                                            }
+                                                                                        else
+                                                                                            {
+                                                                                                does-not-have-standard-input =
+                                                                                                    ''
+                                                                                                        if ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                                        then
+                                                                                                            STATUS=${ environment-variable "?" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                        else
+                                                                                                            STATUS=${ environment-variable "?" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                        fi
+                                                                                                    '' ;
+                                                                                                has-standard-input =
+                                                                                                    ''
+                                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                                        then
+                                                                                                            STATUS=${ environment-variable "?" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                        else
+                                                                                                            STATUS=${ environment-variable "?" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                        fi
+                                                                                                    '' ;
+                                                                                            } ;
+                                                                                    invalidate =
+                                                                                        {
+                                                                                            does-not-have-standard-input = "${ environment-variable "RESOURCE" } ${ environment-variable "PPID" }" ;
+                                                                                            has-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } )" ;
+                                                                                        } ;
+                                                                                    in
+                                                                                        ''
+                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
+                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                                if ${ has-standard-input }
+                                                                                                then
+                                                                                                    ${ init.has-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.has-standard-input }
+                                                                                                else
+                                                                                                    ${ init.does-not-have-standard-input } &&
+                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }
+                                                                                                fi &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                                else
+                                                                                                    BROKEN=$( ${ temporary-broken-directory } ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
+                                                                                                        exit ${ builtins.toString temporary-init-error-code }
+                                                                                                fi
+                                                                                         '' ;
+                                                                            release =
+                                                                                let
+                                                                                    release =
+                                                                                        {
+                                                                                            null =
+                                                                                                ''
+                                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
+                                                                                                '' ;
+                                                                                            set =
+                                                                                                ''
+                                                                                                    if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/release.status.asc &&
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/release.out.log ${ environment-variable "RESOURCE" }/release.err.log ${ environment-variable "RESOURCE" }/release.status.asc &&
+                                                                                                            ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } $( ${ temporary-broken-directory } )
+                                                                                                    fi
+                                                                                                '' ;
+                                                                                        } ;
+                                                                                    in
+                                                                                        ''
+                                                                                            RESOURCE=${ environment-variable 1 } &&
+                                                                                                PID=${ environment-variable 2 } &&
+                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log
+                                                                                                fi &&
+                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.err.log
+                                                                                                fi &&
+                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                fi &&
+                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                                ${ if builtins.typeOf temporary.release == "null" then release.null else release.set }
+                                                                                '' ;
+                                                                            temporary =
+                                                                                let
+                                                                                    identity =
+                                                                                        {
+                                                                                            init ? builtins.null ,
+                                                                                            release ? builtins.null
+                                                                                        } :
+                                                                                            {
+                                                                                                init = init ;
+                                                                                                release = release ;
+                                                                                            } ;
+                                                                                    in identity ( value temporary ) ;
+                                                                            in pkgs.writeShellScript name init
+                                                               else if builtins.typeOf value == "set" then builtins.mapAttrs ( temporary ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                    else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
+                                                                    temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
                                                     strip =
                                                         string :
@@ -74,11 +203,6 @@
                                                                     else string ;
                                                     tertiary =
                                                         let
-                                                            has-standard-input =
-                                                                strip
-                                                                    ''
-                                                                        [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
-                                                                    '' ;
                                                             mapper =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
@@ -88,6 +212,7 @@
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
+                                                                    temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
                                                                     strip = strip ;
                                                                 } ;
                                                     write =
@@ -180,7 +305,7 @@
                                                                                     verification =
                                                                                         let
                                                                                             script =
-                                                                                                 { log-file , status-code , log-begin , log-end , arguments-begin , arguments-end , arguments-no , standard-input-begin , standard-input-end , standard-input-no , standard-output , standard-error , ... } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip } :
+                                                                                                 { log-file , status-code , log-begin , log-end , arguments-begin , arguments-end , arguments-no , standard-input-begin , standard-input-end , standard-input-no , standard-output , standard-error , ... } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , temporary } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                             if [ -z "${ environment-variable "@" }" ]
