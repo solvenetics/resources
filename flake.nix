@@ -101,16 +101,16 @@
                                                                                             does-not-have-standard-input = "${ environment-variable "RESOURCE" } ${ environment-variable "PPID" }" ;
                                                                                             has-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } )" ;
                                                                                         } ;
-                                                                                    xxx =
+                                                                                    in
                                                                                         ''
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
-                                                                                                    ${ init.has-standard-input } &&
+                                                                                                    ${ strip init.has-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.has-standard-input }
                                                                                                 else
-                                                                                                    ${ init.does-not-have-standard-input } &&
+                                                                                                    ${ strip init.does-not-have-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.does-not-have-standard-input }
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
@@ -127,35 +127,6 @@
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
                                                                                         '' ;
-                                                                                    in
-                                                                                        ''
-                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
-                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                                if ${ has-standard-input }
-                                                                                                then
-                                                                                                    ${ init.has-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.has-standard-input }
-                                                                                                else
-                                                                                                    ${ init.does-not-have-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }
-                                                                                                fi &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
-                                                                                                if [ ${ environment-variable "STATUS" } == 0 ]
-                                                                                                then
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                                        true
-                                                                                                else
-                                                                                                    BROKEN=$( ${ temporary-broken-directory } ) &&
-                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
-                                                                                                        exit ${ builtins.toString temporary-init-error-code } &&
-                                                                                                        true
-                                                                                                fi &&
-                                                                                                true
-                                                                                         '' ;
                                                                             release =
                                                                                 let
                                                                                     release =
@@ -489,6 +460,9 @@
                                                                                 {
                                                                                     bad =
                                                                                         {
+                                                                                            bad = scripts : { init = scripts.verification.temporary.release.bad ; release = scripts.verification.temporary.release.bad ; } ;
+                                                                                            good = scripts : { init = scripts.verification.temporary.release.bad ; release = scripts.verification.temporary.release.good ; } ;
+                                                                                            null = scripts : { init = scripts.verification.temporary.release.bad ; } ;
                                                                                         } ;
                                                                                     good =
                                                                                         {
