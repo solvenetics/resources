@@ -103,18 +103,18 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
+                                                                                            ${ pkgs.coreutils }/bin/touch /tmp/FLAG &&
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
                                                                                                     ${ strip init.has-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.has-standard-input }
+                                                                                                        INVALIDATE="${ invalidate.has-standard-input }"
                                                                                                 else
                                                                                                     ${ strip init.does-not-have-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }
+                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }"
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
@@ -386,7 +386,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                echo para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true
+                                                                                                                ${ pkgs.coreutils }/bin/echo para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
@@ -560,15 +560,15 @@
                                                                                 {
                                                                                     bad =
                                                                                         {
-                                                                                            bad = scripts : { init = scripts.verification.temporary.release.bad ; release = scripts.verification.temporary.release.bad ; } ;
-                                                                                            good = scripts : { init = scripts.verification.temporary.release.bad ; release = scripts.verification.temporary.release.good ; } ;
-                                                                                            null = scripts : { init = scripts.verification.temporary.release.bad ; } ;
+                                                                                            bad = scripts : { init = scripts.verification.temporary.init.bad ; release = scripts.verification.temporary.release.bad ; } ;
+                                                                                            good = scripts : { init = scripts.verification.temporary.init.bad ; release = scripts.verification.temporary.release.good ; } ;
+                                                                                            null = scripts : { init = scripts.verification.temporary.init.bad ; } ;
                                                                                         } ;
                                                                                     good =
                                                                                         {
-                                                                                            bad = scripts : { init = scripts.verification.temporary.release.good ; release = scripts.verification.temporary.release.bad ; } ;
-                                                                                            good = scripts : { init = scripts.verification.temporary.release.good ; release = scripts.verification.temporary.release.good ; } ;
-                                                                                            null = scripts : { init = scripts.verification.temporary.release.good ; } ;
+                                                                                            bad = scripts : { init = scripts.verification.temporary.init.good ; release = scripts.verification.temporary.release.bad ; } ;
+                                                                                            good = scripts : { init = scripts.verification.temporary.init.good ; release = scripts.verification.temporary.release.good ; } ;
+                                                                                            null = scripts : { init = scripts.verification.temporary.init.good ; } ;
                                                                                         } ;
                                                                                     null =
                                                                                         {
@@ -581,6 +581,7 @@
                                                                             temporary-init-error-message = "jsq" ;
                                                                         } ;
                                                                 in
+builtins.trace "${ builtins.toString resources }"
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
