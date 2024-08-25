@@ -63,8 +63,7 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
-                                                                            init = "string" ;
-                                                                            init2 =
+                                                                            init =
                                                                                 let
                                                                                     init =
                                                                                         if builtins.typeOf temporary.init == "null" then
@@ -102,7 +101,7 @@
                                                                                             does-not-have-standard-input = "${ environment-variable "RESOURCE" } ${ environment-variable "PPID" }" ;
                                                                                             has-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } )" ;
                                                                                         } ;
-                                                                                    in
+                                                                                    xxx =
                                                                                         ''
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
@@ -127,6 +126,11 @@
                                                                                                         ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
+                                                                                        '' ;
+                                                                                    in
+                                                                                        ''
+
+                                                                                                true
                                                                                          '' ;
                                                                             release =
                                                                                 let
