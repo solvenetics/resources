@@ -496,6 +496,7 @@
                                                                                     null =
                                                                                         {
                                                                                             bad = scripts : { release = scripts.verification.temporary.release.bad ; } ;
+                                                                                            good = scripts : { release = scripts.verification.temporary.release.good ; } ;
                                                                                             null = scripts : { } ;
                                                                                         } ;
                                                                                 } ;
