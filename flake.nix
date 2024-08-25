@@ -147,6 +147,8 @@
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
                                                                                                         true
                                                                                                 else
+                                                                                                    BROKEN=$( ${ temporary-broken-directory } ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
 
                                                                                                         true
                                                                                                 fi &&
