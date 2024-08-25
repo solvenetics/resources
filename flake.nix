@@ -10,6 +10,7 @@
                 fun =
                     system :
                         let
+                            environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
                             lib =
                                 {
                                     at ? "/run/wrappers/bin/at" ,
@@ -31,7 +32,7 @@
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
                                     temporary ? { } ,
                                     temporary-init-error-code ? 64 ,
-                                    temporary-init-error-message ? resource-directory : "We were unable to complete initiation:  ${ resource-directory }." ,
+                                    temporary-init-error-message ? "We were unable to complete initiation:  ${ environment-variable "BROKEN" }." ,
                                     temporary-resource-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.resource" ,
                                     temporary-broken-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.broken"
                                 } :
@@ -42,7 +43,6 @@
                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
                                             installPhase =
                                                 let
-                                                    environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
                                                     has-standard-input =
                                                         strip
                                                             ''
@@ -150,6 +150,7 @@
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code } &&
                                                                                                         true
                                                                                                 fi &&
