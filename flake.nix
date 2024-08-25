@@ -466,6 +466,9 @@
                                                                                         } ;
                                                                                     good =
                                                                                         {
+                                                                                            bad = scripts : { init = scripts.verification.temporary.release.good ; release = scripts.verification.temporary.release.bad ; } ;
+                                                                                            good = scripts : { init = scripts.verification.temporary.release.good ; release = scripts.verification.temporary.release.good ; } ;
+                                                                                            null = scripts : { init = scripts.verification.temporary.release.good ; } ;
                                                                                         } ;
                                                                                     null =
                                                                                         {
