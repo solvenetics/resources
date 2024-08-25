@@ -331,7 +331,7 @@
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     # assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
-                                                                                                                        # assert_equals "" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } ) "If HAS_TARGET then the error should be blank." &&
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } )" "If HAS_TARGET then the error should be blank." &&
                                                                                                                         RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) &&
                                                                                                                         if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                         then
