@@ -216,6 +216,7 @@
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
+                                                                    target = target ;
                                                                     temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
                                                                     strip = strip ;
                                                                 } ;
@@ -300,19 +301,8 @@
                                                                                                         } &&
                                                                                                     para_temporary ( )
                                                                                                         {
-                                                                                                            TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 4 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 5 } &&
-                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
-                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                then
-                                                                                                                    ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" }
-                                                                                                                else
-                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                fi
+
+                                                                                                                false
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
@@ -336,7 +326,22 @@
                                                                                     verification =
                                                                                         let
                                                                                             script =
-                                                                                                 { log-file , status-code , log-begin , log-end , arguments-begin , arguments-end , arguments-no , standard-input-begin , standard-input-end , standard-input-no , standard-output , standard-error , ... } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , temporary } :
+                                                                                                 {
+                                                                                                    log-file ,
+                                                                                                    status-code ,
+                                                                                                    log-begin ,
+                                                                                                    log-end ,
+                                                                                                    log-no ,
+                                                                                                    arguments-begin ,
+                                                                                                    arguments-end ,
+                                                                                                    arguments-no ,
+                                                                                                    standard-input-begin ,
+                                                                                                    standard-input-end ,
+                                                                                                    standard-input-no ,
+                                                                                                    standard-output ,
+                                                                                                    standard-error ,
+                                                                                                    target-file ? builtins.null
+                                                                                                } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                             if [ -z "${ environment-variable "@" }" ]
@@ -359,6 +364,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
+                                                                                                            ${ if builtins.typeOf target-file == "string" then "${ pkgs.coreutils }/bin/echo ${ target } > ${ target-file }" else "# NO TARGET FILE" } &&
                                                                                                             exit ${ builtins.toString status-code }
                                                                                                     '' ;
                                                                                             in
@@ -383,6 +389,7 @@
                                                                                                                                 standard-input-no = "yzr" ;
                                                                                                                                 standard-output = "nqt" ;
                                                                                                                                 standard-error = "yun" ;
+                                                                                                                                target-file = "/build/MtRZla4h.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -400,6 +407,7 @@
                                                                                                                                 standard-input-no = "jmu" ;
                                                                                                                                 standard-output = "itp" ;
                                                                                                                                 standard-error = "nbg" ;
+                                                                                                                                target-file = "/build/OI3rJQRx.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                          } ;
@@ -423,6 +431,7 @@
                                                                                                                                 standard-input-no = "xtn" ;
                                                                                                                                 standard-output = "epz" ;
                                                                                                                                 standard-error = "vdl" ;
+                                                                                                                                target-file = "/build/m9WX7Bnd.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -440,6 +449,7 @@
                                                                                                                                 standard-input-no = "nrq" ;
                                                                                                                                 standard-output = "zus" ;
                                                                                                                                 standard-error = "qki" ;
+                                                                                                                                target-file = "/build/ccNePxLX.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                             release =
@@ -503,9 +513,10 @@
                                                                                             null = scripts : { } ;
                                                                                         } ;
                                                                                 } ;
+                                                                            temporary-init-error-code = 90 ;
+                                                                            temporary-init-error-message = "jsq" ;
                                                                         } ;
                                                                 in
-builtins.trace "${ builtins.toString resources }"
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
