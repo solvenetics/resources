@@ -53,7 +53,7 @@
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
-builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary ) }" ) (
+builtins.trace ( "${ name } - ${ builtins.typeOf ( value secondary tertiary ) }" ) (
                                                                         strip
                                                                             ''
                                                                                 write_it ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
