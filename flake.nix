@@ -301,8 +301,52 @@
                                                                                                         } &&
                                                                                                     para_temporary ( )
                                                                                                         {
-
-                                                                                                                false
+                                                                                                            TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                ARGUMENTS=${ environment-variable 4 } &&
+                                                                                                                STANDARD_INPUT=${ environment-variable 5 } &&
+                                                                                                                TARGET_FILE=${ environment-variable 6 } &&
+                                                                                                                HAS_TARGET=${ environment-variable 7 } &&
+                                                                                                                if [ ${ environment-variable "HAS_TARGET" } == true ]
+                                                                                                                then
+                                                                                                                    STATUS_CODE=0
+                                                                                                                elif [ ${ environment-variable "HAS_TARGET" } == false ]
+                                                                                                                then
+                                                                                                                    STATUS_CODE=90
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
+                                                                                                                fi &&
+                                                                                                                STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
+                                                                                                                STANDARD_ERROR_FILE=$( util_mktemp ) &&
+                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                then
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                then
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                fi &&
+                                                                                                                if [ ${ environment-variable "HAS_TARGET" } == true ]
+                                                                                                                then
+                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
+                                                                                                                        assert_equals "" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } ) "If HAS_TARGET then the error should be blank." &&
+                                                                                                                        RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) &&
+                                                                                                                        if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                        then
+                                                                                                                            fail "We expected the RESOURCE directory to exist."
+                                                                                                                        fi
+                                                                                                                elif [ ${ environment-variable "HAS_TARGET" } == false ]
+                                                                                                                then
+                                                                                                                    assert_equals "" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT" } ) "If not HAS_TARGET then the output should always be blank" &&
+                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } ) "If not HAS_TARGET then the error should be as given." &&
+                                                                                                                        if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) ]
+                                                                                                                        then
+                                                                                                                            fail "We were expecting the target file and its containing resource directory to be moved."
+                                                                                                                        fi
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
+                                                                                                                fi
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
