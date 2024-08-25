@@ -182,7 +182,7 @@
                                                                             in
                                                                                 strip
                                                                                     ''
-                                                                                        write_it ${ pkgs.writeShellScript name "true" } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                        write_it ${ pkgs.writeShellScript name ( builtins.trace ( builtins.typeOf "init" ) "true" ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                                     ''
                                                                 else if builtins.typeOf value == "set" then builtins.mapAttrs ( temporary ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
