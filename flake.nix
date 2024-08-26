@@ -321,6 +321,8 @@
                                                                                                                 EXPECTED_INIT_STANDARD_OUTPUT=${ environment-variable 8 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_ERROR=${ environment-variable 9 } &&
                                                                                                                 EXPECTED_INIT_STATUS=${ environment-variable 10 } &&
+                                                                                                                INIT_LOG_FILE=${ environment-variable 11 } &&
+                                                                                                                INIT_LOG=${ environment-variable 12 } &&
                                                                                                                 if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
@@ -405,7 +407,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                para_temporary ${ temporary.bad.bad } true fzp onj /build/m9WX7Bnd.confirm false true epz vdl 72 &&
+                                                                                                                para_temporary ${ temporary.bad.bad } true txc smf /build/m9WX7Bnd.confirm false true epz vdl 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
                                                                                                                 para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true zus qki 0
                                                                                                         }
                                                                                             '' ;
