@@ -311,6 +311,10 @@
                                                                                                         } &&
                                                                                                     para_temporary ( )
                                                                                                         {
+                                                                                                            para_temporary_inner ${ environment-variable "@" }
+                                                                                                        } &&
+                                                                                                    para_temporary_inner ( )
+                                                                                                        {
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
                                                                                                                 INIT_ARGUMENTS=${ environment-variable 3 } &&
