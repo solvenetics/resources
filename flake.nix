@@ -118,6 +118,7 @@
                                                                                                         INVALIDATE="${ invalidate.does-not-have-standard-input }"
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/invalidate.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
@@ -384,7 +385,9 @@
                                                                                                                     fi
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
-                                                                                                                fi
+                                                                                                                fi &&
+                                                                                                                assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked."
+
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
