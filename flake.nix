@@ -317,7 +317,7 @@
                                                                                                                 INIT_STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                 INIT_TARGET_FILE=${ environment-variable 5 } &&
                                                                                                                 INIT_HAS_TARGET=${ environment-variable 6 } &&
-                                                                                                                HAS_INIT=${ environment-variable 7 } &&
+                                                                                                                INIT_HAS_LOG=${ environment-variable 7 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_OUTPUT=${ environment-variable 8 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_ERROR=${ environment-variable 9 } &&
                                                                                                                 EXPECTED_INIT_STATUS=${ environment-variable 10 } &&
@@ -361,7 +361,7 @@
                                                                                                                 then
                                                                                                                     fail "We expected the RESOURCE directory to exist."
                                                                                                                 fi &&
-                                                                                                                if [ ${ environment-variable "HAS_INIT" } == true ]
+                                                                                                                if [ ${ environment-variable "INIT_HAS_LOG" } == true ]
                                                                                                                 then
                                                                                                                     assert_equals ${ environment-variable "EXPECTED_INIT_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out." &&
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out to be locked." &&
@@ -369,7 +369,7 @@
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err to be locked." &&
                                                                                                                         assert_equals ${ environment-variable "EXPECTED_INIT_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status." &&
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status to be locked."
-                                                                                                                 elif [ ${ environment-variable "HAS_INIT" } == false ]
+                                                                                                                 elif [ ${ environment-variable "INIT_HAS_LOG" } == false ]
                                                                                                                 then
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                     then
@@ -384,7 +384,7 @@
                                                                                                                         fail "We were not expecting any init status."
                                                                                                                     fi
                                                                                                                 else
-                                                                                                                    fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
+                                                                                                                    fail "We did not expect INIT_HAS_LOG=${ environment-variable "INIT_HAS_LOG" }"
                                                                                                                 fi &&
                                                                                                                 assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked."
                                                                                                         } &&
