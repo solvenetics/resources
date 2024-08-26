@@ -311,7 +311,7 @@
                                                                                                         } &&
                                                                                                     para_temporary ( )
                                                                                                         {
-                                                                                                            para_temporary_inner ${ environment-variable "@" }
+                                                                                                            RESOURCE=$( para_temporary_inner ${ environment-variable "@" } )
                                                                                                         } &&
                                                                                                     para_temporary_inner ( )
                                                                                                         {
@@ -394,7 +394,8 @@
                                                                                                                     fail "We did not expect INIT_HAS_LOG=${ environment-variable "INIT_HAS_LOG" }"
                                                                                                                 fi &&
                                                                                                                 assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked." &&
-                                                                                                                assert_equals ${ environment-variable "INIT_LOG" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_LOG_FILE" } ) "We expect the init to perform exactly."
+                                                                                                                assert_equals ${ environment-variable "INIT_LOG" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_LOG_FILE" } ) "We expect the init to perform exactly." &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "RESOURCE" }
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
