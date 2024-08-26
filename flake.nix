@@ -315,7 +315,7 @@
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
                                                                                                                 INIT_ARGUMENTS=${ environment-variable 3 } &&
                                                                                                                 INIT_STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                TARGET_FILE=${ environment-variable 5 } &&
+                                                                                                                INIT_TARGET_FILE=${ environment-variable 5 } &&
                                                                                                                 HAS_TARGET=${ environment-variable 6 } &&
                                                                                                                 HAS_INIT=${ environment-variable 7 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_OUTPUT=${ environment-variable 8 } &&
@@ -343,13 +343,13 @@
                                                                                                                 fi &&
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
-                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
+                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
                                                                                                                         assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } )" "If HAS_TARGET then the error should be blank."
                                                                                                                 elif [ ${ environment-variable "HAS_TARGET" } == false ]
                                                                                                                 then
                                                                                                                     assert_not_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } )" "If not HAS_TARGET then the output should be the location of the broken target." &&
                                                                                                                         assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "If not HAS_TARGET then the error should be as given." &&
-                                                                                                                        if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) ]
+                                                                                                                        if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET_FILE" } ) ) ]
                                                                                                                         then
                                                                                                                             fail "We were expecting the target file and its containing resource directory to be moved."
                                                                                                                         fi
