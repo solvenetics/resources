@@ -313,6 +313,9 @@
                                                                                                                 TARGET_FILE=${ environment-variable 5 } &&
                                                                                                                 HAS_TARGET=${ environment-variable 6 } &&
                                                                                                                 HAS_INIT=${ environment-variable 7 } &&
+                                                                                                                EXPECTED_INIT_STANDARD_OUTPUT=${ environment-variable 8 } &&
+                                                                                                                EXPECTED_INIT_STANDARD_ERROR=${ environment-variable 9 } &&
+                                                                                                                EXPECTED_INIT_STATUS=${ environment-variable 10 } &&
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
@@ -355,7 +358,9 @@
                                                                                                                 fi &&
                                                                                                                 if [ ${ environment-variable "HAS_INIT" } == true ]
                                                                                                                 then
-                                                                                                                    true
+                                                                                                                    assert_equals ${ environment-variable "EXPECTED_INIT_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_INIT_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_INIT_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status."
                                                                                                                 elif [ ${ environment-variable "HAS_INIT" } == false ]
                                                                                                                 then
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
@@ -391,7 +396,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true
+                                                                                                                para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true zus qki 0
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
