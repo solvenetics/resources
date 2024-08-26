@@ -392,6 +392,90 @@
                                                                                                                 assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked." &&
                                                                                                                 assert_equals ${ environment-variable "INIT_LOG" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_LOG_FILE" } ) "We expect the init to perform exactly."
                                                                                                         } &&
+                                                                                                    para_temporary_release( )
+                                                                                                        {
+                                                                                                            TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                INIT_HAS_TARGET=${ environment-variable 2 } &&
+                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                RELEASE_ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                RELEASE_STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                RELEASE_TARGET_FILE=${ environment-variable 5 } &&
+                                                                                                                RELEASE_HAS_TARGET=${ environment-variable 6 } &&
+                                                                                                                RELEASE_HAS_LOG=${ environment-variable 7 } &&
+                                                                                                                RELEASE_EXPECTED_STANDARD_OUTPUT=${ environment-variable 8 } &&
+                                                                                                                RELEASE_EXPECTED_STANDARD_ERROR=${ environment-variable 9 } &&
+                                                                                                                RELEASE_EXPECTED_STATUS=${ environment-variable 10 } &&
+                                                                                                                RELEASE_LOG_FILE=${ environment-variable 11 } &&
+                                                                                                                RELEASE_LOG=${ environment-variable 12 } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo > ${ environment-variable "RELEASE_LOG_FILE" } &&
+                                                                                                                if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
+                                                                                                                then
+                                                                                                                    STATUS_CODE=0
+                                                                                                                elif [ ${ environment-variable "INIT_HAS_TARGET" } == false ]
+                                                                                                                then
+                                                                                                                    STATUS_CODE=90
+                                                                                                                else
+                                                                                                                    fail "We did not expect INIT_HAS_TARGET=${ environment-variable "INIT_HAS_TARGET" }"
+                                                                                                                fi &&
+                                                                                                                STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
+                                                                                                                STANDARD_ERROR_FILE=$( util_mktemp ) &&
+                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                then
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "RELEASE_STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "RELEASE_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                then
+                                                                                                                    assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "RELEASE_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                fi &&
+                                                                                                                if [ ${ environment-variable "RELEASE_HAS_TARGET" } == true ]
+                                                                                                                then
+                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If RELEASE_HAS_TARGET, then the output of should be the target."
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } )" "If RELEASE_HAS_TARGET then the error should be blank."
+                                                                                                                elif [ ${ environment-variable "RELEASE_HAS_TARGET" } == false ]
+                                                                                                                then
+                                                                                                                    assert_not_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } )" "If not RELEASE_HAS_TARGET then the output should be the location of the broken target." &&
+                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "If not RELEASE_HAS_TARGET then the error should be as given." &&
+                                                                                                                        if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RELEASE_TARGET_FILE" } ) ) ]
+                                                                                                                        then
+                                                                                                                            fail "We were expecting the target file and its containing resource directory to be moved."
+                                                                                                                        fi
+                                                                                                                else
+                                                                                                                    fail "We did not expect RELEASE_HAS_TARGET=${ environment-variable "RELEASE_HAS_TARGET" }"
+                                                                                                                fi &&
+                                                                                                                RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) ) &&
+                                                                                                                if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                then
+                                                                                                                    fail "We expected the RESOURCE directory to exist."
+                                                                                                                fi &&
+                                                                                                                if [ ${ environment-variable "RELEASE_HAS_LOG" } == true ]
+                                                                                                                then
+                                                                                                                    assert_equals ${ environment-variable "RELEASE_EXPECTED_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out." &&
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out to be locked." &&
+                                                                                                                        assert_equals ${ environment-variable "RELEASE_EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err." &&
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err to be locked." &&
+                                                                                                                        assert_equals ${ environment-variable "RELEASE_EXPECTED_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status." &&
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status to be locked."
+                                                                                                                 elif [ ${ environment-variable "RELEASE_HAS_LOG" } == false ]
+                                                                                                                then
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any output."
+                                                                                                                    fi &&
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any init error."
+                                                                                                                    fi &&
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any init status."
+                                                                                                                    fi
+                                                                                                                else
+                                                                                                                    fail "We did not expect RELEASE_HAS_LOG=${ environment-variable "RELEASE_HAS_LOG" }"
+                                                                                                                fi &&
+                                                                                                                assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked." &&
+                                                                                                                assert_equals ${ environment-variable "RELEASE_LOG" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_LOG_FILE" } ) "We expect the init to perform exactly."
+                                                                                                        } &&
                                                                                                     test_script ( )
                                                                                                         {
                                                                                                              para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
