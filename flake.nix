@@ -314,7 +314,7 @@
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
                                                                                                                 INIT_ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                INIT_STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                 TARGET_FILE=${ environment-variable 5 } &&
                                                                                                                 HAS_TARGET=${ environment-variable 6 } &&
                                                                                                                 HAS_INIT=${ environment-variable 7 } &&
@@ -334,7 +334,7 @@
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
