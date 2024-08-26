@@ -309,11 +309,7 @@
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match exactly." &&
                                                                                                                 assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "We expect the standard error to match exactly."
                                                                                                         } &&
-                                                                                                    para_temporary ( )
-                                                                                                        {
-                                                                                                            RESOURCE=$( para_temporary_inner ${ environment-variable "@" } )
-                                                                                                        } &&
-                                                                                                    para_temporary_inner ( )
+                                                                                                    para_temporary_init ( )
                                                                                                         {
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
@@ -341,7 +337,7 @@
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.bash }/bin/bash -c \"${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" } && ${ pkgs.coreutils }/bin/sleep 1s\""
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "INIT_STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
@@ -414,8 +410,8 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                para_temporary ${ temporary.bad.bad } true txc smf /build/m9WX7Bnd.confirm false true epz vdl 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
-                                                                                                                para_temporary ${ temporary.good.good } true hwi khh /build/ccNePxLX.confirm true true zus qki 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_
+                                                                                                                para_temporary_init ${ temporary.bad.bad } true txc smf /build/m9WX7Bnd.confirm false true epz vdl 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
+                                                                                                                para_temporary_init ${ temporary.good.good } true hwi khh /build/ccNePxLX.confirm true true zus qki 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
