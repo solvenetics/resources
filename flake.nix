@@ -78,10 +78,12 @@
                                                                                                         if ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                                         then
                                                                                                             STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                         else
                                                                                                             STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                         fi
                                                                                                     '' ;
                                                                                                 has-standard-input =
@@ -89,10 +91,12 @@
                                                                                                         if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
                                                                                                         then
                                                                                                             STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                         else
                                                                                                             STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
                                                                                                         fi
                                                                                                     '' ;
                                                                                             } ;
@@ -359,9 +363,12 @@
                                                                                                                 if [ ${ environment-variable "HAS_INIT" } == true ]
                                                                                                                 then
                                                                                                                     assert_equals ${ environment-variable "EXPECTED_INIT_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out." &&
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out to be locked." &&
                                                                                                                         assert_equals ${ environment-variable "EXPECTED_INIT_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err." &&
-                                                                                                                        assert_equals ${ environment-variable "EXPECTED_INIT_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status."
-                                                                                                                elif [ ${ environment-variable "HAS_INIT" } == false ]
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err to be locked." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_INIT_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status." &&
+                                                                                                                        assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status to be locked."
+                                                                                                                 elif [ ${ environment-variable "HAS_INIT" } == false ]
                                                                                                                 then
                                                                                                                     if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
                                                                                                                     then
