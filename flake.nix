@@ -406,6 +406,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
+                                                                                                                para_temporary ${ temporary.bad.bad } false mfr fay /build/m9WX7Bnd.confirm true true zus qki 0
                                                                                                                 para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true zus qki 0
                                                                                                         }
                                                                                             '' ;
