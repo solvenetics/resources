@@ -261,6 +261,12 @@
                                                                 resources =
                                                                     lib
                                                                         {
+                                                                            at =
+                                                                                pkgs.writeShellScript
+                                                                                    "at"
+                                                                                    ''
+                                                                                        ${ pkgs.coreutils }/bin/tee &
+                                                                                    '' ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 {
@@ -320,8 +326,7 @@
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    assert_status_code 127 "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
-                                                                                                                    # assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
                                                                                                                     assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
@@ -330,10 +335,9 @@
                                                                                                                 fi &&
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
-                                                                                                                    # assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
+                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
                                                                                                                         assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } )" "If HAS_TARGET then the error should be blank." &&
                                                                                                                         RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc &&
                                                                                                                         if [ ! -d ${ environment-variable "RESOURCE" } ]
                                                                                                                         then
                                                                                                                             fail "We expected the RESOURCE directory to exist."
@@ -582,7 +586,6 @@
                                                                             temporary-init-error-message = "jsq" ;
                                                                         } ;
                                                                 in
-builtins.trace "${ builtins.toString resources }"
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
