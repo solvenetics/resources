@@ -344,11 +344,11 @@
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
-                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } )" "If HAS_TARGET then the error should be blank."
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } )" "If HAS_TARGET then the error should be blank."
                                                                                                                 elif [ ${ environment-variable "HAS_TARGET" } == false ]
                                                                                                                 then
-                                                                                                                    assert_equals "" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT" } ) "If not HAS_TARGET then the output should always be blank" &&
-                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } ) "If not HAS_TARGET then the error should be as given." &&
+                                                                                                                    assert_not_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } )" "If not HAS_TARGET then the output should be the location of the broken target." &&
+                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "If not HAS_TARGET then the error should be as given." &&
                                                                                                                         if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) ]
                                                                                                                         then
                                                                                                                             fail "We were expecting the target file and its containing resource directory to be moved."
@@ -406,7 +406,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                para_temporary ${ temporary.bad.bad } false mfr fay /build/m9WX7Bnd.confirm true true zus qki 0
+                                                                                                                para_temporary ${ temporary.bad.bad } true fzp onj /build/m9WX7Bnd.confirm false true epz vdl 72 &&
                                                                                                                 para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true zus qki 0
                                                                                                         }
                                                                                             '' ;
