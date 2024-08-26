@@ -330,7 +330,7 @@
                                                                                                                 fi &&
                                                                                                                 assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
                                                                                                         } &&
-                                                                                                    para_temporary_init ( )
+                                                                                                    para_temporary_order ( )
                                                                                                         {
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
@@ -349,7 +349,12 @@
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                                 fi &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
+                                                                                                                if [ -z "${ environment-variable "EXPECTED" }" ]
+                                                                                                                then
+                                                                                                                    assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
+                                                                                                                else
+                                                                                                                    assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
+                                                                                                                fi
                                                                                                         }  &&
                                                                                                     test_script ( )
                                                                                                         {
@@ -369,7 +374,8 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
                                                                                                                 para_temporary_mult ${ temporary.bad.bad } true txc smf 90 &&
-                                                                                                                para_temporary_init ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
+                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
+                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm ""
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
