@@ -316,19 +316,19 @@
                                                                                                                 INIT_ARGUMENTS=${ environment-variable 3 } &&
                                                                                                                 INIT_STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                 INIT_TARGET_FILE=${ environment-variable 5 } &&
-                                                                                                                HAS_TARGET=${ environment-variable 6 } &&
+                                                                                                                INIT_HAS_TARGET=${ environment-variable 6 } &&
                                                                                                                 HAS_INIT=${ environment-variable 7 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_OUTPUT=${ environment-variable 8 } &&
                                                                                                                 EXPECTED_INIT_STANDARD_ERROR=${ environment-variable 9 } &&
                                                                                                                 EXPECTED_INIT_STATUS=${ environment-variable 10 } &&
-                                                                                                                if [ ${ environment-variable "HAS_TARGET" } == true ]
+                                                                                                                if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
-                                                                                                                elif [ ${ environment-variable "HAS_TARGET" } == false ]
+                                                                                                                elif [ ${ environment-variable "INIT_HAS_TARGET" } == false ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=90
                                                                                                                 else
-                                                                                                                    fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
+                                                                                                                    fail "We did not expect INIT_HAS_TARGET=${ environment-variable "INIT_HAS_TARGET" }"
                                                                                                                 fi &&
                                                                                                                 STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
@@ -341,20 +341,20 @@
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                                 fi &&
-                                                                                                                if [ ${ environment-variable "HAS_TARGET" } == true ]
+                                                                                                                if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
                                                                                                                 then
-                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
-                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } )" "If HAS_TARGET then the error should be blank."
-                                                                                                                elif [ ${ environment-variable "HAS_TARGET" } == false ]
+                                                                                                                    assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If INIT_HAS_TARGET, then the output of should be the target."
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } )" "If INIT_HAS_TARGET then the error should be blank."
+                                                                                                                elif [ ${ environment-variable "INIT_HAS_TARGET" } == false ]
                                                                                                                 then
-                                                                                                                    assert_not_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } )" "If not HAS_TARGET then the output should be the location of the broken target." &&
-                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "If not HAS_TARGET then the error should be as given." &&
+                                                                                                                    assert_not_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } )" "If not INIT_HAS_TARGET then the output should be the location of the broken target." &&
+                                                                                                                        assert_equals jsq $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "If not INIT_HAS_TARGET then the error should be as given." &&
                                                                                                                         if [ -e $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_TARGET_FILE" } ) ) ]
                                                                                                                         then
                                                                                                                             fail "We were expecting the target file and its containing resource directory to be moved."
                                                                                                                         fi
                                                                                                                 else
-                                                                                                                    fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
+                                                                                                                    fail "We did not expect INIT_HAS_TARGET=${ environment-variable "INIT_HAS_TARGET" }"
                                                                                                                 fi &&
                                                                                                                 RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) ) &&
                                                                                                                 if [ ! -d ${ environment-variable "RESOURCE" } ]
