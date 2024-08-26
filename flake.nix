@@ -276,125 +276,128 @@
                                                                             scripts =
                                                                                 {
                                                                                     test=
-                                                                                        { ... } : { environment-variable , scripts , temporary , ... } :
-                                                                                            ''
-                                                                                                util_mktemp ( )
-                                                                                                    {
-                                                                                                        ${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification
-                                                                                                    }
-                                                                                                    para_script ( )
+                                                                                        { pkgs , ... } : { environment-variable , scripts , temporary , ... } :
+                                                                                            let
+                                                                                                null-file = "/build/BEuZydrN.confirm" ;
+                                                                                                in
+                                                                                                ''
+                                                                                                    util_mktemp ( )
                                                                                                         {
-                                                                                                            SCRIPT=${ environment-variable 1 } &&
-                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                STATUS_CODE=${ environment-variable 3 } &&
-                                                                                                                LOG_FILE=${ environment-variable 4 } &&
-                                                                                                                EXPECTED=${ environment-variable 5 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 6 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 7 } &&
-                                                                                                                EXPECTED_STANDARD_OUTPUT=${ environment-variable 8 } &&
-                                                                                                                EXPECTED_STANDARD_ERROR=${ environment-variable 9 } &&
-                                                                                                                STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
-                                                                                                                STANDARD_ERROR_FILE=$( util_mktemp ) &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                then
-                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
-                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                then
-                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
-                                                                                                                else
-                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                fi &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file to match exactly." &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match exactly." &&
-                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "We expect the standard error to match exactly."
-                                                                                                        } &&
-                                                                                                    para_temporary_mult ( )
-                                                                                                        {
-                                                                                                            TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                then
-                                                                                                                    OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                        OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
-                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                then
-                                                                                                                    OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                        OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
-                                                                                                                else
-                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                fi &&
-                                                                                                                assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
-                                                                                                        } &&
-                                                                                                    para_temporary_order ( )
-                                                                                                        {
-                                                                                                            TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                LOG_FILE=${ environment-variable 6 } &&
-                                                                                                                EXPECTED=${ environment-variable 7 } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                then
-                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
-                                                                                                                elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                then
-                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
-                                                                                                                else
-                                                                                                                    fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                fi &&
-                                                                                                                if [ -z "${ environment-variable "EXPECTED" }" ]
-                                                                                                                then
-                                                                                                                    assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
-                                                                                                                else
-                                                                                                                    assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
-                                                                                                                fi
-                                                                                                        }  &&
-                                                                                                    test_script ( )
-                                                                                                        {
-                                                                                                             para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
-                                                                                                                para_script ${ scripts.verification.script.script.bad } false 71 /build/UhVGqTXa.confirm bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
-                                                                                                                para_script ${ scripts.verification.script.script.good } true 0 /build/dFz88Etj.confirm miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
-                                                                                                                para_script ${ scripts.verification.script.script.good } false 0 /build/dFz88Etj.confirm miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
-                                                                                                         } &&
-                                                                                                     test_temporary ( )
-                                                                                                        {
-                                                                                                            para_script ${ scripts.verification.temporary.init.bad } true 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf epz vdl &&
-                                                                                                                para_script ${ scripts.verification.temporary.init.bad } false 72 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc epz vdl &&
-                                                                                                                para_script ${ scripts.verification.temporary.init.good } true 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_ hwi khh zus qki &&
-                                                                                                                para_script ${ scripts.verification.temporary.init.good } false 0 /build/dDmoVMf4.confirm zvu_nvv_exh_eyg_nrq_xne_ exh iej zus qki &&
-                                                                                                                para_script ${ scripts.verification.temporary.release.bad } true 73 /build/Jh4pICL7.confirm aue_mmx_mml_vpr_gei_whp_orm_mck_ mml whp uoz jtg &&
-                                                                                                                para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
-                                                                                                                para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
-                                                                                                                para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
-                                                                                                                para_temporary_mult ${ temporary.bad.bad } true txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
-                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm "" &&
-                                                                                                                para_temporary_mult ${ temporary.bad.bad } false txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.bad } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
-                                                                                                                para_temporary_order ${ temporary.bad.bad } false txc smf 90 /build/Jh4pICL7.confirm "" &&
-                                                                                                                para_temporary_mult ${ temporary.bad.good } true txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
-                                                                                                                para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/ODb8uwnZ.confirm "" &&
-                                                                                                                para_temporary_mult ${ temporary.bad.good } false txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.good } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
-                                                                                                                para_temporary_order ${ temporary.bad.good } false txc smf 90 /build/ODb8uwnZ.confirm "" &&
-
-                                                                                                                para_temporary_mult ${ temporary.bad.null } true txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.null } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
-                                                                                                                para_temporary_order ${ temporary.bad.null } true txc smf 90 /build/BEuZydrN.confirm "" &&
-                                                                                                                para_temporary_mult ${ temporary.bad.null } false txc smf 90 &&
-                                                                                                                para_temporary_order ${ temporary.bad.null } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
-                                                                                                                para_temporary_order ${ temporary.bad.null } false txc smf 90 /build/BEuZydrN.confirm "" &&
-                                                                                                                ${ pkgs.coreutils }/bin/true
+                                                                                                            ${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification
                                                                                                         }
-                                                                                            '' ;
+                                                                                                        para_script ( )
+                                                                                                            {
+                                                                                                                SCRIPT=${ environment-variable 1 } &&
+                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                    STATUS_CODE=${ environment-variable 3 } &&
+                                                                                                                    LOG_FILE=${ environment-variable 4 } &&
+                                                                                                                    EXPECTED=${ environment-variable 5 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 6 } &&
+                                                                                                                    STANDARD_INPUT=${ environment-variable 7 } &&
+                                                                                                                    EXPECTED_STANDARD_OUTPUT=${ environment-variable 8 } &&
+                                                                                                                    EXPECTED_STANDARD_ERROR=${ environment-variable 9 } &&
+                                                                                                                    STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
+                                                                                                                    STANDARD_ERROR_FILE=$( util_mktemp ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
+                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                    else
+                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                    fi &&
+                                                                                                                    assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file to match exactly." &&
+                                                                                                                    assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match exactly." &&
+                                                                                                                    assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "We expect the standard error to match exactly."
+                                                                                                            } &&
+                                                                                                        para_temporary_mult ( )
+                                                                                                            {
+                                                                                                                TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
+                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                    then
+                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
+                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
+                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                    then
+                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
+                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
+                                                                                                                    else
+                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                    fi &&
+                                                                                                                    assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
+                                                                                                            } &&
+                                                                                                        para_temporary_order ( )
+                                                                                                            {
+                                                                                                                TEMPORARY=${ environment-variable 1 } &&
+                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
+                                                                                                                    LOG_FILE=${ environment-variable 6 } &&
+                                                                                                                    EXPECTED=${ environment-variable 7 } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
+                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                    else
+                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                    fi &&
+                                                                                                                    if [ -z "${ environment-variable "EXPECTED" }" ]
+                                                                                                                    then
+                                                                                                                        assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
+                                                                                                                    else
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
+                                                                                                                    fi
+                                                                                                            }  &&
+                                                                                                        test_script ( )
+                                                                                                            {
+                                                                                                                 para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
+                                                                                                                    para_script ${ scripts.verification.script.script.bad } false 71 /build/UhVGqTXa.confirm bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
+                                                                                                                    para_script ${ scripts.verification.script.script.good } true 0 /build/dFz88Etj.confirm miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
+                                                                                                                    para_script ${ scripts.verification.script.script.good } false 0 /build/dFz88Etj.confirm miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
+                                                                                                             } &&
+                                                                                                         test_temporary ( )
+                                                                                                            {
+                                                                                                                para_script ${ scripts.verification.temporary.init.bad } true 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf epz vdl &&
+                                                                                                                    para_script ${ scripts.verification.temporary.init.bad } false 72 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc epz vdl &&
+                                                                                                                    para_script ${ scripts.verification.temporary.init.good } true 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_ hwi khh zus qki &&
+                                                                                                                    para_script ${ scripts.verification.temporary.init.good } false 0 /build/dDmoVMf4.confirm zvu_nvv_exh_eyg_nrq_xne_ exh iej zus qki &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.bad } true 73 /build/Jh4pICL7.confirm aue_mmx_mml_vpr_gei_whp_orm_mck_ mml whp uoz jtg &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.bad } false 73 /build/Jh4pICL7.confirm aue_mmx_gcs_vpr_toa_mck_ gcs vgm uoz jtg &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
+                                                                                                                    para_temporary_mult ${ temporary.bad.bad } true txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
+                                                                                                                    para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm "" &&
+                                                                                                                    para_temporary_mult ${ temporary.bad.bad } false txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.bad } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
+                                                                                                                    para_temporary_order ${ temporary.bad.bad } false txc smf 90 /build/Jh4pICL7.confirm "" &&
+                                                                                                                    para_temporary_mult ${ temporary.bad.good } true txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
+                                                                                                                    para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/ODb8uwnZ.confirm "" &&
+                                                                                                                    para_temporary_mult ${ temporary.bad.good } false txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.good } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
+                                                                                                                    para_temporary_order ${ temporary.bad.good } false txc smf 90 /build/ODb8uwnZ.confirm "" &&
+
+                                                                                                                    para_temporary_mult ${ temporary.bad.null } true txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.null } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
+                                                                                                                    para_temporary_order ${ temporary.bad.null } true txc smf 90 /build/BEuZydrN.confirm "" &&
+                                                                                                                    para_temporary_mult ${ temporary.bad.null } false txc smf 90 &&
+                                                                                                                    para_temporary_order ${ temporary.bad.null } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ mgp iwc &&
+                                                                                                                    para_temporary_order ${ temporary.bad.null } false txc smf 90 /build/BEuZydrN.confirm "" &&
+                                                                                                                    ${ pkgs.coreutils }/bin/true
+                                                                                                            }
+                                                                                                '' ;
                                                                                     verification =
                                                                                         let
                                                                                             script =
