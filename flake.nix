@@ -320,7 +320,7 @@
                                                                                                                 INIT_HAS_LOG=${ environment-variable 7 } &&
                                                                                                                 INIT_EXPECTED_STANDARD_OUTPUT=${ environment-variable 8 } &&
                                                                                                                 INIT_EXPECTED_STANDARD_ERROR=${ environment-variable 9 } &&
-                                                                                                                EXPECTED_INIT_STATUS=${ environment-variable 10 } &&
+                                                                                                                INIT_EXPECTED_STATUS=${ environment-variable 10 } &&
                                                                                                                 INIT_LOG_FILE=${ environment-variable 11 } &&
                                                                                                                 INIT_LOG=${ environment-variable 12 } &&
                                                                                                                 if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
@@ -369,7 +369,7 @@
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.out.log ) "We were expecting the init out to be locked." &&
                                                                                                                         assert_equals ${ environment-variable "INIT_EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err." &&
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.err.log ) "We were expecting the init err to be locked." &&
-                                                                                                                        assert_equals ${ environment-variable "EXPECTED_INIT_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status." &&
+                                                                                                                        assert_equals ${ environment-variable "INIT_EXPECTED_STATUS" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status." &&
                                                                                                                         assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/init.status.asc ) "We were expecting the init status to be locked."
                                                                                                                  elif [ ${ environment-variable "INIT_HAS_LOG" } == false ]
                                                                                                                 then
