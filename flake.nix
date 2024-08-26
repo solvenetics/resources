@@ -375,7 +375,8 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
                                                                                                                 para_temporary_mult ${ temporary.bad.bad } true txc smf 90 &&
                                                                                                                 para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
-                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm ""
+                                                                                                                para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm "" &&
+                                                                                                                ${ pkgs.coreutils }/bin/true
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
