@@ -336,32 +336,7 @@
                                                                                                                 if [ ${ environment-variable "HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     assert_equals $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "If HAS_TARGET, then the output of should be the target."
-                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } )" "If HAS_TARGET then the error should be blank." &&
-                                                                                                                        RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TARGET_FILE" } ) ) &&
-                                                                                                                        if [ ! -d ${ environment-variable "RESOURCE" } ]
-                                                                                                                        then
-                                                                                                                            fail "We expected the RESOURCE directory to exist."
-                                                                                                                        fi &&
-                                                                                                                        if [ ${ environment-variable "HAS_INIT" } == true ]
-                                                                                                                        then
-                                                                                                                            true
-                                                                                                                        elif [ ${ environment-variable "HAS_INIT" } == false ]
-                                                                                                                        then
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                                            then
-                                                                                                                                fail "We were not expecting any output."
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                                                            then
-                                                                                                                                fail "We were not expecting any init error."
-                                                                                                                            fi &&
-                                                                                                                            if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                                            then
-                                                                                                                                fail "We were not expecting any init status."
-                                                                                                                            fi
-                                                                                                                        else
-                                                                                                                            fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
-                                                                                                                        fi
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR" } )" "If HAS_TARGET then the error should be blank."
                                                                                                                 elif [ ${ environment-variable "HAS_TARGET" } == false ]
                                                                                                                 then
                                                                                                                     assert_equals "" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT" } ) "If not HAS_TARGET then the output should always be blank" &&
@@ -372,6 +347,31 @@
                                                                                                                         fi
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_TARGET=${ environment-variable "HAS_TARGET" }"
+                                                                                                                fi &&
+                                                                                                                RESOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) ) &&
+                                                                                                                if [ ! -d ${ environment-variable "RESOURCE" } ]
+                                                                                                                then
+                                                                                                                    fail "We expected the RESOURCE directory to exist."
+                                                                                                                fi &&
+                                                                                                                if [ ${ environment-variable "HAS_INIT" } == true ]
+                                                                                                                then
+                                                                                                                    true
+                                                                                                                elif [ ${ environment-variable "HAS_INIT" } == false ]
+                                                                                                                then
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.out.log ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any output."
+                                                                                                                    fi &&
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.err.log ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any init error."
+                                                                                                                    fi &&
+                                                                                                                    if [ -e ${ environment-variable "RESOURCE" }/init.status.asc ]
+                                                                                                                    then
+                                                                                                                        fail "We were not expecting any init status."
+                                                                                                                    fi
+                                                                                                                else
+                                                                                                                    fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
                                                                                                                 fi
                                                                                                         } &&
                                                                                                     test_script ( )
