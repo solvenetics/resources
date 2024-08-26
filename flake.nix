@@ -313,7 +313,7 @@
                                                                                                         {
                                                                                                             TEMPORARY=${ environment-variable 1 } &&
                                                                                                                 HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                INIT_ARGUMENTS=${ environment-variable 3 } &&
                                                                                                                 STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                                 TARGET_FILE=${ environment-variable 5 } &&
                                                                                                                 HAS_TARGET=${ environment-variable 6 } &&
@@ -334,10 +334,10 @@
                                                                                                                 STANDARD_ERROR_FILE=$( util_mktemp ) &&
                                                                                                                 if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                 then
-                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
+                                                                                                                    assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
                                                                                                                 elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                 then
-                                                                                                                    assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
+                                                                                                                    assert_status ${ environment-variable "STATUS_CODE" } "${ environment-variable "TEMPORARY" } ${ environment-variable "INIT_ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }" "We expect the temporary's status."
                                                                                                                 else
                                                                                                                     fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                                 fi &&
@@ -387,7 +387,6 @@
                                                                                                                     fail "We did not expect HAS_INIT=${ environment-variable "HAS_INIT" }"
                                                                                                                 fi &&
                                                                                                                 assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked."
-
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
