@@ -323,6 +323,7 @@
                                                                                                                 INIT_EXPECTED_STATUS=${ environment-variable 10 } &&
                                                                                                                 INIT_LOG_FILE=${ environment-variable 11 } &&
                                                                                                                 INIT_LOG=${ environment-variable 12 } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo > ${ environment-variable "INIT_LOG_FILE" } &&
                                                                                                                 if [ ${ environment-variable "INIT_HAS_TARGET" } == true ]
                                                                                                                 then
                                                                                                                     STATUS_CODE=0
@@ -388,7 +389,8 @@
                                                                                                                 else
                                                                                                                     fail "We did not expect INIT_HAS_LOG=${ environment-variable "INIT_HAS_LOG" }"
                                                                                                                 fi &&
-                                                                                                                assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked."
+                                                                                                                assert_equals 400 $( ${ pkgs.coreutils }/bin/stat --format %a ${ environment-variable "RESOURCE" }/invalidate.sh ) "We were expecting the invalidation script to be locked." &&
+                                                                                                                assert_equals ${ environment-variable "INIT_LOG" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "INIT_LOG_FILE" } ) "We expect the init to perform exactly."
                                                                                                         } &&
                                                                                                     test_script ( )
                                                                                                         {
@@ -408,7 +410,7 @@
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } true 0 /build/ODb8uwnZ.confirm eiz_nos_mgh_sae_keb_lhc_yho_hex_ mgh lhc eec jxv &&
                                                                                                                 para_script ${ scripts.verification.temporary.release.good } false 0 /build/ODb8uwnZ.confirm eiz_nos_ixa_sae_lql_hex_ ixa vfd eec jxv &&
                                                                                                                 para_temporary ${ temporary.bad.bad } true txc smf /build/m9WX7Bnd.confirm false true epz vdl 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
-                                                                                                                para_temporary ${ temporary.good.good } true mfr fay /build/ccNePxLX.confirm true true zus qki 0
+                                                                                                                para_temporary ${ temporary.good.good } true hwi khh /build/ccNePxLX.confirm true true zus qki 0 /build/dDmoVMf4.confirm zvu_nvv_hwi_eyg_doe_khh_baj_xne_
                                                                                                         }
                                                                                             '' ;
                                                                                     verification =
