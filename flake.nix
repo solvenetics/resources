@@ -427,7 +427,11 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    evictor = temporary : { temporary = temporary.evictor ; cache = 2 ; } ;
+                                                                                    evictor =
+                                                                                        {
+                                                                                            fast = temporary : { temporary = temporary.evictor ; cache = 2 ; } ;
+                                                                                            slow = temporary : { temporary = temporary.evictor ; cache = 8 ; } ;
+                                                                                        } ;
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
@@ -575,15 +579,14 @@
                                                                                                             }  &&
                                                                                                         test_script ( )
                                                                                                             {
-                                                                                                                ${ pkgs.coreutils }/bin/echo wt &&
-                                                                                                                /*
-                                                                                                                para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
-                                                                                                                    para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
-                                                                                                                    para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
-                                                                                                                    para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
-                                                                                                                */
-                                                                                                                true &&
-                                                                                                                exit 61
+                                                                                                                ${ pkgs.coreutils }/bin/echo wtf &&
+                                                                                                                # /*
+                                                                                                                # para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
+                                                                                                                #    para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
+                                                                                                                #    para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
+                                                                                                                #     para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
+                                                                                                                # */
+                                                                                                                exit 0
                                                                                                              } &&
                                                                                                         x_test_temporary ( )
                                                                                                             {
@@ -719,6 +722,8 @@
                                                                                                     standard-input-no ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
+                                                                                                    evictor ,
+                                                                                                    evictor-file ,
                                                                                                     target-file
                                                                                                 } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     ''
@@ -737,8 +742,10 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ if evictor then cache.evictor.fast else cache.evictor.slow } ${ environment-variable "ARGUMENTS" } > ${ evictor-file } 2>&1
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
+                                                                                                                    ${ environment-variable "STANDARD_INPUT" } | ${ if evictor then cache.evictor.fast else cache.evictor.slow } ${ environment-variable "ARGUMENTS" } > ${ evictor-file } 2>&1
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ target-file } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
@@ -767,6 +774,8 @@
                                                                                                                                 standard-input-no = "yzr" ;
                                                                                                                                 standard-output = "nqt" ;
                                                                                                                                 standard-error = "yun" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/udjU1A6o.confirm" ;
                                                                                                                                 target-file = "/build/Iw7j4sOr.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
@@ -784,6 +793,8 @@
                                                                                                                                 standard-input-no = "jmu" ;
                                                                                                                                 standard-output = "itp" ;
                                                                                                                                 standard-error = "nbg" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/sIbj0h6Z.confirm" ;
                                                                                                                                 target-file = "/build/Z8iexL0r.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
@@ -807,10 +818,12 @@
                                                                                                                                 standard-input-no = "xtn" ;
                                                                                                                                 standard-output = "epz" ;
                                                                                                                                 standard-error = "vdl" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/a2OUhW53.confirm" ;
                                                                                                                                 target-file = "/build/m9WX7Bnd.confirm" ;
                                                                                                                             } ;
                                                                                                                     evictor =
-                                                                                                                        script
+                                                                                                                        evictor
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "cqt" ;
@@ -824,7 +837,6 @@
                                                                                                                                 standard-input-no = "otb" ;
                                                                                                                                 standard-output = "dcs" ;
                                                                                                                                 standard-error = "bae" ;
-                                                                                                                                target-file = "/build/lzgR2nlV.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -841,6 +853,8 @@
                                                                                                                                 standard-input-no = "nrq" ;
                                                                                                                                 standard-output = "zus" ;
                                                                                                                                 standard-error = "qki" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/SG8t4G16.confirm" ;
                                                                                                                                 target-file = "/build/ccNePxLX.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
@@ -861,6 +875,8 @@
                                                                                                                                 standard-input-no = "toa" ;
                                                                                                                                 standard-output = "uoz" ;
                                                                                                                                 standard-error = "jtg" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/6pHzDSmW.confirm" ;
                                                                                                                                 target-file = "/build/iwl3MCIj.confirm" ;
                                                                                                                             } ;
                                                                                                                     evictor =
@@ -894,6 +910,8 @@
                                                                                                                                 standard-input-no = "lql" ;
                                                                                                                                 standard-output = "eec" ;
                                                                                                                                 standard-error = "jxv" ;
+                                                                                                                                evictor = true ;
+                                                                                                                                evictor-file = "/build/6pHzDSmW.confirm" ;
                                                                                                                                 target-file = "/build/SLLPZSO5.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
