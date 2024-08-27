@@ -494,7 +494,12 @@
                                                                                                                     para_script ${ scripts.verification.temporary.release.evictor } true 0 /build/bBml9IJl.confirm kcc_lkp_txc_wfj_grl_smf_qsc_zso_ txc smf frd iqw &&
                                                                                                                     para_temporary_mult ${ temporary.evictor } true dcs bae 0 &&
                                                                                                                     para_temporary_order ${ temporary.evictor } true dcs bae 0 /build/JGJ1VKM4.confirm cqt_dqu_dcs_cyn_zop_bae_aec_uni_ &&
-                                                                                                                    para_temporary_order ${ temporary.evictor } true dcs bae 0 /build/bBml9IJl.confirm ""
+                                                                                                                    para_temporary_order ${ temporary.evictor } true dcs bae 0 /build/bBml9IJl.confirm "" &&
+                                                                                                                    para_script ${ scripts.verification.temporary.init.evictor } false 0 /build/JGJ1VKM4.confirm cqt_dqu_txc_cyn_otb_uni_ txc smf dcs bae &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.evictor } false 0 /build/bBml9IJl.confirm kcc_lkp_txc_wfj_vpy_zso_ txc smf frd iqw &&
+                                                                                                                    para_temporary_mult ${ temporary.evictor } false dcs bae 0 &&
+                                                                                                                    para_temporary_order ${ temporary.evictor } false dcs bae 0 /build/JGJ1VKM4.confirm cqt_dqu_dcs_cyn_otb_uni_ &&
+                                                                                                                    para_temporary_order ${ temporary.evictor } false dcs bae 0 /build/bBml9IJl.confirm ""
                                                                                                             }
                                                                                                 '' ;
                                                                                     verification =
