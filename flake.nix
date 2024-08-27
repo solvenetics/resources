@@ -425,6 +425,10 @@
                                                                                     ''
                                                                                         ${ pkgs.coreutils }/bin/tee &
                                                                                     '' ;
+                                                                            cache =
+                                                                                {
+                                                                                    evictor = temporary : { temporary = temporary.evictor ; cache = 2 ; } ;
+                                                                                } ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 {
@@ -727,10 +731,13 @@
                                                                                                                 STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ cache.evictor } ${ environment-variable "ARGUMENTS" }
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
+                                                                                                                    ${ cache.evictor } ${ environment-variable "ARGUMENTS" }
                                                                                                             fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ target-file } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
