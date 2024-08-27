@@ -384,12 +384,38 @@
                                                                                                                             OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
                                                                                                                             OBSERVED_3=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }_PRIME > /dev/null 2>&1" ) &&
                                                                                                                             assert_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "If we repeatedly call the cache with the same then we should get the same." &&
-                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_3" } "If we change the arguments then repeated calls to the cache should return different."                                                                                                                             
+                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_3" } "If we change the arguments then repeated calls to the cache should return different."
                                                                                                                     else
                                                                                                                         fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                                     fi &&
                                                                                                                     assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
                                                                                                             } &&
+                                                                                                        para_cache_order ( )
+                                                                                                            {
+                                                                                                                CACHE=${ environment-variable 1 } &&
+                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
+                                                                                                                    LOG_FILE=${ environment-variable 6 } &&
+                                                                                                                    EXPECTED=${ environment-variable 7 } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
+                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
+                                                                                                                    then
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                    else
+                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
+                                                                                                                    fi &&
+                                                                                                                    if [ -z "${ environment-variable "EXPECTED" }" ]
+                                                                                                                    then
+                                                                                                                        assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
+                                                                                                                    else
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
+                                                                                                                    fi
+                                                                                                            }  &&
                                                                                                         test_script ( )
                                                                                                             {
                                                                                                                  para_script ${ scripts.verification.script.script.bad } true 71 /build/UhVGqTXa.confirm bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
