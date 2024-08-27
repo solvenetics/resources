@@ -573,12 +573,17 @@
                                                                                                                         assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
                                                                                                                     fi
                                                                                                             }  &&
-                                                                                                        X_test_script ( )
+                                                                                                        test_script ( )
                                                                                                             {
-                                                                                                                 para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo wt &&
+                                                                                                                /*
+                                                                                                                para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
                                                                                                                     para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
                                                                                                                     para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
                                                                                                                     para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
+                                                                                                                */
+                                                                                                                true &&
+                                                                                                                exit 61
                                                                                                              } &&
                                                                                                         x_test_temporary ( )
                                                                                                             {
@@ -731,11 +736,9 @@
                                                                                                                 STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ cache.evictor } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
-                                                                                                                    ${ cache.evictor } ${ environment-variable "ARGUMENTS" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ target-file } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
