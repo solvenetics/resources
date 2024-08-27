@@ -402,10 +402,10 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
                                                                                                                     if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                                     then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/bash -c \"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1\""
                                                                                                                     elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
                                                                                                                     then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
+                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/bash -c \"${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1\""
                                                                                                                     else
                                                                                                                         fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
                                                                                                                     fi &&
