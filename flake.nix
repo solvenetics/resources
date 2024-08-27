@@ -573,7 +573,7 @@
                                                                                                                         assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
                                                                                                                     fi
                                                                                                             }  &&
-                                                                                                        test_script ( )
+                                                                                                        X_test_script ( )
                                                                                                             {
                                                                                                                  para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
                                                                                                                     para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
