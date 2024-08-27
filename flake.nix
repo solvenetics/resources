@@ -45,6 +45,7 @@
                                                 let
                                                     has-standard-input =
                                                         strip
+
                                                             ''
                                                                 [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
                                                             '' ;
@@ -382,6 +383,7 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
+                                                                            cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -579,9 +581,7 @@
                                                                                                             }  &&
                                                                                                         test_script ( )
                                                                                                             {
-                                                                                                                ${ pkgs.coreutils }/bin/echo wtf &&
-                                                                                                                # /*
-                                                                                                                # para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
+                                                                                                                para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
                                                                                                                 #    para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
                                                                                                                 #    para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
                                                                                                                 #     para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
@@ -944,6 +944,7 @@
                                                                             temporary-init-error-message = "jsq" ;
                                                                         } ;
                                                                 in
+                                                                    builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
