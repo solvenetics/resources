@@ -366,7 +366,7 @@
                                                                                                                     para_script ${ scripts.verification.script.script.good } true 0 /build/dFz88Etj.confirm miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
                                                                                                                     para_script ${ scripts.verification.script.script.good } false 0 /build/dFz88Etj.confirm miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
                                                                                                              } &&
-                                                                                                         test_temporary ( )
+                                                                                                        test_temporary ( )
                                                                                                             {
                                                                                                                 para_script ${ scripts.verification.temporary.init.bad } true 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf epz vdl &&
                                                                                                                     para_script ${ scripts.verification.temporary.init.bad } false 72 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_xtn_zpp_ txc smf epz vdl &&
@@ -380,55 +380,55 @@
                                                                                                                     para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
                                                                                                                     para_temporary_order ${ temporary.bad.bad } true txc smf 90 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.bad.bad } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.bad } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ &&
+                                                                                                                    para_temporary_order ${ temporary.bad.bad } false txc smf  90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_xtn_zpp_ &&
                                                                                                                     para_temporary_order ${ temporary.bad.bad } false txc smf 90 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.bad.good } true txc smf 90 &&
                                                                                                                     para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
                                                                                                                     para_temporary_order ${ temporary.bad.good } true txc smf 90 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.bad.good } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.good } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ &&
+                                                                                                                    para_temporary_order ${ temporary.bad.good } false txc smf  90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_xtn_zpp_ &&
                                                                                                                     para_temporary_order ${ temporary.bad.good } false txc smf 90 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.bad.null } true txc smf 90 &&
                                                                                                                     para_temporary_order ${ temporary.bad.null } true txc smf 90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
                                                                                                                     para_temporary_order ${ temporary.bad.null } true txc smf 90 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.bad.null } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.null } false mgp iwc 90 /build/LuSCtrEw.confirm rtw_rlc_mgp_hgb_xtn_zpp_ &&
+                                                                                                                    para_temporary_order ${ temporary.bad.null } false txc smf  90 /build/LuSCtrEw.confirm rtw_rlc_txc_hgb_xtn_zpp_ &&
                                                                                                                     para_temporary_order ${ temporary.bad.null } false txc smf 90 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.bad } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.good.bad } true txc smf 0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_doe_smf_baj_xne_
                                                                                                                     para_temporary_order ${ temporary.good.bad } true txc smf 0 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.bad } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.bad } false mgp iwc 0 /build/dDmoVMf4.confirm zvu_nvv_mgp_eyg_nrq_xne_ &&
+                                                                                                                    para_temporary_order ${ temporary.good.bad } false txc smf  0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_nrq_xne_ &&
                                                                                                                     para_temporary_order ${ temporary.good.bad } false txc smf 0 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.good } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.good.good } true txc smf 0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_doe_smf_baj_xne_ &&
                                                                                                                     para_temporary_order ${ temporary.good.good } true txc smf 0 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.good } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.good } false mgp iwc 0 /build/dDmoVMf4.confirm zvu_nvv_mgp_eyg_nrq_xne_ &&
+                                                                                                                    para_temporary_order ${ temporary.good.good } false txc smf  0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_nrq_xne_ &&
                                                                                                                     para_temporary_order ${ temporary.good.good } false txc smf 0 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.null } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.good.null } true txc smf 0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_doe_smf_baj_xne_ &&
                                                                                                                     para_temporary_order ${ temporary.good.null } true txc smf 0 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.good.null } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.null } false mgp iwc 0 /build/dDmoVMf4.confirm zvu_nvv_mgp_eyg_nrq_xne_ &&
+                                                                                                                    para_temporary_order ${ temporary.good.null } false txc smf  0 /build/dDmoVMf4.confirm zvu_nvv_txc_eyg_nrq_xne_ &&
                                                                                                                     para_temporary_order ${ temporary.good.null } false txc smf 0 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.bad } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.null.bad } true txc smf 0 ${ null-file } "" &&
                                                                                                                     para_temporary_order ${ temporary.null.bad } true txc smf 0 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.bad } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.bad } false mgp iwc 0 ${ null-file } ""  &&
+                                                                                                                    para_temporary_order ${ temporary.null.bad } false txc smf  0 ${ null-file } ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.bad } false txc smf 0 /build/Jh4pICL7.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.good } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.null.good } true txc smf 0 ${ null-file } ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.good } true txc smf 0 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.good } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.good } false mgp iwc 0 ${ null-file } ""  &&
+                                                                                                                    para_temporary_order ${ temporary.null.good } false txc smf  0 ${ null-file } ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.good } false txc smf 0 /build/ODb8uwnZ.confirm "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.null } true txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.null.null } true txc smf 0 ${ null-file } ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.null } true txc smf 0 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.null } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } false mgp iwc 0 ${ null-file } ""  &&
+                                                                                                                    para_temporary_order ${ temporary.null.null } false txc smf  0 ${ null-file } ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.null } false txc smf 0 ${ null-file } "" &&
                                                                                                                     ${ pkgs.coreutils }/bin/true
                                                                                                             }
