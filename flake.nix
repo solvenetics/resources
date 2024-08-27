@@ -505,9 +505,8 @@
                                                                                                 '' ;
                                                                                     verification =
                                                                                         let
-                                                                                            script =
+                                                                                            evictor =
                                                                                                  {
-                                                                                                    log-file ,
                                                                                                     status-code ,
                                                                                                     log-begin ,
                                                                                                     log-end ,
@@ -519,8 +518,48 @@
                                                                                                     standard-input-end ,
                                                                                                     standard-input-no ,
                                                                                                     standard-output ,
-                                                                                                    standard-error ,
-                                                                                                    target-file ? builtins.null
+                                                                                                    standard-error
+                                                                                                } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
+                                                                                                            if [ -z "${ environment-variable "@" }" ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
+                                                                                                            fi &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ cache.verification.evictor } ${ environment-variable "ARGUMENTS" }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
+                                                                                                                    ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ARGUMENTS" }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
+                                                                                                            exit ${ builtins.toString status-code }
+                                                                                                    '' ;
+                                                                                            script =
+                                                                                                 {
+                                                                                                    status-code ,
+                                                                                                    log-begin ,
+                                                                                                    log-end ,
+                                                                                                    log-no ,
+                                                                                                    arguments-begin ,
+                                                                                                    arguments-end ,
+                                                                                                    arguments-no ,
+                                                                                                    standard-input-begin ,
+                                                                                                    standard-input-end ,
+                                                                                                    standard-input-no ,
+                                                                                                    standard-output ,
+                                                                                                    standard-error
                                                                                                 } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
@@ -544,7 +583,6 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
-                                                                                                            ${ if builtins.typeOf target-file == "string" then "${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ target-file }" else "# NO TARGET FILE" } &&
                                                                                                             exit ${ builtins.toString status-code }
                                                                                                     '' ;
                                                                                             in
@@ -556,7 +594,6 @@
                                                                                                                     bad =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/UhVGqTXa.confirm" ;
                                                                                                                                 status-code = 71 ;
                                                                                                                                 log-begin = "bvq" ;
                                                                                                                                 log-end = "fsk" ;
@@ -573,7 +610,6 @@
                                                                                                                     good =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/dFz88Etj.confirm" ;
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "miv" ;
                                                                                                                                 log-end = "kjo" ;
@@ -596,7 +632,6 @@
                                                                                                                     bad =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/LuSCtrEw.confirm" ;
                                                                                                                                 status-code = 72 ;
                                                                                                                                 log-begin = "rtw" ;
                                                                                                                                 log-end = "zpp" ;
@@ -614,7 +649,6 @@
                                                                                                                     evictor =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/JGJ1VKM4.confirm" ;
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "cqt" ;
                                                                                                                                 log-end = "uni" ;
@@ -632,7 +666,6 @@
                                                                                                                     good =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/dDmoVMf4.confirm" ;
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "zvu" ;
                                                                                                                                 log-end = "xne" ;
@@ -653,7 +686,6 @@
                                                                                                                     bad =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/Jh4pICL7.confirm" ;
                                                                                                                                 status-code = 73 ;
                                                                                                                                 log-begin = "aue" ;
                                                                                                                                 log-end = "mck" ;
@@ -670,7 +702,6 @@
                                                                                                                     evictor =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/bBml9IJl.confirm" ;
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "kcc" ;
                                                                                                                                 log-end = "zso" ;
@@ -687,7 +718,6 @@
                                                                                                                     good =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                log-file = "/build/ODb8uwnZ.confirm" ;
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "eiz" ;
                                                                                                                                 log-end = "hex" ;
