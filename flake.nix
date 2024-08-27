@@ -50,6 +50,156 @@
                                                             '' ;
                                                     mappers =
                                                         let
+                                                            cache =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then
+                                                                        let
+                                                                            cache =
+                                                                                ''
+                                                                                    export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+                                                                                        EPOCH_TIMESTAMP=$( ${ pkgs.coreutils }/bin/date --date @$(( ( ${ environment-variable cache-timestamp } / ${ temporary.epoch } ) * ${ temporary.epoch } )) +%s ) &&
+                                                                                        PARENT_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                        if ${ has-standard-input }
+                                                                                        then
+                                                                                            HAS_STANDARD_INPUT=true &&
+                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                        else
+                                                                                            HAS_STANDARD_INPUT=false &&
+                                                                                                STANDARD_INPUT=""
+                                                                                        fi &&
+                                                                                        ENCODED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/base64 ) &&
+                                                                                        ENCODED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 ) &&
+                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo "${ constant-hash } ${ environment-variable "EPOCH_TIMESTAMP" } ${ environment-variable "@" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                        exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        if ${ pkgs.flock }/bin/flock 3
+                                                                                        then
+                                                                                           if [ -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
+                                                                                            then
+                                                                                                if [ ! -z ${ environment-variable "PARENT_HASH" } ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
+                                                                                                fi &&
+                                                                                                GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "GRANDPARENT_PID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "GRANDPARENT_PID" }.pid &&
+                                                                                                    ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                            else
+                                                                                                WORK_DIR=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIR" }/flag &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "ENCODED_ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "ENCODED_STANDARD_INPUT" } ${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIR" } | ${ at } now > /dev/null 2>&1 &&
+                                                                                                    while [ ! -f ${ environment-variable "WORK_DIR" }/flag/flag ]
+                                                                                                    do
+                                                                                                        ${ pkgs.coreutils }/bin/sleep 0
+                                                                                                    done &&
+                                                                                                    # ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIR" }/flag/ &&
+                                                                                                    if [ "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/status )" == 0 ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIR" } ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
+                                                                                                        if [ ! -z "${ environment-variable "PARENT_HASH" }" ]
+                                                                                                        then
+                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_HASH" } ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_HASH" }.hash
+                                                                                                        fi &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
+                                                                                                        GRANDPARENT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/link
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIR" }/link &&
+                                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIR" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-instantiation-message }" >&2 &&
+                                                                                                            exit ${ builtins.toString cache-instantiation-exit }
+                                                                                                    fi
+                                                                                            fi
+                                                                                        else
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ cache-directory }/${ environment-variable cache-epoch-hash }/link &&
+                                                                                                ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
+                                                                                                exit ${ builtins.toString cache-lock-exit }
+                                                                                        fi &&
+                                                                                        ${ pkgs.flock }/bin/flock -u 3
+                                                                                        ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock
+                                                                                '' ;
+                                                                            constant-hash = builtins.hashString "sha512" ( builtins.concatStringsSep ";" ( builtins.concatLists [ path [ name ( builtins.toString temporary.temporary ) ( builtins.toString temporary.epoch ) ] ] ) ) ;
+                                                                            init =
+                                                                                ''
+                                                                                    ENCODED_ARGUMENTS=${ environment-variable 1 } &&
+                                                                                        HAS_STANDARD_INPUT=${ environment-variable 2 } &&
+                                                                                        ENCODED_STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                        export ${ cache-epoch-hash }=${ environment-variable 4 } &&
+                                                                                        WORK_DIR=${ environment-variable 5 } &&
+                                                                                        ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_ARGUMENTS" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "ENCODED_STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64 --decode ) &&
+                                                                                        ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "invalidate" invalidate } ${ environment-variable "WORK_DIR" }/invalidate &&
+                                                                                        if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                        then
+                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                            else
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                            fi
+                                                                                        else
+                                                                                            if ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/link
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                            else
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "WORK_DIR" }/status
+                                                                                            fi
+                                                                                        fi &&
+                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag/flag &&
+                                                                                        while [ -f ${ environment-variable "WORK_DIR" }/flag/flag ]
+                                                                                        do
+                                                                                            ${ pkgs.coreutils }/bin/sleep 0s
+                                                                                        done &&
+                                                                                        while [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
+                                                                                        do
+                                                                                            ${ pkgs.coreutils }/bin/sleep 0s
+                                                                                        done &&
+                                                                                        # ${ pkgs.inotify-tools }/bin/inotifywait --event delete ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag --timeout $(( temporary.epoch - $( ${ pkgs.coreutils }/bin/date +%s ) % temporary.epoch )) &&
+                                                                                        if [ -x ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate ]
+                                                                                        then
+                                                                                            ${ cache-directory }/${ environment-variable cache-epoch-hash }/invalidate
+                                                                                        fi
+                                                                                '' ;
+                                                                            invalidate =
+                                                                                ''
+                                                                                    export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
+                                                                                        exec 3> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        ${ pkgs.flock }/bin/flock 3 &&
+                                                                                        ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }/flag/flag &&
+                                                                                        INVALIDATION_DIR=$( ${ pkgs.coreutils }/bin/mktemp --dry-run ) &&
+                                                                                        ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "INVALIDATION_DIR" } &&
+                                                                                        # WHY THE FUCK DOES NOT THE BELOW WORK?
+                                                                                        # ${ pkgs.coreutils }/bin/rm ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        ${ pkgs.flock }/bin/flock -u 3 &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                        do
+                                                                                            PID=$( ${ pkgs.coreutils }/bin/basename ${ environment-variable "PID_FILE%.*" } ) &&
+                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                        done &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "INVALIDATION_DIR" } -mindepth 1 -type l -name "*.hash" -exec ${ pkgs.coreutils }/bin/readlink {} \; | while read HASH_LINK
+                                                                                        do
+                                                                                            if [ -d ${ environment-variable "HASH_LINK" } ] && [ -x ${ environment-variable "HASH_LINK" }/invalidate ]
+                                                                                            then
+                                                                                                ${ environment-variable "HASH_LINK" }/invalidate
+                                                                                            fi &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/rm ${ environment-variable "HASH_LINK" }
+                                                                                        done &&
+                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "INVALIDATION_DIR" }
+                                                                                '' ;
+                                                                            temporary =
+                                                                                let
+                                                                                    identity =
+                                                                                        {
+                                                                                            epoch ? builtins.null ,
+                                                                                            temporary ,
+                                                                                        } :
+                                                                                            {
+                                                                                                epoch = builtins.toString ( if builtins.typeOf epoch == "null" then cache-default-epoch else epoch ) ;
+                                                                                                temporary = temporary ;
+                                                                                            } ;
+                                                                                    in identity ( value tertiary.temporary ) ;
+                                                                            in pkgs.writeShellScript name cache
+                                                                    else builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
@@ -192,6 +342,7 @@
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
+                                                                    cache = cache [ ( environment-variable out ) "cache" ] ;
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
@@ -217,6 +368,7 @@
                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             in
                                                                 {
+                                                                    cache = builtins.mapAttrs ( mapper [ ( environment-variable out ) "cache" ] ) cache ;
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
@@ -424,7 +576,7 @@
                                                                                                                     para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
                                                                                                                     para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
                                                                                                              } &&
-                                                                                                        test_temporary ( )
+                                                                                                        x_test_temporary ( )
                                                                                                             {
                                                                                                                 para_script ${ scripts.verification.temporary.init.bad } true 72 rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf epz vdl &&
                                                                                                                     para_script ${ scripts.verification.temporary.init.bad } false 72 rtw_rlc_txc_hgb_xtn_zpp_ txc smf epz vdl &&
@@ -489,7 +641,7 @@
                                                                                                                     para_temporary_order ${ temporary.null.null } false txc smf  0 ""  &&
                                                                                                                     para_temporary_order ${ temporary.null.null } false txc smf 0 ""
                                                                                                             } &&
-                                                                                                        test_cache ( )
+                                                                                                        x_test_cache ( )
                                                                                                             {
                                                                                                                 para_script ${ scripts.verification.temporary.init.evictor } true 0 cqt_dqu_txc_cyn_zop_smf_aec_uni_ txc smf dcs bae &&
                                                                                                                     para_script ${ scripts.verification.temporary.release.evictor } true 0 kcc_lkp_txc_wfj_grl_smf_qsc_zso_ txc smf frd iqw &&
@@ -519,7 +671,7 @@
                                                                                                     standard-input-no ,
                                                                                                     standard-output ,
                                                                                                     standard-error
-                                                                                                } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                                } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                             if [ -z "${ environment-variable "@" }" ]
@@ -535,11 +687,9 @@
                                                                                                                 STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ cache.verification.evictor } ${ environment-variable "ARGUMENTS" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
-                                                                                                                    ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
@@ -559,8 +709,9 @@
                                                                                                     standard-input-end ,
                                                                                                     standard-input-no ,
                                                                                                     standard-output ,
-                                                                                                    standard-error
-                                                                                                } : { pkgs , ... } : { environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                                    standard-error ,
+                                                                                                    target-file
+                                                                                                } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     ''
                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                             if [ -z "${ environment-variable "@" }" ]
@@ -606,6 +757,7 @@
                                                                                                                                 standard-input-no = "yzr" ;
                                                                                                                                 standard-output = "nqt" ;
                                                                                                                                 standard-error = "yun" ;
+                                                                                                                                target-file = "/build/Iw7j4sOr.confirm" ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -622,6 +774,7 @@
                                                                                                                                 standard-input-no = "jmu" ;
                                                                                                                                 standard-output = "itp" ;
                                                                                                                                 standard-error = "nbg" ;
+                                                                                                                                target-file = "/build/Z8iexL0r.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                          } ;
@@ -698,9 +851,10 @@
                                                                                                                                 standard-input-no = "toa" ;
                                                                                                                                 standard-output = "uoz" ;
                                                                                                                                 standard-error = "jtg" ;
+                                                                                                                                target-file = "/build/iwl3MCIj.confirm" ;
                                                                                                                             } ;
                                                                                                                     evictor =
-                                                                                                                        script
+                                                                                                                        evictor
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "kcc" ;
@@ -730,6 +884,7 @@
                                                                                                                                 standard-input-no = "lql" ;
                                                                                                                                 standard-output = "eec" ;
                                                                                                                                 standard-error = "jxv" ;
+                                                                                                                                target-file = "/build/SLLPZSO5.confirm" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
