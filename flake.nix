@@ -486,8 +486,12 @@
                                                                                                                     para_temporary_order ${ temporary.null.null } true txc smf 0 ${ null-file } "" &&
                                                                                                                     para_temporary_mult ${ temporary.null.null } false txc smf 0 &&
                                                                                                                     para_temporary_order ${ temporary.null.null } false txc smf  0 ${ null-file } ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } false txc smf 0 ${ null-file } "" &&
-                                                                                                                    ${ pkgs.coreutils }/bin/true
+                                                                                                                    para_temporary_order ${ temporary.null.null } false txc smf 0 ${ null-file } ""
+                                                                                                            } &&
+                                                                                                        test_cache ( )
+                                                                                                            {
+                                                                                                                para_script ${ scripts.verification.temporary.init.evictor } true 0 /build/JGJ1VKM4.confirm cqt_dqu_txc_cyn_zop_smf_aec_uni_ txc smf dcs bae &&
+                                                                                                                    para_script ${ scripts.verification.temporary.release.evictor } true 0 /build/bBml9IJl.confirm kcc_lkp_txc_wfj_grl_smf_qsc_zso_ txc smf frd iqw
                                                                                                             }
                                                                                                 '' ;
                                                                                     verification =
@@ -598,6 +602,24 @@
                                                                                                                                 standard-error = "vdl" ;
                                                                                                                                 target-file = "/build/m9WX7Bnd.confirm" ;
                                                                                                                             } ;
+                                                                                                                    evictor =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/JGJ1VKM4.confirm" ;
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "cqt" ;
+                                                                                                                                log-end = "uni" ;
+                                                                                                                                log-no = "ahh" ;
+                                                                                                                                arguments-begin = "dqu" ;
+                                                                                                                                arguments-end = "cyn" ;
+                                                                                                                                arguments-no = "oaz" ;
+                                                                                                                                standard-input-begin = "zop" ;
+                                                                                                                                standard-input-end = "aec" ;
+                                                                                                                                standard-input-no = "otb" ;
+                                                                                                                                standard-output = "dcs" ;
+                                                                                                                                standard-error = "bae" ;
+                                                                                                                                target-file = "/build/lzgR2nlV.confirm" ;
+                                                                                                                            } ;
                                                                                                                     good =
                                                                                                                         script
                                                                                                                             {
@@ -636,6 +658,23 @@
                                                                                                                                 standard-output = "uoz" ;
                                                                                                                                 standard-error = "jtg" ;
                                                                                                                             } ;
+                                                                                                                    evictor =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                log-file = "/build/bBml9IJl.confirm" ;
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "kcc" ;
+                                                                                                                                log-end = "zso" ;
+                                                                                                                                log-no = "iaa" ;
+                                                                                                                                arguments-begin = "lkp" ;
+                                                                                                                                arguments-end = "wfj" ;
+                                                                                                                                arguments-no = "dux" ;
+                                                                                                                                standard-input-begin = "grl" ;
+                                                                                                                                standard-input-end = "qsc" ;
+                                                                                                                                standard-input-no = "vpy" ;
+                                                                                                                                standard-output = "frd" ;
+                                                                                                                                standard-error = "iqw" ;
+                                                                                                                            } ;
                                                                                                                     good =
                                                                                                                         script
                                                                                                                             {
@@ -671,6 +710,7 @@
                                                                                             good = scripts : { init = scripts.verification.temporary.init.good ; release = scripts.verification.temporary.release.good ; } ;
                                                                                             null = scripts : { init = scripts.verification.temporary.init.good ; } ;
                                                                                         } ;
+                                                                                    evictor = scripts : { init = scripts.verification.temporary.init.evictor ; release = scripts.verification.temporary.release.evictor ; } ;
                                                                                     null =
                                                                                         {
                                                                                             bad = scripts : { release = scripts.verification.temporary.release.bad ; } ;
