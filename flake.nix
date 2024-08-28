@@ -442,7 +442,7 @@
                                                                                                             index :
                                                                                                                 strip
                                                                                                                     ''
-                                                                                                                        test_${ builtins.toString index }
+                                                                                                                        test_${ builtins.toString index } ( )
                                                                                                                             {
                                                                                                                                 ${ builtins.elemAt list index }
                                                                                                                             }
@@ -450,7 +450,7 @@
                                                                                                         in builtins.genList fun ( builtins.length list ) ;
                                                                                                 list =
                                                                                                     let
-                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp -t XXXXXXXX.verification" ;
+                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                         script =
                                                                                                             {
                                                                                                                 script ,
@@ -465,7 +465,7 @@
                                                                                                                     ''
                                                                                                                         OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
                                                                                                                             OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                            assert_exit_status ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                            assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                             assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                             assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
                                                                                                                     ''
@@ -473,13 +473,24 @@
                                                                                                                     ''
                                                                                                                         OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
                                                                                                                             OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                            assert_exit_status ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                            assert_status_code ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                             assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                             assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
                                                                                                                     '' ;
                                                                                                         in
                                                                                                             [
-
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = "${ pkgs.coreutils }/bin/true" ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "nrg" ;
+                                                                                                                            standard-input = "byn" ;
+                                                                                                                            status = 71 ;
+                                                                                                                            expected-standard-output = "" ;
+                                                                                                                            expected-standard-error = "" ;
+                                                                                                                        }
+                                                                                                                )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
