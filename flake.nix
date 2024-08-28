@@ -429,285 +429,12 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    evictor =
-                                                                                        {
-                                                                                            fast = temporary : { temporary = temporary.evictor ; cache = 2 ; } ;
-                                                                                            slow = temporary : { temporary = temporary.evictor ; cache = 8 ; } ;
-                                                                                        } ;
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 {
-                                                                                    test=
-                                                                                        { pkgs , ... } : { environment-variable , scripts , temporary , ... } :
-                                                                                            let
-                                                                                                null-file = "/build/BEuZydrN.confirm" ;
-                                                                                                in
-                                                                                                ''
-                                                                                                    util_mktemp ( )
-                                                                                                        {
-                                                                                                            ${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification
-                                                                                                        }
-                                                                                                        para_script ( )
-                                                                                                            {
-                                                                                                                SCRIPT=${ environment-variable 1 } &&
-                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                    STATUS_CODE=${ environment-variable 3 } &&
-                                                                                                                    EXPECTED=${ environment-variable 4 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 5 } &&
-                                                                                                                    STANDARD_INPUT=${ environment-variable 6 } &&
-                                                                                                                    EXPECTED_STANDARD_OUTPUT=${ environment-variable 7 } &&
-                                                                                                                    EXPECTED_STANDARD_ERROR=${ environment-variable 8 } &&
-                                                                                                                    LOG_FILE=${ log-file } &&
-                                                                                                                    STANDARD_OUTPUT_FILE=$( util_mktemp ) &&
-                                                                                                                    STANDARD_ERROR_FILE=$( util_mktemp ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "STATUS_CODE" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
-                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "STATUS_CODE" } "${ environment-variable "SCRIPT" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "STANDARD_ERROR_FILE" }"
-                                                                                                                    else
-                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                    fi &&
-                                                                                                                    assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file to match exactly." &&
-                                                                                                                    assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match exactly." &&
-                                                                                                                    assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "STANDARD_ERROR_FILE" } ) "We expect the standard error to match exactly."
-                                                                                                            } &&
-                                                                                                        para_temporary_mult ( )
-                                                                                                            {
-                                                                                                                TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                    then
-                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
-                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                    then
-                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" )
-                                                                                                                    else
-                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                    fi &&
-                                                                                                                    assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
-                                                                                                            } &&
-                                                                                                        para_temporary_order ( )
-                                                                                                            {
-                                                                                                                TEMPORARY=${ environment-variable 1 } &&
-                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                    EXPECTED=${ environment-variable 6 } &&
-                                                                                                                    LOG_FILE=${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
-                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "TEMPORARY" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1"
-                                                                                                                    else
-                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                    fi &&
-                                                                                                                    if [ -z "${ environment-variable "EXPECTED" }" ]
-                                                                                                                    then
-                                                                                                                        assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
-                                                                                                                    else
-                                                                                                                        assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
-                                                                                                                    fi
-                                                                                                            }  &&
-                                                                                                        para_cache_mult ( )
-                                                                                                            {
-                                                                                                                CACHE=${ environment-variable 1 } &&
-                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                    then
-                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_3=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }_PRIME > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_4=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" }_PRIME | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_5=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }_PRIME > /dev/null 2>&1" ) &&
-                                                                                                                            assert_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "If we repeatedly call the cache with the same then we should get the same." &&
-                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_3" } "If we change the arguments then repeated calls to the cache should return different." &&
-                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_4" } "If we change the input then repeated calls to the cache should return differnt." &&
-                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_5" } "If we change both the arguments and inputs then repeated calls to the cache should return different."
-                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                    then
-                                                                                                                        OBSERVED_1=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_2=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1" ) &&
-                                                                                                                            OBSERVED_3=$( assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" }_PRIME > /dev/null 2>&1" ) &&
-                                                                                                                            assert_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "If we repeatedly call the cache with the same then we should get the same." &&
-                                                                                                                            assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_3" } "If we change the arguments then repeated calls to the cache should return different."
-                                                                                                                    else
-                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                    fi &&
-                                                                                                                    assert_not_equals ${ environment-variable "OBSERVED_1" } ${ environment-variable "OBSERVED_2" } "We should be generating new unique values each time."
-                                                                                                            } &&
-                                                                                                        para_cache_order ( )
-                                                                                                            {
-                                                                                                                CACHE=${ environment-variable 1 } &&
-                                                                                                                    HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                                    ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                                    STANDARD_INPUT=${ environment-variable 4 } &&
-                                                                                                                    EXPECTED_STATUS=${ environment-variable 5 } &&
-                                                                                                                    LOG_FILE=${ environment-variable 6 } &&
-                                                                                                                    EXPECTED=${ environment-variable 7 } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo > ${ environment-variable "LOG_FILE" } &&
-                                                                                                                    if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/bash -c \"${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1\""
-                                                                                                                    elif [ ${ environment-variable "HAS_STANDARD_INPUT" } == false ]
-                                                                                                                    then
-                                                                                                                        assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.coreutils }/bin/bash -c \"${ environment-variable "CACHE" } ${ environment-variable "ARGUMENTS" } > /dev/null 2>&1\""
-                                                                                                                    else
-                                                                                                                        fail "We did not expect HAS_STANDARD_INPUT=${ environment-variable "HAS_STANDARD_INPUT" }"
-                                                                                                                    fi &&
-                                                                                                                    if [ -z "${ environment-variable "EXPECTED" }" ]
-                                                                                                                    then
-                                                                                                                        assert_equals "${ environment-variable "EXPECTED" }" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } )" "We expect the log file."
-                                                                                                                    else
-                                                                                                                        assert_equals ${ environment-variable "EXPECTED" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "LOG_FILE" } ) "We expect the log file."
-                                                                                                                    fi
-                                                                                                            }  &&
-                                                                                                        test_script ( )
-                                                                                                            {
-                                                                                                                para_script ${ scripts.verification.script.script.bad } true 71 bvq_qyr_izw_yfp_lmc_vft_tsp_fsk_ izw vft nqt yun &&
-                                                                                                                #    para_script ${ scripts.verification.script.script.bad } false 71 bvq_qyr_jue_yfp_yzr_fsk_ jue djz nqt yun &&
-                                                                                                                #    para_script ${ scripts.verification.script.script.good } true 0 miv_nma_aff_zgm_ytw_knj_eod_kjo_ aff knj itp nbg &&
-                                                                                                                #     para_script ${ scripts.verification.script.script.good } false 0 miv_nma_gkw_zgm_jmu_kjo_ gkw hdd itp nbg
-                                                                                                                # */
-                                                                                                                exit 0
-                                                                                                             } &&
-                                                                                                        x_test_temporary ( )
-                                                                                                            {
-                                                                                                                para_script ${ scripts.verification.temporary.init.bad } true 72 rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ txc smf epz vdl &&
-                                                                                                                    para_script ${ scripts.verification.temporary.init.bad } false 72 rtw_rlc_txc_hgb_xtn_zpp_ txc smf epz vdl &&
-                                                                                                                    para_script ${ scripts.verification.temporary.init.good } true 0 zvu_nvv_txc_eyg_doe_smf_baj_xne_ txc smf zus qki &&
-                                                                                                                    para_script ${ scripts.verification.temporary.init.good } false 0 zvu_nvv_txc_eyg_nrq_xne_ txc smf zus qki &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.bad } true 73 aue_mmx_txc_vpr_gei_smf_orm_mck_ txc smf uoz jtg &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.bad } false 73 aue_mmx_txc_vpr_toa_mck_ txc smf uoz jtg &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.good } true 0 eiz_nos_txc_sae_keb_smf_yho_hex_ txc smf eec jxv &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.good } false 0 eiz_nos_txc_sae_lql_hex_ txc smf eec jxv &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.bad } true txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.bad } true txc smf 90 rtw_rlc_txc_hgb_wmp_smf_bww_zpp_
-                                                                                                                    para_temporary_order ${ temporary.bad.bad } true txc smf 90 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.bad } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.bad } false txc smf  90 rtw_rlc_txc_hgb_xtn_zpp_ &&
-                                                                                                                    para_temporary_order ${ temporary.bad.bad } false txc smf 90 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.good } true txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.good } true txc smf 90 rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
-                                                                                                                    para_temporary_order ${ temporary.bad.good } true txc smf 90 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.good } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.good } false txc smf  90 rtw_rlc_txc_hgb_xtn_zpp_ &&
-                                                                                                                    para_temporary_order ${ temporary.bad.good } false txc smf 90 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.null } true txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.null } true txc smf 90 rtw_rlc_txc_hgb_wmp_smf_bww_zpp_ &&
-                                                                                                                    para_temporary_order ${ temporary.bad.null } true txc smf 90 ${ null-file } "" &&
-                                                                                                                    para_temporary_mult ${ temporary.bad.null } false txc smf 90 &&
-                                                                                                                    para_temporary_order ${ temporary.bad.null } false txc smf  90 rtw_rlc_txc_hgb_xtn_zpp_ &&
-                                                                                                                    para_temporary_order ${ temporary.bad.null } false txc smf 90 ${ null-file } "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.bad } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.bad } true txc smf 0 zvu_nvv_txc_eyg_doe_smf_baj_xne_
-                                                                                                                    para_temporary_order ${ temporary.good.bad } true txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.bad } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.bad } false txc smf  0 zvu_nvv_txc_eyg_nrq_xne_ &&
-                                                                                                                    para_temporary_order ${ temporary.good.bad } false txc smf 0 /build/Jh4pICL7.confirm "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.good } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.good } true txc smf 0 zvu_nvv_txc_eyg_doe_smf_baj_xne_ &&
-                                                                                                                    para_temporary_order ${ temporary.good.good } true txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.good } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.good } false txc smf  0 zvu_nvv_txc_eyg_nrq_xne_ &&
-                                                                                                                    para_temporary_order ${ temporary.good.good } false txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.null } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.null } true txc smf 0 zvu_nvv_txc_eyg_doe_smf_baj_xne_ &&
-                                                                                                                    para_temporary_order ${ temporary.good.null } true txc smf 0 ${ null-file } "" &&
-                                                                                                                    para_temporary_mult ${ temporary.good.null } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.good.null } false txc smf  0 zvu_nvv_txc_eyg_nrq_xne_ &&
-                                                                                                                    para_temporary_order ${ temporary.good.null } false txc smf 0 ${ null-file } "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.bad } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.bad } true txc smf 0 "" &&
-                                                                                                                    para_temporary_order ${ temporary.null.bad } true txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.bad } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.bad } false txc smf  0 ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.bad } false txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.good } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.good } true txc smf 0 ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.good } true txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.good } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.good } false txc smf  0 ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.good } false txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.null } true txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } true txc smf 0 ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } true txc smf 0 "" &&
-                                                                                                                    para_temporary_mult ${ temporary.null.null } false txc smf 0 &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } false txc smf  0 ""  &&
-                                                                                                                    para_temporary_order ${ temporary.null.null } false txc smf 0 ""
-                                                                                                            } &&
-                                                                                                        x_test_cache ( )
-                                                                                                            {
-                                                                                                                para_script ${ scripts.verification.temporary.init.evictor } true 0 cqt_dqu_txc_cyn_zop_smf_aec_uni_ txc smf dcs bae &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.evictor } true 0 kcc_lkp_txc_wfj_grl_smf_qsc_zso_ txc smf frd iqw &&
-                                                                                                                    para_temporary_mult ${ temporary.evictor } true dcs bae 0 &&
-                                                                                                                    para_temporary_order ${ temporary.evictor } true dcs bae 0 cqt_dqu_dcs_cyn_zop_bae_aec_uni_ &&
-                                                                                                                    para_temporary_order ${ temporary.evictor } true dcs bae 0 "" &&
-                                                                                                                    para_script ${ scripts.verification.temporary.init.evictor } false 0 cqt_dqu_txc_cyn_otb_uni_ txc smf dcs bae &&
-                                                                                                                    para_script ${ scripts.verification.temporary.release.evictor } false 0 kcc_lkp_txc_wfj_vpy_zso_ txc smf frd iqw &&
-                                                                                                                    para_temporary_mult ${ temporary.evictor } false dcs bae 0 &&
-                                                                                                                    para_temporary_order ${ temporary.evictor } false dcs bae 0 cqt_dqu_dcs_cyn_otb_uni_  &&
-                                                                                                                    para_temporary_order ${ temporary.evictor } false dcs bae 0 ""
-                                                                                                            }
-                                                                                                '' ;
                                                                                     verification =
                                                                                         let
-                                                                                            evictor =
-                                                                                                 {
-                                                                                                    status-code ,
-                                                                                                    log-begin ,
-                                                                                                    log-end ,
-                                                                                                    log-no ,
-                                                                                                    arguments-begin ,
-                                                                                                    arguments-end ,
-                                                                                                    arguments-no ,
-                                                                                                    standard-input-begin ,
-                                                                                                    standard-input-end ,
-                                                                                                    standard-input-no ,
-                                                                                                    standard-output ,
-                                                                                                    standard-error
-                                                                                                } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                                    ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
-                                                                                                            if [ -z "${ environment-variable "@" }" ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
-                                                                                                            fi &&
-                                                                                                            if ${ has-standard-input }
-                                                                                                            then
-                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
-                                                                                                            exit ${ builtins.toString status-code }
-                                                                                                    '' ;
                                                                                             script =
                                                                                                  {
                                                                                                     status-code ,
@@ -722,108 +449,78 @@
                                                                                                     standard-input-no ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
-                                                                                                    evictor ,
-                                                                                                    evictor-file ,
-                                                                                                    target-file
+                                                                                                    marks
                                                                                                 } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                                    ''
-                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
-                                                                                                            if [ -z "${ environment-variable "@" }" ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
-                                                                                                            fi &&
-                                                                                                            if ${ has-standard-input }
-                                                                                                            then
-                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ if evictor then cache.evictor.fast else cache.evictor.slow } ${ environment-variable "ARGUMENTS" } > ${ evictor-file } 2>&1
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file } &&
-                                                                                                                    ${ environment-variable "STANDARD_INPUT" } | ${ if evictor then cache.evictor.fast else cache.evictor.slow } ${ environment-variable "ARGUMENTS" } > ${ evictor-file } 2>&1
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable target } > ${ target-file } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ log-end }_ >> ${ log-file } &&
-                                                                                                            exit ${ builtins.toString status-code }
-                                                                                                    '' ;
+                                                                                                    let
+                                                                                                        in
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
+                                                                                                                    if [ -z "${ environment-variable "@" }" ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
+                                                                                                                    fi &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                                    fi &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
+                                                                                                                    exit ${ builtins.toString status-code }
+                                                                                                            '' ;
                                                                                             in
                                                                                                 {
-                                                                                                    script =
-                                                                                                        {
-                                                                                                            script =
-                                                                                                                {
-                                                                                                                    bad =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 71 ;
-                                                                                                                                log-begin = "bvq" ;
-                                                                                                                                log-end = "fsk" ;
-                                                                                                                                log-no = "ses" ;
-                                                                                                                                arguments-begin = "qyr" ;
-                                                                                                                                arguments-end = "yfp" ;
-                                                                                                                                arguments-no = "neb" ;
-                                                                                                                                standard-input-begin = "lmc" ;
-                                                                                                                                standard-input-end = "tsp" ;
-                                                                                                                                standard-input-no = "yzr" ;
-                                                                                                                                standard-output = "nqt" ;
-                                                                                                                                standard-error = "yun" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/udjU1A6o.confirm" ;
-                                                                                                                                target-file = "/build/Iw7j4sOr.confirm" ;
-                                                                                                                            } ;
-                                                                                                                    good =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                log-begin = "miv" ;
-                                                                                                                                log-end = "kjo" ;
-                                                                                                                                log-no = "uer" ;
-                                                                                                                                arguments-begin = "nma" ;
-                                                                                                                                arguments-end = "zgm" ;
-                                                                                                                                arguments-no = "pjc" ;
-                                                                                                                                standard-input-begin = "ytw" ;
-                                                                                                                                standard-input-end = "eod" ;
-                                                                                                                                standard-input-no = "jmu" ;
-                                                                                                                                standard-output = "itp" ;
-                                                                                                                                standard-error = "nbg" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/sIbj0h6Z.confirm" ;
-                                                                                                                                target-file = "/build/Z8iexL0r.confirm" ;
-                                                                                                                            } ;
-                                                                                                                } ;
-                                                                                                         } ;
                                                                                                     temporary =
                                                                                                         {
                                                                                                             init =
                                                                                                                 {
                                                                                                                     bad =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 72 ;
-                                                                                                                                log-begin = "rtw" ;
-                                                                                                                                log-end = "zpp" ;
-                                                                                                                                log-no = "lce" ;
-                                                                                                                                arguments-begin = "rlc" ;
-                                                                                                                                arguments-end = "hgb" ;
-                                                                                                                                arguments-no = "qnj" ;
-                                                                                                                                standard-input-begin = "wmp" ;
-                                                                                                                                standard-input-end = "bww" ;
-                                                                                                                                standard-input-no = "xtn" ;
-                                                                                                                                standard-output = "epz" ;
-                                                                                                                                standard-error = "vdl" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/a2OUhW53.confirm" ;
-                                                                                                                                target-file = "/build/m9WX7Bnd.confirm" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            fast =
+                                                                                                                                script
+                                                                                                                                    {
+                                                                                                                                        status-code = 72 ;
+                                                                                                                                        log-begin = "rtw" ;
+                                                                                                                                        log-end = "zpp" ;
+                                                                                                                                        log-no = "lce" ;
+                                                                                                                                        arguments-begin = "rlc" ;
+                                                                                                                                        arguments-end = "hgb" ;
+                                                                                                                                        arguments-no = "qnj" ;
+                                                                                                                                        standard-input-begin = "wmp" ;
+                                                                                                                                        standard-input-end = "bww" ;
+                                                                                                                                        standard-input-no = "xtn" ;
+                                                                                                                                        standard-output = "epz" ;
+                                                                                                                                        standard-error = "vdl" ;
+                                                                                                                                        marks = [ ] ;
+                                                                                                                                    } ;
+                                                                                                                            slow =
+                                                                                                                                script
+                                                                                                                                    {
+                                                                                                                                        status-code = 74 ;
+                                                                                                                                        log-begin = "epx" ;
+                                                                                                                                        log-end = "bhp" ;
+                                                                                                                                        log-no = "kpt" ;
+                                                                                                                                        arguments-begin = "hsy" ;
+                                                                                                                                        arguments-end = "gfu" ;
+                                                                                                                                        arguments-no = "zti" ;
+                                                                                                                                        standard-input-begin = "bfx" ;
+                                                                                                                                        standard-input-end = "euy" ;
+                                                                                                                                        standard-input-no = "fle" ;
+                                                                                                                                        standard-output = "orj" ;
+                                                                                                                                        standard-error = "bri" ;
+                                                                                                                                        marks = [ ] ;
+                                                                                                                                    } ;
+                                                                                                                        } ;
                                                                                                                     evictor =
-                                                                                                                        evictor
+                                                                                                                        script
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "cqt" ;
@@ -837,26 +534,45 @@
                                                                                                                                 standard-input-no = "otb" ;
                                                                                                                                 standard-output = "dcs" ;
                                                                                                                                 standard-error = "bae" ;
+                                                                                                                                marks = [ ] ;
                                                                                                                             } ;
                                                                                                                     good =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                log-begin = "zvu" ;
-                                                                                                                                log-end = "xne" ;
-                                                                                                                                log-no = "hkh" ;
-                                                                                                                                arguments-begin = "nvv" ;
-                                                                                                                                arguments-end = "eyg" ;
-                                                                                                                                arguments-no = "srv" ;
-                                                                                                                                standard-input-begin = "doe" ;
-                                                                                                                                standard-input-end = "baj" ;
-                                                                                                                                standard-input-no = "nrq" ;
-                                                                                                                                standard-output = "zus" ;
-                                                                                                                                standard-error = "qki" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/SG8t4G16.confirm" ;
-                                                                                                                                target-file = "/build/ccNePxLX.confirm" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            fast =
+                                                                                                                                script
+                                                                                                                                    {
+                                                                                                                                        status-code = 0 ;
+                                                                                                                                        log-begin = "zvu" ;
+                                                                                                                                        log-end = "xne" ;
+                                                                                                                                        log-no = "hkh" ;
+                                                                                                                                        arguments-begin = "nvv" ;
+                                                                                                                                        arguments-end = "eyg" ;
+                                                                                                                                        arguments-no = "srv" ;
+                                                                                                                                        standard-input-begin = "doe" ;
+                                                                                                                                        standard-input-end = "baj" ;
+                                                                                                                                        standard-input-no = "nrq" ;
+                                                                                                                                        standard-output = "zus" ;
+                                                                                                                                        standard-error = "qki" ;
+                                                                                                                                        marks = [ ] ;
+                                                                                                                                    } ;
+                                                                                                                            slow =
+                                                                                                                                script
+                                                                                                                                    {
+                                                                                                                                        status-code = 0 ;
+                                                                                                                                        log-begin = "ynq" ;
+                                                                                                                                        log-end = "jag" ;
+                                                                                                                                        log-no = "huj" ;
+                                                                                                                                        arguments-begin = "ydd" ;
+                                                                                                                                        arguments-end = "ykr" ;
+                                                                                                                                        arguments-no = "gwj" ;
+                                                                                                                                        standard-input-begin = "wlw" ;
+                                                                                                                                        standard-input-end = "okm" ;
+                                                                                                                                        standard-input-no = "vum" ;
+                                                                                                                                        standard-output = "fsf" ;
+                                                                                                                                        standard-error = "brc" ;
+                                                                                                                                        marks = [ ] ;
+                                                                                                                                    } ;
+                                                                                                                        } ;
                                                                                                                 } ;
                                                                                                             release =
                                                                                                                 {
@@ -875,12 +591,10 @@
                                                                                                                                 standard-input-no = "toa" ;
                                                                                                                                 standard-output = "uoz" ;
                                                                                                                                 standard-error = "jtg" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/6pHzDSmW.confirm" ;
-                                                                                                                                target-file = "/build/iwl3MCIj.confirm" ;
+                                                                                                                                marks = [ ] ;
                                                                                                                             } ;
                                                                                                                     evictor =
-                                                                                                                        evictor
+                                                                                                                        script
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
                                                                                                                                 log-begin = "kcc" ;
@@ -894,6 +608,7 @@
                                                                                                                                 standard-input-no = "vpy" ;
                                                                                                                                 standard-output = "frd" ;
                                                                                                                                 standard-error = "iqw" ;
+                                                                                                                                marks = [ ] ;
                                                                                                                             } ;
                                                                                                                     good =
                                                                                                                         script
@@ -910,9 +625,7 @@
                                                                                                                                 standard-input-no = "lql" ;
                                                                                                                                 standard-output = "eec" ;
                                                                                                                                 standard-error = "jxv" ;
-                                                                                                                                evictor = true ;
-                                                                                                                                evictor-file = "/build/6pHzDSmW.confirm" ;
-                                                                                                                                target-file = "/build/SLLPZSO5.confirm" ;
+                                                                                                                                marks = [ ] ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
@@ -920,25 +633,7 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
-                                                                                    bad =
-                                                                                        {
-                                                                                            bad = scripts : { init = scripts.verification.temporary.init.bad ; release = scripts.verification.temporary.release.bad ; } ;
-                                                                                            good = scripts : { init = scripts.verification.temporary.init.bad ; release = scripts.verification.temporary.release.good ; } ;
-                                                                                            null = scripts : { init = scripts.verification.temporary.init.bad ; } ;
-                                                                                        } ;
-                                                                                    good =
-                                                                                        {
-                                                                                            bad = scripts : { init = scripts.verification.temporary.init.good ; release = scripts.verification.temporary.release.bad ; } ;
-                                                                                            good = scripts : { init = scripts.verification.temporary.init.good ; release = scripts.verification.temporary.release.good ; } ;
-                                                                                            null = scripts : { init = scripts.verification.temporary.init.good ; } ;
-                                                                                        } ;
-                                                                                    evictor = scripts : { init = scripts.verification.temporary.init.evictor ; release = scripts.verification.temporary.release.evictor ; } ;
-                                                                                    null =
-                                                                                        {
-                                                                                            bad = scripts : { release = scripts.verification.temporary.release.bad ; } ;
-                                                                                            good = scripts : { release = scripts.verification.temporary.release.good ; } ;
-                                                                                            null = scripts : { } ;
-                                                                                        } ;
+
                                                                                 } ;
                                                                             temporary-init-error-code = 90 ;
                                                                             temporary-init-error-message = "jsq" ;
@@ -947,8 +642,7 @@
                                                                     builtins.trace ( builtins.toString resources )
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
-                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test.sh
+                                                                            export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources }
                                                                     '' ;
                                                     } ;
                                         } ;
