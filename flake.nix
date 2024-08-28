@@ -633,7 +633,6 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
-
                                                                                 } ;
                                                                             temporary-init-error-code = 90 ;
                                                                             temporary-init-error-message = "jsq" ;
