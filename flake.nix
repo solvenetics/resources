@@ -463,27 +463,15 @@
                                                                                                                 expected-standard-error ,
                                                                                                                 expected-log
                                                                                                             } :
-                                                                                                                if has-standard-input then
-                                                                                                                    ''
-                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
-                                                                                                                            OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo > ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ log-directory } &&
-                                                                                                                            assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
-                                                                                                                            assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
-                                                                                                                            assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
-                                                                                                                    ''
-                                                                                                                else
-                                                                                                                    ''
-                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
-                                                                                                                            OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo > ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ log-directory } &&
-                                                                                                                            assert_status_code ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
-                                                                                                                            assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
-                                                                                                                            assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
-                                                                                                                            assert_equals ${ expected-log } $( ${ pkgs.coreutils }/bin/cat ${ log-file } ) "We expect the log to match."
-                                                                                                                    '' ;
+                                                                                                                ''
+                                                                                                                    OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
+                                                                                                                        OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo > ${ log-file } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ log-directory } &&
+                                                                                                                        assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                        assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
+                                                                                                                        assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
+                                                                                                                '' ;
                                                                                                         in
                                                                                                             [
                                                                                                                 (
