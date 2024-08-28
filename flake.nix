@@ -434,53 +434,54 @@
                                                                             scripts =
                                                                                 {
                                                                                     test =
-                                                                                        { pkgs , ... } : { scripts , ... } :
+                                                                                        { pkgs , ... } : { scripts , strip ,... } :
                                                                                             let
+                                                                                                functions =
+                                                                                                    let
+                                                                                                        fun =
+                                                                                                            index :
+                                                                                                                strip
+                                                                                                                    ''
+                                                                                                                        test_${ builtins.toString index }
+                                                                                                                            {
+                                                                                                                                ${ builtins.elemAt list index }
+                                                                                                                            }
+                                                                                                                    '' ;
+                                                                                                        in builtins.genList fun ( builtins.length list ) ;
                                                                                                 list =
-                                                                                                    [
-                                                                                                        (
-                                                                                                            script
-                                                                                                                {
-                                                                                                                    scripts = script.verification.temporary.init.bad.fast ;
-                                                                                                                    has-standard-input = true ;
-                                                                                                                    arguments = "nrg" ;
-                                                                                                                    standard-input = "byn" ;
-                                                                                                                    status = 71 ;
-                                                                                                                    standard-output = "" ;
-                                                                                                                    standard-error = "" ;
-                                                                                                                }
-                                                                                                        )
-                                                                                                    ] ;
-                                                                                                mktemp = "${ pkgs.coreutils }/bin/mktemp -t XXXXXXXX.verification" ;
-                                                                                                script =
-                                                                                                    {
-                                                                                                        script ,
-                                                                                                        has-standard-input ,
-                                                                                                        arguments ,
-                                                                                                        standard-input ,
-                                                                                                        status ,
-                                                                                                        expected-standard-output ,
-                                                                                                        expected-standard-error
-                                                                                                    } :
-                                                                                                        if has-standard-input then
-                                                                                                            ''
-                                                                                                                OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
-                                                                                                                    OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                    assert_exit_status ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
-                                                                                                                    assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
-                                                                                                                    assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
-                                                                                                            ''
-                                                                                                        else
-                                                                                                            ''
-                                                                                                                OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
-                                                                                                                    OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                    assert_exit_status ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
-                                                                                                                    assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
-                                                                                                                    assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
-                                                                                                            '' ;
-                                                                                                in
-                                                                                                    ''
-                                                                                                    '' ;
+                                                                                                    let
+                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp -t XXXXXXXX.verification" ;
+                                                                                                        script =
+                                                                                                            {
+                                                                                                                script ,
+                                                                                                                has-standard-input ,
+                                                                                                                arguments ,
+                                                                                                                standard-input ,
+                                                                                                                status ,
+                                                                                                                expected-standard-output ,
+                                                                                                                expected-standard-error
+                                                                                                            } :
+                                                                                                                if has-standard-input then
+                                                                                                                    ''
+                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
+                                                                                                                            OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
+                                                                                                                            assert_exit_status ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                            assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
+                                                                                                                            assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
+                                                                                                                    ''
+                                                                                                                else
+                                                                                                                    ''
+                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
+                                                                                                                            OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
+                                                                                                                            assert_exit_status ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                            assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
+                                                                                                                            assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
+                                                                                                                    '' ;
+                                                                                                        in
+                                                                                                            [
+
+                                                                                                            ] ;
+                                                                                                in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
                                                                                         let
                                                                                             script =
