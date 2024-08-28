@@ -482,13 +482,13 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = "${ pkgs.coreutils }/bin/true" ;
+                                                                                                                            script = scripts.verification.init.bad.fast ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "nrg" ;
                                                                                                                             standard-input = "byn" ;
-                                                                                                                            status = 71 ;
-                                                                                                                            expected-standard-output = "" ;
-                                                                                                                            expected-standard-error = "" ;
+                                                                                                                            status = 81 ;
+                                                                                                                            expected-standard-output = "epz" ;
+                                                                                                                            expected-standard-error = "vdl" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
@@ -538,156 +538,153 @@
                                                                                                             '' ;
                                                                                             in
                                                                                                 {
-                                                                                                    temporary =
+                                                                                                    init =
                                                                                                         {
-                                                                                                            init =
+                                                                                                            bad =
                                                                                                                 {
-                                                                                                                    bad =
-                                                                                                                        {
-                                                                                                                            fast =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        status-code = 72 ;
-                                                                                                                                        log-begin = "rtw" ;
-                                                                                                                                        log-end = "zpp" ;
-                                                                                                                                        log-no = "lce" ;
-                                                                                                                                        arguments-begin = "rlc" ;
-                                                                                                                                        arguments-end = "hgb" ;
-                                                                                                                                        arguments-no = "qnj" ;
-                                                                                                                                        standard-input-begin = "wmp" ;
-                                                                                                                                        standard-input-end = "bww" ;
-                                                                                                                                        standard-input-no = "xtn" ;
-                                                                                                                                        standard-output = "epz" ;
-                                                                                                                                        standard-error = "vdl" ;
-                                                                                                                                        marks = [ ] ;
-                                                                                                                                    } ;
-                                                                                                                            slow =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        status-code = 74 ;
-                                                                                                                                        log-begin = "epx" ;
-                                                                                                                                        log-end = "bhp" ;
-                                                                                                                                        log-no = "kpt" ;
-                                                                                                                                        arguments-begin = "hsy" ;
-                                                                                                                                        arguments-end = "gfu" ;
-                                                                                                                                        arguments-no = "zti" ;
-                                                                                                                                        standard-input-begin = "bfx" ;
-                                                                                                                                        standard-input-end = "euy" ;
-                                                                                                                                        standard-input-no = "fle" ;
-                                                                                                                                        standard-output = "orj" ;
-                                                                                                                                        standard-error = "bri" ;
-                                                                                                                                        marks = [ ] ;
-                                                                                                                                    } ;
-                                                                                                                        } ;
-                                                                                                                    evictor =
+                                                                                                                    fast =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                log-begin = "cqt" ;
-                                                                                                                                log-end = "uni" ;
-                                                                                                                                log-no = "ahh" ;
-                                                                                                                                arguments-begin = "dqu" ;
-                                                                                                                                arguments-end = "cyn" ;
-                                                                                                                                arguments-no = "oaz" ;
-                                                                                                                                standard-input-begin = "zop" ;
-                                                                                                                                standard-input-end = "aec" ;
-                                                                                                                                standard-input-no = "otb" ;
-                                                                                                                                standard-output = "dcs" ;
-                                                                                                                                standard-error = "bae" ;
+                                                                                                                                status-code = 81 ;
+                                                                                                                                log-begin = "rtw" ;
+                                                                                                                                log-end = "zpp" ;
+                                                                                                                                log-no = "lce" ;
+                                                                                                                                arguments-begin = "rlc" ;
+                                                                                                                                arguments-end = "hgb" ;
+                                                                                                                                arguments-no = "qnj" ;
+                                                                                                                                standard-input-begin = "wmp" ;
+                                                                                                                                standard-input-end = "bww" ;
+                                                                                                                                standard-input-no = "xtn" ;
+                                                                                                                                standard-output = "epz" ;
+                                                                                                                                standard-error = "vdl" ;
                                                                                                                                 marks = [ ] ;
                                                                                                                             } ;
-                                                                                                                    good =
-                                                                                                                        {
-                                                                                                                            fast =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        status-code = 0 ;
-                                                                                                                                        log-begin = "zvu" ;
-                                                                                                                                        log-end = "xne" ;
-                                                                                                                                        log-no = "hkh" ;
-                                                                                                                                        arguments-begin = "nvv" ;
-                                                                                                                                        arguments-end = "eyg" ;
-                                                                                                                                        arguments-no = "srv" ;
-                                                                                                                                        standard-input-begin = "doe" ;
-                                                                                                                                        standard-input-end = "baj" ;
-                                                                                                                                        standard-input-no = "nrq" ;
-                                                                                                                                        standard-output = "zus" ;
-                                                                                                                                        standard-error = "qki" ;
-                                                                                                                                        marks = [ ] ;
-                                                                                                                                    } ;
-                                                                                                                            slow =
-                                                                                                                                script
-                                                                                                                                    {
-                                                                                                                                        status-code = 0 ;
-                                                                                                                                        log-begin = "ynq" ;
-                                                                                                                                        log-end = "jag" ;
-                                                                                                                                        log-no = "huj" ;
-                                                                                                                                        arguments-begin = "ydd" ;
-                                                                                                                                        arguments-end = "ykr" ;
-                                                                                                                                        arguments-no = "gwj" ;
-                                                                                                                                        standard-input-begin = "wlw" ;
-                                                                                                                                        standard-input-end = "okm" ;
-                                                                                                                                        standard-input-no = "vum" ;
-                                                                                                                                        standard-output = "fsf" ;
-                                                                                                                                        standard-error = "brc" ;
-                                                                                                                                        marks = [ ] ;
-                                                                                                                                    } ;
-                                                                                                                        } ;
-                                                                                                                } ;
-                                                                                                            release =
-                                                                                                                {
-                                                                                                                    bad =
+                                                                                                                    slow =
                                                                                                                         script
                                                                                                                             {
-                                                                                                                                status-code = 73 ;
-                                                                                                                                log-begin = "aue" ;
-                                                                                                                                log-end = "mck" ;
-                                                                                                                                log-no = "uya" ;
-                                                                                                                                arguments-begin = "mmx" ;
-                                                                                                                                arguments-end = "vpr" ;
-                                                                                                                                arguments-no = "xdj" ;
-                                                                                                                                standard-input-begin = "gei" ;
-                                                                                                                                standard-input-end = "orm" ;
-                                                                                                                                standard-input-no = "toa" ;
-                                                                                                                                standard-output = "uoz" ;
-                                                                                                                                standard-error = "jtg" ;
-                                                                                                                                marks = [ ] ;
-                                                                                                                            } ;
-                                                                                                                    evictor =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                log-begin = "kcc" ;
-                                                                                                                                log-end = "zso" ;
-                                                                                                                                log-no = "iaa" ;
-                                                                                                                                arguments-begin = "lkp" ;
-                                                                                                                                arguments-end = "wfj" ;
-                                                                                                                                arguments-no = "dux" ;
-                                                                                                                                standard-input-begin = "grl" ;
-                                                                                                                                standard-input-end = "qsc" ;
-                                                                                                                                standard-input-no = "vpy" ;
-                                                                                                                                standard-output = "frd" ;
-                                                                                                                                standard-error = "iqw" ;
-                                                                                                                                marks = [ ] ;
-                                                                                                                            } ;
-                                                                                                                    good =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                log-begin = "eiz" ;
-                                                                                                                                log-end = "hex" ;
-                                                                                                                                log-no = "zgc" ;
-                                                                                                                                arguments-begin = "nos" ;
-                                                                                                                                arguments-end = "sae" ;
-                                                                                                                                arguments-no = "gku" ;
-                                                                                                                                standard-input-begin = "keb" ;
-                                                                                                                                standard-input-end = "yho" ;
-                                                                                                                                standard-input-no = "lql" ;
-                                                                                                                                standard-output = "eec" ;
-                                                                                                                                standard-error = "jxv" ;
+                                                                                                                                status-code = 82 ;
+                                                                                                                                log-begin = "epx" ;
+                                                                                                                                log-end = "bhp" ;
+                                                                                                                                log-no = "kpt" ;
+                                                                                                                                arguments-begin = "hsy" ;
+                                                                                                                                arguments-end = "gfu" ;
+                                                                                                                                arguments-no = "zti" ;
+                                                                                                                                standard-input-begin = "bfx" ;
+                                                                                                                                standard-input-end = "euy" ;
+                                                                                                                                standard-input-no = "fle" ;
+                                                                                                                                standard-output = "orj" ;
+                                                                                                                                standard-error = "bri" ;
                                                                                                                                 marks = [ ] ;
                                                                                                                             } ;
                                                                                                                 } ;
+                                                                                                            evictor =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        status-code = 0 ;
+                                                                                                                        log-begin = "cqt" ;
+                                                                                                                        log-end = "uni" ;
+                                                                                                                        log-no = "ahh" ;
+                                                                                                                        arguments-begin = "dqu" ;
+                                                                                                                        arguments-end = "cyn" ;
+                                                                                                                        arguments-no = "oaz" ;
+                                                                                                                        standard-input-begin = "zop" ;
+                                                                                                                        standard-input-end = "aec" ;
+                                                                                                                        standard-input-no = "otb" ;
+                                                                                                                        standard-output = "dcs" ;
+                                                                                                                        standard-error = "bae" ;
+                                                                                                                        marks = [ ] ;
+                                                                                                                    } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    fast =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "zvu" ;
+                                                                                                                                log-end = "xne" ;
+                                                                                                                                log-no = "hkh" ;
+                                                                                                                                arguments-begin = "nvv" ;
+                                                                                                                                arguments-end = "eyg" ;
+                                                                                                                                arguments-no = "srv" ;
+                                                                                                                                standard-input-begin = "doe" ;
+                                                                                                                                standard-input-end = "baj" ;
+                                                                                                                                standard-input-no = "nrq" ;
+                                                                                                                                standard-output = "zus" ;
+                                                                                                                                standard-error = "qki" ;
+                                                                                                                                marks = [ ] ;
+                                                                                                                            } ;
+                                                                                                                    slow =
+                                                                                                                        script
+                                                                                                                            {
+                                                                                                                                status-code = 0 ;
+                                                                                                                                log-begin = "ynq" ;
+                                                                                                                                log-end = "jag" ;
+                                                                                                                                log-no = "huj" ;
+                                                                                                                                arguments-begin = "ydd" ;
+                                                                                                                                arguments-end = "ykr" ;
+                                                                                                                                arguments-no = "gwj" ;
+                                                                                                                                standard-input-begin = "wlw" ;
+                                                                                                                                standard-input-end = "okm" ;
+                                                                                                                                standard-input-no = "vum" ;
+                                                                                                                                standard-output = "fsf" ;
+                                                                                                                                standard-error = "brc" ;
+                                                                                                                                marks = [ ] ;
+                                                                                                                            } ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                                    release =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        status-code = 83 ;
+                                                                                                                        log-begin = "aue" ;
+                                                                                                                        log-end = "mck" ;
+                                                                                                                        log-no = "uya" ;
+                                                                                                                        arguments-begin = "mmx" ;
+                                                                                                                        arguments-end = "vpr" ;
+                                                                                                                        arguments-no = "xdj" ;
+                                                                                                                        standard-input-begin = "gei" ;
+                                                                                                                        standard-input-end = "orm" ;
+                                                                                                                        standard-input-no = "toa" ;
+                                                                                                                        standard-output = "uoz" ;
+                                                                                                                        standard-error = "jtg" ;
+                                                                                                                        marks = [ ] ;
+                                                                                                                    } ;
+                                                                                                            evictor =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        status-code = 0 ;
+                                                                                                                        log-begin = "kcc" ;
+                                                                                                                        log-end = "zso" ;
+                                                                                                                        log-no = "iaa" ;
+                                                                                                                        arguments-begin = "lkp" ;
+                                                                                                                        arguments-end = "wfj" ;
+                                                                                                                        arguments-no = "dux" ;
+                                                                                                                        standard-input-begin = "grl" ;
+                                                                                                                        standard-input-end = "qsc" ;
+                                                                                                                        standard-input-no = "vpy" ;
+                                                                                                                        standard-output = "frd" ;
+                                                                                                                        standard-error = "iqw" ;
+                                                                                                                        marks = [ ] ;
+                                                                                                                    } ;
+                                                                                                            good =
+                                                                                                                script
+                                                                                                                    {
+                                                                                                                        status-code = 0 ;
+                                                                                                                        log-begin = "eiz" ;
+                                                                                                                        log-end = "hex" ;
+                                                                                                                        log-no = "zgc" ;
+                                                                                                                        arguments-begin = "nos" ;
+                                                                                                                        arguments-end = "sae" ;
+                                                                                                                        arguments-no = "gku" ;
+                                                                                                                        standard-input-begin = "keb" ;
+                                                                                                                        standard-input-end = "yho" ;
+                                                                                                                        standard-input-no = "lql" ;
+                                                                                                                        standard-output = "eec" ;
+                                                                                                                        standard-error = "jxv" ;
+                                                                                                                        marks = [ ] ;
+                                                                                                                    } ;
                                                                                                         } ;
                                                                                                 } ;
                                                                                 } ;
