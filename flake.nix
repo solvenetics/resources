@@ -434,9 +434,29 @@
                                                                             scripts =
                                                                                 {
                                                                                     test =
-                                                                                        { pkgs , ... } : { ... } :
-                                                                                            ''
-                                                                                            '' ;
+                                                                                        { pkgs , ... } : { scripts , ... } :
+                                                                                            let
+                                                                                                fun =
+                                                                                                    {
+                                                                                                        script ,
+                                                                                                        has-standard-input ,
+                                                                                                        arguments ,
+                                                                                                        standard-input ,
+                                                                                                        status ,
+                                                                                                        standard-output ,
+                                                                                                        standard-error
+                                                                                                    } :
+                                                                                                        if has-standard-input then
+                                                                                                            ''
+                                                                                                                assert_exit_status ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }"
+                                                                                                            ''
+                                                                                                        else
+                                                                                                            ''
+                                                                                                                assert_exit_status ${ builtins.toString status } "${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }"
+                                                                                                            '' ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                    '' ;
                                                                                     verification =
                                                                                         let
                                                                                             script =
