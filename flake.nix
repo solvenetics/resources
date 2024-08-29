@@ -494,6 +494,7 @@
                                                                                                                         OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         # OBSERVED_ARGUMENTS=${ grab } &&
                                                                                                                         # OBSERVED_TARGET=${ grab } &&
+                                                                                                                        assert_equals true $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_ARGUMENTS_FILE" } ) "We expect arguments." &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
                                                                                                                         # assert_equals "" "${ environment-variable "OBSERVED_TARGET" }" "The TARGET should be empty."
@@ -541,15 +542,15 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                                     if [ -z "${ environment-variable "@" }" ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file } &&
-                                                                                                                            HAS_ARGUMENTS=true &&
-                                                                                                                            ARGUMENTS=${ environment-variable "@" }
-                                                                                                                    else
                                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file } &&
                                                                                                                             HAS_ARGUMENTS=false &&
                                                                                                                             ARGUMENTS=""
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file } &&
+                                                                                                                            HAS_ARGUMENTS=true &&
+                                                                                                                            ARGUMENTS=${ environment-variable "@" }
                                                                                                                     fi &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
