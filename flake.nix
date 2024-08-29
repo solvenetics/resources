@@ -442,7 +442,7 @@
                                                                                                     for ARGUMENT in ${ environment-variable "@" }
                                                                                                     do
                                                                                                         ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX.verification )
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX )
                                                                                                     done
                                                                                             '' ;
                                                                                     test =
