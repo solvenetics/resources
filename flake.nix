@@ -486,9 +486,10 @@
                                                                                                                         ${ pkgs.flock }/bin/flock 201 &&
                                                                                                                         assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                         ${ pkgs.flock }/bin/flock -u 201 &&
-                                                                                                                        ${ pkgs.inotify-tools }/bin/inotifywait --timeout 60 --event create --format "%w%f" ${ log-directory } &&
+                                                                                                                        OBSERVED_TARGET=$( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 60 --event create --format "%w%f" ${ log-directory } ) ) &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
-                                                                                                                        assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match."
+                                                                                                                        assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
+                                                                                                                        assert_equals "" "${ environment-variable "OBSERVED_TARGET" }" "The TARGET should be empty."
 
                                                                                                                 '' ;
                                                                                                         in
@@ -550,7 +551,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    ( ${ scripts.delay } "${ target }" & ) &&
+                                                                                                                    ( ${ scripts.delay } "${ environment-variable target }" & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
                                                                                             in
