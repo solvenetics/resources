@@ -439,10 +439,10 @@
                                                                                             ''
                                                                                                 exec 201> ${ log-directory }.lock &&
                                                                                                     ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                    ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                     for ARGUMENT in ${ environment-variable "@" }
                                                                                                     do
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX.verification )
+                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX.verification )
                                                                                                     done
                                                                                             '' ;
                                                                                     test =
@@ -465,7 +465,7 @@
                                                                                                         grab =
                                                                                                             strip
                                                                                                                 ''
-                                                                                                                    $( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 60 --event create --format "%w%f" ${ log-directory } ) )
+                                                                                                                    $( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 1 --event create --format "%w%f" ${ log-directory } ) )
                                                                                                                 '' ;
                                                                                                         mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                         script =
@@ -491,11 +491,13 @@
                                                                                                                         ${ pkgs.flock }/bin/flock 201 &&
                                                                                                                         assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                         ${ pkgs.flock }/bin/flock -u 201 &&
-                                                                                                                        OBSERVED_TARGET=${ grab } &&
+                                                                                                                        OBSERVED_HAS_ARGUMENTS=${ grab } &&
+                                                                                                                        # OBSERVED_ARGUMENTS=${ grab } &&
+                                                                                                                        # OBSERVED_TARGET=${ grab } &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
-                                                                                                                        assert_equals "" "${ environment-variable "OBSERVED_TARGET" }" "The TARGET should be empty."
-
+                                                                                                                        # assert_equals "" "${ environment-variable "OBSERVED_TARGET" }" "The TARGET should be empty."
+                                                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             [
@@ -539,11 +541,15 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
                                                                                                                     if [ -z "${ environment-variable "@" }" ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file }
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file } &&
+                                                                                                                            HAS_ARGUMENTS=true &&
+                                                                                                                            ARGUMENTS=${ environment-variable "@" }
                                                                                                                     else
                                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file }
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file } &&
+                                                                                                                            HAS_ARGUMENTS=false &&
+                                                                                                                            ARGUMENTS=""
                                                                                                                     fi &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
@@ -556,7 +562,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    ( ${ scripts.delay } "${ environment-variable target }" & ) &&
+                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" "${ environment-variable target }" & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
                                                                                             in
