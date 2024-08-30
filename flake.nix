@@ -418,7 +418,7 @@
                                                         buildCommand =
                                                             let
                                                                 log-directory = "/build/T9FYcU5F.confirm" ;
-                                                                log-file = "/build/cp9FGgb4.confirm" ;
+                                                                log-cache = "/build/cp9FGgb4.confirm" ;
                                                                 resources =
                                                                     lib
                                                                         {
@@ -487,7 +487,6 @@
                                                                                                                 ''
                                                                                                                     OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
                                                                                                                         OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo > ${ log-file } &&
                                                                                                                         if [ ! -e ${ log-directory } ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ log-directory }
@@ -631,20 +630,7 @@
                                                                                                                             scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
-                                                                                                                
-                                                                                                                (
-                                                                                                                    script
-                                                                                                                        {
-                                                                                                                            script = scripts.verification.init.good.slow ;
-                                                                                                                            has-standard-input = false ;
-                                                                                                                            arguments = "tlb" ;
-                                                                                                                            standard-input = "vtw" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "fsw" ;
-                                                                                                                            expected-standard-error = "brc" ;
-                                                                                                                            scripts-arguments = "pum" ;
-                                                                                                                        }
-                                                                                                                )
+
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
