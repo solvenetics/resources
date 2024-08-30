@@ -626,6 +626,127 @@
                                                                                                                             expected-standard-error = "brc" ;
                                                                                                                         }
                                                                                                                 )
+
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "nrg" ;
+                                                                                                                            standard-input = "byn" ;
+                                                                                                                            status = 81 ;
+                                                                                                                            expected-standard-output = "epz" ;
+                                                                                                                            expected-standard-error = "vdl" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "tro" ;
+                                                                                                                            standard-input = "jvz" ;
+                                                                                                                            status = 81 ;
+                                                                                                                            expected-standard-output = "epz" ;
+                                                                                                                            expected-standard-error = "vdl" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "xgz" ;
+                                                                                                                            standard-input = "uqx" ;
+                                                                                                                            status = 82 ;
+                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-error = "bri" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "zsx" ;
+                                                                                                                            standard-input = "ioc" ;
+                                                                                                                            status = 82 ;
+                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-error = "bri" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "fzm" ;
+                                                                                                                            standard-input = "ivo" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "dcs" ;
+                                                                                                                            expected-standard-error = "bae" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "pip" ;
+                                                                                                                            standard-input = "ggu" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "dcs" ;
+                                                                                                                            expected-standard-error = "bae" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "vqm" ;
+                                                                                                                            standard-input = "frw" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "zus" ;
+                                                                                                                            expected-standard-error = "vqki" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "vfy" ;
+                                                                                                                            standard-input = "ykz" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "zuw" ;
+                                                                                                                            expected-standard-error = "qki" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "oeh" ;
+                                                                                                                            standard-input = "jaw" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "fsf" ;
+                                                                                                                            expected-standard-error = "brc" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "tlb" ;
+                                                                                                                            standard-input = "vtw" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "fsw" ;
+                                                                                                                            expected-standard-error = "brc" ;
+                                                                                                                        }
+                                                                                                                )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
