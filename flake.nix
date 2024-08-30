@@ -630,7 +630,20 @@
                                                                                                                             scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
-
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "tlb" ;
+                                                                                                                            standard-input = "vtw" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "fsw" ;
+                                                                                                                            expected-standard-error = "brc" ;
+                                                                                                                            scripts-arguments = "pum" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
