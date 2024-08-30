@@ -842,22 +842,49 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
-                                                                                    bad =
+                                                                                    verification
                                                                                         {
                                                                                             bad =
                                                                                                 {
-                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
-                                                                                                    slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                    bad =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                        } ;
+                                                                                                    good =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                        } ;
+                                                                                                    null =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; } ;
+                                                                                                        } ;
                                                                                                 } ;
                                                                                             good =
                                                                                                 {
-                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
-                                                                                                    slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                    bad =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                        } ;
+                                                                                                    good =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                        } ;
+                                                                                                    null =
+                                                                                                        {
+                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; } ;
+                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; } ;
+                                                                                                        } ;
                                                                                                 } ;
                                                                                             null =
                                                                                                 {
-                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; } ;
-                                                                                                    slow = scripts : { init = scripts.verification.init.good.fast ; } ;
+                                                                                                    bad = scripts : { release = scripts.verification.release.bad ; } ;
+                                                                                                    good = scripts : { release = scripts.verification.release.good ; } ;
+                                                                                                    null = scripts : { } ;
                                                                                                 } ;
                                                                                         } ;
                                                                                 } ;
