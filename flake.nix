@@ -554,6 +554,30 @@
                                                                                                                             expected-standard-error = "bri" ;
                                                                                                                         }
                                                                                                                 )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "fzm" ;
+                                                                                                                            standard-input = "ivo" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "dcs" ;
+                                                                                                                            expected-standard-error = "bae" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "pip" ;
+                                                                                                                            standard-input = "ggu" ;
+                                                                                                                            status = 0 ;
+                                                                                                                            expected-standard-output = "dcs" ;
+                                                                                                                            expected-standard-error = "bae" ;
+                                                                                                                        }
+                                                                                                                )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
