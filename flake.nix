@@ -614,6 +614,7 @@
                                                                                                                             expected-standard-error = "brc" ;
                                                                                                                         }
                                                                                                                 )
+                                                                                                                
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
@@ -630,7 +631,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            script = scripts.verification.release.bad ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "nrg" ;
                                                                                                                             standard-input = "byn" ;
@@ -642,7 +643,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            script = scripts.verification.release.bad.fast ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             arguments = "tro" ;
                                                                                                                             standard-input = "jvz" ;
@@ -654,7 +655,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            script = scripts.verification.release.bad.slow ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "xgz" ;
                                                                                                                             standard-input = "uqx" ;
@@ -666,7 +667,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            script = scripts.verification.release.bad.slow ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             arguments = "zsx" ;
                                                                                                                             standard-input = "ioc" ;
@@ -678,7 +679,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            script = scripts.verification.release.evictor ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "fzm" ;
                                                                                                                             standard-input = "ivo" ;
@@ -690,7 +691,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            script = scripts.verification.release.evictor ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             arguments = "pip" ;
                                                                                                                             standard-input = "ggu" ;
@@ -702,7 +703,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            script = scripts.verification.release.good.fast ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "vqm" ;
                                                                                                                             standard-input = "frw" ;
@@ -714,7 +715,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            script = scripts.verification.release.good.fast ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             arguments = "vfy" ;
                                                                                                                             standard-input = "ykz" ;
@@ -726,7 +727,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            script = scripts.verification.release.good.slow ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             arguments = "oeh" ;
                                                                                                                             standard-input = "jaw" ;
@@ -738,7 +739,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            script = scripts.verification.release.good.slow ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             arguments = "tlb" ;
                                                                                                                             standard-input = "vtw" ;
