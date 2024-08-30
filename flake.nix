@@ -482,7 +482,8 @@
                                                                                                                 status ,
                                                                                                                 expected-standard-output ,
                                                                                                                 expected-standard-error ,
-                                                                                                                scripts-arguments
+                                                                                                                scripts-arguments ,
+                                                                                                                fail ? false
                                                                                                             } :
                                                                                                                 ''
                                                                                                                     OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
@@ -495,12 +496,14 @@
                                                                                                                         ${ pkgs.flock }/bin/flock 201 &&
                                                                                                                         assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                         ${ pkgs.flock }/bin/flock -u 201 &&
-                                                                                                                        OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
-                                                                                                                        OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
+                                                                                                                        export OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        export ENV=$( ${ pkgs.coreutils }/bin/env ) &&
+                                                                                                                        ${ if fail then "#" else "fail WTF -- \n ${ environment-variable "ENV" }" } &&
                                                                                                                         # OBSERVED_TEMPORARY_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
@@ -659,6 +662,7 @@
                                                                                                                             expected-standard-output = "uoz" ;
                                                                                                                             expected-standard-error = "jtg" ;
                                                                                                                             scripts-arguments = "vev" ;
+                                                                                                                            fail = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
