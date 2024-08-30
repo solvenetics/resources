@@ -627,7 +627,6 @@
                                                                                                                             expected-standard-error = "brc" ;
                                                                                                                         }
                                                                                                                 )
-
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
