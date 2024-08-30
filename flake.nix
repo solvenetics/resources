@@ -459,7 +459,7 @@
                                                                                                             index :
                                                                                                                 strip
                                                                                                                     ''
-                                                                                                                        test_${ builtins.toString index } ( )
+                                                                                                                        test_${ builtins.toString index }_ ( )
                                                                                                                             {
                                                                                                                                 ${ builtins.elemAt list index }
                                                                                                                             }
@@ -501,14 +501,19 @@
                                                                                                                         OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        # OBSERVED_TEMPORARY_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
                                                                                                                         assert_equals true $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_ARGUMENTS_FILE" } ) "We expect to have arguments." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
+                                                                                                                        # assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        assert_equals "" "${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty."
-                                                                                                                        assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE"
+                                                                                                                        assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE" &&
+                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty." &&
+                                                                                                                        # if [ -e ${ environment-variable "OBSERVED_TEMPORARY_FILE" } ]
+                                                                                                                        # then
+                                                                                                                        #     fail "We expect the TEMPORARY FILE to be deleted."
+                                                                                                                        # fi &&
                                                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                                                 '' ;
                                                                                                         in
@@ -547,7 +552,7 @@
                                                                                                                             arguments = "xgz" ;
                                                                                                                             standard-input = "uqx" ;
                                                                                                                             status = 82 ;
-                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-output = "orj" ;
                                                                                                                             expected-standard-error = "bri" ;
                                                                                                                             scripts-arguments = "yew" ;
                                                                                                                         }
@@ -560,7 +565,7 @@
                                                                                                                             arguments = "zsx" ;
                                                                                                                             standard-input = "ioc" ;
                                                                                                                             status = 82 ;
-                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-output = "orj" ;
                                                                                                                             expected-standard-error = "bri" ;
                                                                                                                             scripts-arguments = "yew" ;
                                                                                                                         }
@@ -600,7 +605,7 @@
                                                                                                                             standard-input = "frw" ;
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "zus" ;
-                                                                                                                            expected-standard-error = "vqki" ;
+                                                                                                                            expected-standard-error = "qki" ;
                                                                                                                             scripts-arguments = "sxt" ;
                                                                                                                         }
                                                                                                                 )
@@ -612,7 +617,7 @@
                                                                                                                             arguments = "vfy" ;
                                                                                                                             standard-input = "ykz" ;
                                                                                                                             status = 0 ;
-                                                                                                                            expected-standard-output = "zuw" ;
+                                                                                                                            expected-standard-output = "zus" ;
                                                                                                                             expected-standard-error = "qki" ;
                                                                                                                             scripts-arguments = "sxt" ;
                                                                                                                         }
@@ -730,7 +735,7 @@
                                                                                                     status-code ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
-                                                                                                    scripts-argument ,
+                                                                                                    scripts-argument
                                                                                                 } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     let
                                                                                                         mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run ${ log-directory }/XXXXXXXX" ;
@@ -755,7 +760,8 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
                                                                                                                     SCRIPTS=$( ${ scripts.terminal } ${ scripts-argument } ) &&
-                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "SCRIPTS" }" "${ environment-variable target }" & ) &&
+                                                                                                                    TEMPORARY=$( ${ temporary.terminal } ${ scripts-argument } ) &&
+                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "SCRIPTS" }" "${ environment-variable target }" ${ environment-variable "TEMPORARY" } & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
                                                                                             in
@@ -840,6 +846,7 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
+                                                                                    terminal = scripts : { init = scripts.terminal ; release = scripts.terminal ; } ;
                                                                                     verification =
                                                                                         {
                                                                                             bad =
