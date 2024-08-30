@@ -493,11 +493,15 @@
                                                                                                                         ${ pkgs.flock }/bin/flock -u 201 &&
                                                                                                                         OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
+                                                                                                                        OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        # OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         # OBSERVED_TARGET=${ grab } &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
                                                                                                                         assert_equals true $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_ARGUMENTS_FILE" } ) "We expect to have arguments." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
+                                                                                                                        assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
+                                                                                                                        # assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
                                                                                                                         # assert_equals "" "${ environment-variable "OBSERVED_TARGET" }" "The TARGET should be empty."
                                                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                                                 '' ;
@@ -555,16 +559,19 @@
                                                                                                                     fi &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
-                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                        HAS_STANDARD_INPUT=true &&
+                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
                                                                                                                     else
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                                        HAS_STANDARD_INPUT=false &&
+                                                                                                                            STANDARD_INPUT="" &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" "${ environment-variable target }" & ) &&
+                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable target }" & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
                                                                                             in
