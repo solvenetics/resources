@@ -527,15 +527,6 @@
                                                                                             script =
                                                                                                  {
                                                                                                     status-code ,
-                                                                                                    log-begin ,
-                                                                                                    log-end ,
-                                                                                                    log-no ,
-                                                                                                    arguments-begin ,
-                                                                                                    arguments-end ,
-                                                                                                    arguments-no ,
-                                                                                                    standard-input-begin ,
-                                                                                                    standard-input-end ,
-                                                                                                    standard-input-no ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
                                                                                                     marks
@@ -544,30 +535,21 @@
                                                                                                         mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run ${ log-directory }/XXXXXXXX" ;
                                                                                                         in
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ log-begin }_ >> ${ log-file } &&
-                                                                                                                    if [ -z "${ environment-variable "@" }" ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-begin }_ >> ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }_ >> ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ arguments-end }_ >> ${ log-file } &&
-                                                                                                                            HAS_ARGUMENTS=false &&
-                                                                                                                            ARGUMENTS=""
-                                                                                                                    else
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ arguments-no }_ >> ${ log-file } &&
-                                                                                                                            HAS_ARGUMENTS=true &&
-                                                                                                                            ARGUMENTS=${ environment-variable "@" }
-                                                                                                                    fi &&
+                                                                                                                if [ -z "${ environment-variable "@" }" ]
+                                                                                                                then
+                                                                                                                    HAS_ARGUMENTS=false &&
+                                                                                                                        ARGUMENTS=""
+                                                                                                                else
+                                                                                                                    HAS_ARGUMENTS=true &&
+                                                                                                                        ARGUMENTS=${ environment-variable "@" }
+                                                                                                                fi &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
                                                                                                                         HAS_STANDARD_INPUT=true &&
-                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-begin }_ >> ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "STANDARD_INPUT" }_ >> ${ log-file } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-end }_ >> ${ log-file }
+                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
                                                                                                                     else
                                                                                                                         HAS_STANDARD_INPUT=false &&
-                                                                                                                            STANDARD_INPUT="" &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ standard-input-no }_ >> ${ log-file }
+                                                                                                                            STANDARD_INPUT=""
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
@@ -584,15 +566,6 @@
                                                                                                                         script
                                                                                                                             {
                                                                                                                                 status-code = 81 ;
-                                                                                                                                log-begin = "rtw" ;
-                                                                                                                                log-end = "zpp" ;
-                                                                                                                                log-no = "lce" ;
-                                                                                                                                arguments-begin = "rlc" ;
-                                                                                                                                arguments-end = "hgb" ;
-                                                                                                                                arguments-no = "qnj" ;
-                                                                                                                                standard-input-begin = "wmp" ;
-                                                                                                                                standard-input-end = "bww" ;
-                                                                                                                                standard-input-no = "xtn" ;
                                                                                                                                 standard-output = "epz" ;
                                                                                                                                 standard-error = "vdl" ;
                                                                                                                                 marks = [ ] ;
@@ -601,15 +574,6 @@
                                                                                                                         script
                                                                                                                             {
                                                                                                                                 status-code = 82 ;
-                                                                                                                                log-begin = "epx" ;
-                                                                                                                                log-end = "bhp" ;
-                                                                                                                                log-no = "kpt" ;
-                                                                                                                                arguments-begin = "hsy" ;
-                                                                                                                                arguments-end = "gfu" ;
-                                                                                                                                arguments-no = "zti" ;
-                                                                                                                                standard-input-begin = "bfx" ;
-                                                                                                                                standard-input-end = "euy" ;
-                                                                                                                                standard-input-no = "fle" ;
                                                                                                                                 standard-output = "orj" ;
                                                                                                                                 standard-error = "bri" ;
                                                                                                                                 marks = [ ] ;
@@ -619,15 +583,6 @@
                                                                                                                 script
                                                                                                                     {
                                                                                                                         status-code = 0 ;
-                                                                                                                        log-begin = "cqt" ;
-                                                                                                                        log-end = "uni" ;
-                                                                                                                        log-no = "ahh" ;
-                                                                                                                        arguments-begin = "dqu" ;
-                                                                                                                        arguments-end = "cyn" ;
-                                                                                                                        arguments-no = "oaz" ;
-                                                                                                                        standard-input-begin = "zop" ;
-                                                                                                                        standard-input-end = "aec" ;
-                                                                                                                        standard-input-no = "otb" ;
                                                                                                                         standard-output = "dcs" ;
                                                                                                                         standard-error = "bae" ;
                                                                                                                         marks = [ ] ;
@@ -638,15 +593,6 @@
                                                                                                                         script
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
-                                                                                                                                log-begin = "zvu" ;
-                                                                                                                                log-end = "xne" ;
-                                                                                                                                log-no = "hkh" ;
-                                                                                                                                arguments-begin = "nvv" ;
-                                                                                                                                arguments-end = "eyg" ;
-                                                                                                                                arguments-no = "srv" ;
-                                                                                                                                standard-input-begin = "doe" ;
-                                                                                                                                standard-input-end = "baj" ;
-                                                                                                                                standard-input-no = "nrq" ;
                                                                                                                                 standard-output = "zus" ;
                                                                                                                                 standard-error = "qki" ;
                                                                                                                                 marks = [ ] ;
@@ -655,15 +601,6 @@
                                                                                                                         script
                                                                                                                             {
                                                                                                                                 status-code = 0 ;
-                                                                                                                                log-begin = "ynq" ;
-                                                                                                                                log-end = "jag" ;
-                                                                                                                                log-no = "huj" ;
-                                                                                                                                arguments-begin = "ydd" ;
-                                                                                                                                arguments-end = "ykr" ;
-                                                                                                                                arguments-no = "gwj" ;
-                                                                                                                                standard-input-begin = "wlw" ;
-                                                                                                                                standard-input-end = "okm" ;
-                                                                                                                                standard-input-no = "vum" ;
                                                                                                                                 standard-output = "fsf" ;
                                                                                                                                 standard-error = "brc" ;
                                                                                                                                 marks = [ ] ;
@@ -676,15 +613,6 @@
                                                                                                                 script
                                                                                                                     {
                                                                                                                         status-code = 83 ;
-                                                                                                                        log-begin = "aue" ;
-                                                                                                                        log-end = "mck" ;
-                                                                                                                        log-no = "uya" ;
-                                                                                                                        arguments-begin = "mmx" ;
-                                                                                                                        arguments-end = "vpr" ;
-                                                                                                                        arguments-no = "xdj" ;
-                                                                                                                        standard-input-begin = "gei" ;
-                                                                                                                        standard-input-end = "orm" ;
-                                                                                                                        standard-input-no = "toa" ;
                                                                                                                         standard-output = "uoz" ;
                                                                                                                         standard-error = "jtg" ;
                                                                                                                         marks = [ ] ;
@@ -693,15 +621,6 @@
                                                                                                                 script
                                                                                                                     {
                                                                                                                         status-code = 0 ;
-                                                                                                                        log-begin = "kcc" ;
-                                                                                                                        log-end = "zso" ;
-                                                                                                                        log-no = "iaa" ;
-                                                                                                                        arguments-begin = "lkp" ;
-                                                                                                                        arguments-end = "wfj" ;
-                                                                                                                        arguments-no = "dux" ;
-                                                                                                                        standard-input-begin = "grl" ;
-                                                                                                                        standard-input-end = "qsc" ;
-                                                                                                                        standard-input-no = "vpy" ;
                                                                                                                         standard-output = "frd" ;
                                                                                                                         standard-error = "iqw" ;
                                                                                                                         marks = [ ] ;
@@ -710,15 +629,6 @@
                                                                                                                 script
                                                                                                                     {
                                                                                                                         status-code = 0 ;
-                                                                                                                        log-begin = "eiz" ;
-                                                                                                                        log-end = "hex" ;
-                                                                                                                        log-no = "zgc" ;
-                                                                                                                        arguments-begin = "nos" ;
-                                                                                                                        arguments-end = "sae" ;
-                                                                                                                        arguments-no = "gku" ;
-                                                                                                                        standard-input-begin = "keb" ;
-                                                                                                                        standard-input-end = "yho" ;
-                                                                                                                        standard-input-no = "lql" ;
                                                                                                                         standard-output = "eec" ;
                                                                                                                         standard-error = "jxv" ;
                                                                                                                         marks = [ ] ;
