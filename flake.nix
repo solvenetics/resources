@@ -842,7 +842,7 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
-                                                                                    verification
+                                                                                    verification =
                                                                                         {
                                                                                             bad =
                                                                                                 {
