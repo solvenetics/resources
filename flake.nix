@@ -476,8 +476,7 @@
                                                                                                                 standard-input ,
                                                                                                                 status ,
                                                                                                                 expected-standard-output ,
-                                                                                                                expected-standard-error ,
-                                                                                                                expected-log
+                                                                                                                expected-standard-error
                                                                                                             } :
                                                                                                                 ''
                                                                                                                     OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
@@ -517,7 +516,18 @@
                                                                                                                             status = 81 ;
                                                                                                                             expected-standard-output = "epz" ;
                                                                                                                             expected-standard-error = "vdl" ;
-                                                                                                                            expected-log = "rtw_rlc_nrg_hgb_wmp_byn_bww_" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "tro" ;
+                                                                                                                            standard-input = "jvz" ;
+                                                                                                                            status = 81 ;
+                                                                                                                            expected-standard-output = "epz" ;
+                                                                                                                            expected-standard-error = "vdl" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
