@@ -530,6 +530,30 @@
                                                                                                                             expected-standard-error = "vdl" ;
                                                                                                                         }
                                                                                                                 )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            has-standard-input = true ;
+                                                                                                                            arguments = "xgz" ;
+                                                                                                                            standard-input = "uqx" ;
+                                                                                                                            status = 82 ;
+                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-error = "bri" ;
+                                                                                                                        }
+                                                                                                                )
+                                                                                                                (
+                                                                                                                    script
+                                                                                                                        {
+                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            has-standard-input = false ;
+                                                                                                                            arguments = "zsx" ;
+                                                                                                                            standard-input = "ioc" ;
+                                                                                                                            status = 82 ;
+                                                                                                                            expected-standard-output = "org" ;
+                                                                                                                            expected-standard-error = "bri" ;
+                                                                                                                        }
+                                                                                                                )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
