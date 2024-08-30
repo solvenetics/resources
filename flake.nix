@@ -445,6 +445,11 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX )
                                                                                                     done
                                                                                             '' ;
+                                                                                    terminal =
+                                                                                        { pkgs , ... } : { environment-variable , ... } :
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" }
+                                                                                            '' ;
                                                                                     test =
                                                                                         { pkgs , ... } : { scripts , strip ,... } :
                                                                                             let
@@ -476,7 +481,8 @@
                                                                                                                 standard-input ,
                                                                                                                 status ,
                                                                                                                 expected-standard-output ,
-                                                                                                                expected-standard-error
+                                                                                                                expected-standard-error ,
+                                                                                                                is-terminal
                                                                                                             } :
                                                                                                                 ''
                                                                                                                     OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
@@ -494,6 +500,7 @@
                                                                                                                         OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
                                                                                                                         OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
@@ -502,6 +509,7 @@
                                                                                                                         assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
                                                                                                                         assert_equals "" "${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty."
+                                                                                                                        assert_equals "${ arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE"
                                                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                                                 '' ;
                                                                                                         in
@@ -516,6 +524,7 @@
                                                                                                                             status = 81 ;
                                                                                                                             expected-standard-output = "epz" ;
                                                                                                                             expected-standard-error = "vdl" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -528,6 +537,7 @@
                                                                                                                             status = 81 ;
                                                                                                                             expected-standard-output = "epz" ;
                                                                                                                             expected-standard-error = "vdl" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -540,6 +550,7 @@
                                                                                                                             status = 82 ;
                                                                                                                             expected-standard-output = "org" ;
                                                                                                                             expected-standard-error = "bri" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -552,6 +563,7 @@
                                                                                                                             status = 82 ;
                                                                                                                             expected-standard-output = "org" ;
                                                                                                                             expected-standard-error = "bri" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -564,6 +576,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "dcs" ;
                                                                                                                             expected-standard-error = "bae" ;
+                                                                                                                            is-terminal = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -576,6 +589,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "dcs" ;
                                                                                                                             expected-standard-error = "bae" ;
+                                                                                                                            is-terminal = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -588,6 +602,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "zus" ;
                                                                                                                             expected-standard-error = "vqki" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -600,6 +615,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "zuw" ;
                                                                                                                             expected-standard-error = "qki" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -612,6 +628,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "fsw" ;
                                                                                                                             expected-standard-error = "brc" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 
@@ -625,6 +642,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "fsw" ;
                                                                                                                             expected-standard-error = "brc" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -637,6 +655,7 @@
                                                                                                                             status = 83 ;
                                                                                                                             expected-standard-output = "uoz" ;
                                                                                                                             expected-standard-error = "jtg" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -649,6 +668,7 @@
                                                                                                                             status = 83 ;
                                                                                                                             expected-standard-output = "uoz" ;
                                                                                                                             expected-standard-error = "jtg" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -661,6 +681,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "frd" ;
                                                                                                                             expected-standard-error = "iqw" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -673,6 +694,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "frd" ;
                                                                                                                             expected-standard-error = "iqw" ;
+                                                                                                                            is-terminal = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -685,6 +707,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "eec" ;
                                                                                                                             expected-standard-error = "jxv" ;
+                                                                                                                            is-terminal = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -697,6 +720,7 @@
                                                                                                                             status = 0 ;
                                                                                                                             expected-standard-output = "eec" ;
                                                                                                                             expected-standard-error = "jxv" ;
+                                                                                                                            is-terminal = false ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
@@ -708,7 +732,7 @@
                                                                                                     status-code ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
-                                                                                                    marks
+                                                                                                    is-terminal
                                                                                                 } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     let
                                                                                                         mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run ${ log-directory }/XXXXXXXX" ;
@@ -732,7 +756,8 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable target }" & ) &&
+                                                                                                                    SCRIPTS=$( ${ scripts.terminal } ${ environment-variable "@" } ) &&
+                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "SCRIPTS" }" "${ environment-variable target }" & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
                                                                                             in
@@ -747,7 +772,7 @@
                                                                                                                                 status-code = 81 ;
                                                                                                                                 standard-output = "epz" ;
                                                                                                                                 standard-error = "vdl" ;
-                                                                                                                                marks = [ ] ;
+                                                                                                                                is-terminal = false ;
                                                                                                                             } ;
                                                                                                                     slow =
                                                                                                                         script
@@ -755,7 +780,7 @@
                                                                                                                                 status-code = 82 ;
                                                                                                                                 standard-output = "orj" ;
                                                                                                                                 standard-error = "bri" ;
-                                                                                                                                marks = [ ] ;
+                                                                                                                                is-terminal = false ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                             evictor =
@@ -764,7 +789,7 @@
                                                                                                                         status-code = 0 ;
                                                                                                                         standard-output = "dcs" ;
                                                                                                                         standard-error = "bae" ;
-                                                                                                                        marks = [ ] ;
+                                                                                                                        is-terminal = true ;
                                                                                                                     } ;
                                                                                                             good =
                                                                                                                 {
@@ -774,7 +799,7 @@
                                                                                                                                 status-code = 0 ;
                                                                                                                                 standard-output = "zus" ;
                                                                                                                                 standard-error = "qki" ;
-                                                                                                                                marks = [ ] ;
+                                                                                                                                is-terminal = false ;
                                                                                                                             } ;
                                                                                                                     slow =
                                                                                                                         script
@@ -782,7 +807,7 @@
                                                                                                                                 status-code = 0 ;
                                                                                                                                 standard-output = "fsw" ;
                                                                                                                                 standard-error = "brc" ;
-                                                                                                                                marks = [ ] ;
+                                                                                                                                is-terminal = false ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
@@ -794,7 +819,7 @@
                                                                                                                         status-code = 83 ;
                                                                                                                         standard-output = "uoz" ;
                                                                                                                         standard-error = "jtg" ;
-                                                                                                                        marks = [ ] ;
+                                                                                                                        is-terminal = false ;
                                                                                                                     } ;
                                                                                                             evictor =
                                                                                                                 script
@@ -802,7 +827,7 @@
                                                                                                                         status-code = 0 ;
                                                                                                                         standard-output = "frd" ;
                                                                                                                         standard-error = "iqw" ;
-                                                                                                                        marks = [ ] ;
+                                                                                                                        is-terminal = true ;
                                                                                                                     } ;
                                                                                                             good =
                                                                                                                 script
@@ -810,7 +835,7 @@
                                                                                                                         status-code = 0 ;
                                                                                                                         standard-output = "eec" ;
                                                                                                                         standard-error = "jxv" ;
-                                                                                                                        marks = [ ] ;
+                                                                                                                        is-terminal = false ;
                                                                                                                     } ;
                                                                                                         } ;
                                                                                                 } ;
