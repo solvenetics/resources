@@ -842,6 +842,24 @@
                                                                                 } ;
                                                                             temporary =
                                                                                 {
+                                                                                    bad =
+                                                                                        {
+                                                                                            bad =
+                                                                                                {
+                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                    slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
+                                                                                                } ;
+                                                                                            good =
+                                                                                                {
+                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                    slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
+                                                                                                } ;
+                                                                                            null =
+                                                                                                {
+                                                                                                    fast = scripts : { init = scripts.verification.init.bad.fast ; } ;
+                                                                                                    slow = scripts : { init = scripts.verification.init.good.fast ; } ;
+                                                                                                } ;
+                                                                                        } ;
                                                                                 } ;
                                                                             temporary-init-error-code = 90 ;
                                                                             temporary-init-error-message = "jsq" ;
