@@ -482,7 +482,8 @@
                                                                                                                 status ,
                                                                                                                 expected-standard-output ,
                                                                                                                 expected-standard-error ,
-                                                                                                                is-terminal
+                                                                                                                is-terminal ,
+                                                                                                                scripts-arguments
                                                                                                             } :
                                                                                                                 ''
                                                                                                                     OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
@@ -509,7 +510,7 @@
                                                                                                                         assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
                                                                                                                         assert_equals "" "${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty."
-                                                                                                                        assert_equals "${ arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE"
+                                                                                                                        assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE"
                                                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                                                 '' ;
                                                                                                         in
@@ -525,6 +526,7 @@
                                                                                                                             expected-standard-output = "epz" ;
                                                                                                                             expected-standard-error = "vdl" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "yby" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -538,6 +540,7 @@
                                                                                                                             expected-standard-output = "epz" ;
                                                                                                                             expected-standard-error = "vdl" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "yby" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -551,6 +554,7 @@
                                                                                                                             expected-standard-output = "org" ;
                                                                                                                             expected-standard-error = "bri" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "yew" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -564,6 +568,7 @@
                                                                                                                             expected-standard-output = "org" ;
                                                                                                                             expected-standard-error = "bri" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "yew" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -577,6 +582,7 @@
                                                                                                                             expected-standard-output = "dcs" ;
                                                                                                                             expected-standard-error = "bae" ;
                                                                                                                             is-terminal = true ;
+                                                                                                                            scripts-arguments = "ikw" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -590,6 +596,7 @@
                                                                                                                             expected-standard-output = "dcs" ;
                                                                                                                             expected-standard-error = "bae" ;
                                                                                                                             is-terminal = true ;
+                                                                                                                            scripts-arguments = "ikw" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -603,6 +610,7 @@
                                                                                                                             expected-standard-output = "zus" ;
                                                                                                                             expected-standard-error = "vqki" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "sxt" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -616,6 +624,7 @@
                                                                                                                             expected-standard-output = "zuw" ;
                                                                                                                             expected-standard-error = "qki" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "sxt" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -629,6 +638,7 @@
                                                                                                                             expected-standard-output = "fsw" ;
                                                                                                                             expected-standard-error = "brc" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 
@@ -643,6 +653,7 @@
                                                                                                                             expected-standard-output = "fsw" ;
                                                                                                                             expected-standard-error = "brc" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -656,6 +667,7 @@
                                                                                                                             expected-standard-output = "uoz" ;
                                                                                                                             expected-standard-error = "jtg" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "vev" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -669,6 +681,7 @@
                                                                                                                             expected-standard-output = "uoz" ;
                                                                                                                             expected-standard-error = "jtg" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "vev" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -682,6 +695,7 @@
                                                                                                                             expected-standard-output = "frd" ;
                                                                                                                             expected-standard-error = "iqw" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "zru" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -695,6 +709,7 @@
                                                                                                                             expected-standard-output = "frd" ;
                                                                                                                             expected-standard-error = "iqw" ;
                                                                                                                             is-terminal = true ;
+                                                                                                                            scripts-arguments = "zru" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -708,6 +723,7 @@
                                                                                                                             expected-standard-output = "eec" ;
                                                                                                                             expected-standard-error = "jxv" ;
                                                                                                                             is-terminal = true ;
+                                                                                                                            scripts-arguments = "aop" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -721,6 +737,7 @@
                                                                                                                             expected-standard-output = "eec" ;
                                                                                                                             expected-standard-error = "jxv" ;
                                                                                                                             is-terminal = false ;
+                                                                                                                            scripts-arguments = "aop" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
@@ -732,6 +749,7 @@
                                                                                                     status-code ,
                                                                                                     standard-output ,
                                                                                                     standard-error ,
+                                                                                                    scripts-argument ,
                                                                                                     is-terminal
                                                                                                 } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                     let
@@ -756,7 +774,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    SCRIPTS=$( ${ scripts.terminal } ${ environment-variable "@" } ) &&
+                                                                                                                    SCRIPTS=$( ${ scripts.terminal } ${ scripts-argument } ) &&
                                                                                                                     ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "SCRIPTS" }" "${ environment-variable target }" & ) &&
                                                                                                                     exit ${ builtins.toString status-code }
                                                                                                             '' ;
@@ -773,6 +791,7 @@
                                                                                                                                 standard-output = "epz" ;
                                                                                                                                 standard-error = "vdl" ;
                                                                                                                                 is-terminal = false ;
+                                                                                                                                scripts-argument = "yby" ;
                                                                                                                             } ;
                                                                                                                     slow =
                                                                                                                         script
@@ -781,6 +800,7 @@
                                                                                                                                 standard-output = "orj" ;
                                                                                                                                 standard-error = "bri" ;
                                                                                                                                 is-terminal = false ;
+                                                                                                                                scripts-argument = "yew" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                             evictor =
@@ -790,6 +810,7 @@
                                                                                                                         standard-output = "dcs" ;
                                                                                                                         standard-error = "bae" ;
                                                                                                                         is-terminal = true ;
+                                                                                                                        scripts-argument = "ikw" ;
                                                                                                                     } ;
                                                                                                             good =
                                                                                                                 {
@@ -800,6 +821,7 @@
                                                                                                                                 standard-output = "zus" ;
                                                                                                                                 standard-error = "qki" ;
                                                                                                                                 is-terminal = false ;
+                                                                                                                                scripts-argument = "sxt" ;
                                                                                                                             } ;
                                                                                                                     slow =
                                                                                                                         script
@@ -808,6 +830,7 @@
                                                                                                                                 standard-output = "fsw" ;
                                                                                                                                 standard-error = "brc" ;
                                                                                                                                 is-terminal = false ;
+                                                                                                                                scripts-argument = "pum" ;
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
@@ -820,6 +843,7 @@
                                                                                                                         standard-output = "uoz" ;
                                                                                                                         standard-error = "jtg" ;
                                                                                                                         is-terminal = false ;
+                                                                                                                        scripts-argument = "vev" ;
                                                                                                                     } ;
                                                                                                             evictor =
                                                                                                                 script
@@ -828,6 +852,7 @@
                                                                                                                         standard-output = "frd" ;
                                                                                                                         standard-error = "iqw" ;
                                                                                                                         is-terminal = true ;
+                                                                                                                        scripts-argument = "zru" ;
                                                                                                                     } ;
                                                                                                             good =
                                                                                                                 script
@@ -836,6 +861,7 @@
                                                                                                                         standard-output = "eec" ;
                                                                                                                         standard-error = "jxv" ;
                                                                                                                         is-terminal = false ;
+                                                                                                                        scripts-argument = "aop" ;
                                                                                                                     } ;
                                                                                                         } ;
                                                                                                 } ;
