@@ -487,7 +487,13 @@
                                                                                                                 fail ? false
                                                                                                             } :
                                                                                                                 ''
-                                                                                                                    OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
+                                                                                                                    message ( )
+                                                                                                                        {
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ builtins.toString seed } &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo -n " : " &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }
+                                                                                                                        } &&
+                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
                                                                                                                         OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
                                                                                                                         if [ ! -e ${ log-directory } ]
                                                                                                                         then
