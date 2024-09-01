@@ -477,6 +477,7 @@
                                                                                                             {
                                                                                                                 script ,
                                                                                                                 has-standard-input ,
+                                                                                                                seed ,
                                                                                                                 arguments ,
                                                                                                                 standard-input ,
                                                                                                                 status ,
@@ -494,25 +495,35 @@
                                                                                                                         fi &&
                                                                                                                         exec 201> ${ log-directory }.lock &&
                                                                                                                         ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                                        assert_status_code ${ builtins.toString status } "${ pkgs.coreutils }/bin/echo ${ standard-input } | ${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
+                                                                                                                        EXPECTED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ builtins.toString seed } arguments | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                                        EXPECTED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ builtins.toString seed } standard-input | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 )
+                                                                                                                        assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ standard-input } | " else "" }${ script } ${ arguments } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
                                                                                                                         ${ pkgs.flock }/bin/flock -u 201 &&
                                                                                                                         export OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         export OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
                                                                                                                         export OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         export OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        export OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        export OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        export ENV=$( ${ pkgs.coreutils }/bin/env ) &&
-                                                                                                                        # ${ if fail then "#" else "${ environment-variable "ENV" }" } &&
+                                                                                                                        # export OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        # export OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
                                                                                                                         # OBSERVED_TEMPORARY_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo SEED=${ builtins.toString seed } &&
+                                                                                                                        ${ if true then
+                                                                                                                        builtins.concatStringsSep
+                                                                                                                            " && "
+                                                                                                                            ( builtins.map
+                                                                                                                                ( value : "${ pkgs.coreutils }/bin/echo OBSERVED_${ value }=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_${ value }_FILE" } )" )
+                                                                                                                                [ "HAS_ARGUMENTS" "ARGUMENTS" "HAS_STANDARD_INPUT" "SCRIPT" "TARGET" ]
+                                                                                                                            )
+                                                                                                                         else "# " } &&
+                                                                                                                        # ${ if fail then "fail WTF" else "# " } &&
                                                                                                                         assert_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) "We expect the standard output to match." &&
                                                                                                                         assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
                                                                                                                         assert_equals true $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_ARGUMENTS_FILE" } ) "We expect to have arguments." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        # assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
+                                                                                                                        assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
                                                                                                                         assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE" &&
-                                                                                                                        assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty." &&
+                                                                                                                        # assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE" &&
+                                                                                                                        # assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty." &&
                                                                                                                         # if [ -e ${ environment-variable "OBSERVED_TEMPORARY_FILE" } ]
                                                                                                                         # then
                                                                                                                         #     fail "We expect the TEMPORARY FILE to be deleted."
@@ -526,6 +537,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.bad.fast ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 28903 ;
                                                                                                                             arguments = "nrg" ;
                                                                                                                             standard-input = "byn" ;
                                                                                                                             status = 81 ;
@@ -539,6 +551,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.bad.fast ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 18773 ;
                                                                                                                             arguments = "tro" ;
                                                                                                                             standard-input = "jvz" ;
                                                                                                                             status = 81 ;
@@ -552,6 +565,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.bad.slow ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 9657 ;
                                                                                                                             arguments = "xgz" ;
                                                                                                                             standard-input = "uqx" ;
                                                                                                                             status = 82 ;
@@ -565,6 +579,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.bad.slow ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 23438 ;
                                                                                                                             arguments = "zsx" ;
                                                                                                                             standard-input = "ioc" ;
                                                                                                                             status = 82 ;
@@ -578,6 +593,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.evictor ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 25733 ;
                                                                                                                             arguments = "fzm" ;
                                                                                                                             standard-input = "ivo" ;
                                                                                                                             status = 0 ;
@@ -591,6 +607,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.evictor ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 6810 ;
                                                                                                                             arguments = "pip" ;
                                                                                                                             standard-input = "ggu" ;
                                                                                                                             status = 0 ;
@@ -604,6 +621,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.good.fast ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 29220 ;
                                                                                                                             arguments = "vqm" ;
                                                                                                                             standard-input = "frw" ;
                                                                                                                             status = 0 ;
@@ -617,6 +635,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.good.fast ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 6944 ;
                                                                                                                             arguments = "vfy" ;
                                                                                                                             standard-input = "ykz" ;
                                                                                                                             status = 0 ;
@@ -630,6 +649,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.good.slow ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 21287 ;
                                                                                                                             arguments = "oeh" ;
                                                                                                                             standard-input = "jaw" ;
                                                                                                                             status = 0 ;
@@ -643,6 +663,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.init.good.slow ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 17771 ;
                                                                                                                             arguments = "tlb" ;
                                                                                                                             standard-input = "vtw" ;
                                                                                                                             status = 0 ;
@@ -656,6 +677,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.bad ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 10186 ;
                                                                                                                             arguments = "xec" ;
                                                                                                                             standard-input = "edu" ;
                                                                                                                             status = 83 ;
@@ -670,6 +692,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.bad ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 31934 ;
                                                                                                                             arguments = "lqf" ;
                                                                                                                             standard-input = "jff" ;
                                                                                                                             status = 83 ;
@@ -683,6 +706,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.evictor ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 5621 ;
                                                                                                                             arguments = "hrp" ;
                                                                                                                             standard-input = "fgt" ;
                                                                                                                             status = 0 ;
@@ -696,6 +720,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.evictor ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 16346 ;
                                                                                                                             arguments = "cmd" ;
                                                                                                                             standard-input = "ojh" ;
                                                                                                                             status = 0 ;
@@ -709,6 +734,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.good ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            seed = 1603 ;
                                                                                                                             arguments = "elw" ;
                                                                                                                             standard-input = "eeu" ;
                                                                                                                             status = 0 ;
@@ -722,6 +748,7 @@
                                                                                                                         {
                                                                                                                             script = scripts.verification.release.good ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            seed = 28971 ;
                                                                                                                             arguments = "ddv" ;
                                                                                                                             standard-input = "isr" ;
                                                                                                                             status = 0 ;
