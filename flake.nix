@@ -449,7 +449,7 @@
                                                                                                                     verification =
                                                                                                                         { pkgs , ... } : { environment-variable , has-standard-input , ... } :
                                                                                                                             ''
-                                                                                                                                SEED=${ builtins.hashString "sha512" ( builtins.concatLists [ path [ name ] ] ) }
+                                                                                                                                SEED=${ builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name ] ] ) ) }
                                                                                                                             '' ;
                                                                                                                 }
                                                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
@@ -508,7 +508,10 @@
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                 } ;
-                                                                                            in { } ;
+                                                                                            in
+                                                                                                {
+                                                                                                    scripts = builtins.mapAttrs ( mapper [ ] ) set ;
+                                                                                                } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
