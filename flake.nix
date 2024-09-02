@@ -433,23 +433,23 @@
                                                                                 } ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
+                                                                                let
+                                                                                    script =
+                                                                                         seed : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - arguments" }
+                                                                                                    if ${ has-standard-input }
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - standard input" }
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - standard input" }
+                                                                                                    fi &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "${ builtins.toString seed } - standard output" } &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "${ builtins.toString seed } - standard error" } >&2 &&
+                                                                                                    exit ${ builtins.toString status }
+                                                                                            '' ;
+                                                                                    in
                                                                                 {
-                                                                                    delay =
-                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                            ''
-                                                                                                exec 201> ${ log-directory }.lock &&
-                                                                                                    ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                    for ARGUMENT in ${ environment-variable "@" }
-                                                                                                    do
-                                                                                                        ${ pkgs.coreutils }/bin/sleep 1s &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENT" } > $( ${ pkgs.coreutils }/bin/mktemp ${ log-directory }/XXXXXXXX )
-                                                                                                    done
-                                                                                            '' ;
-                                                                                    terminal =
-                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                            ''
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" }
-                                                                                            '' ;
                                                                                     test =
                                                                                         { pkgs , ... } : { scripts , strip ,... } :
                                                                                             let
@@ -477,322 +477,178 @@
                                                                                                             {
                                                                                                                 script ,
                                                                                                                 has-standard-input ,
-                                                                                                                seed ,
-                                                                                                                arguments ,
-                                                                                                                standard-input ,
                                                                                                                 status ,
-                                                                                                                expected-standard-output ,
-                                                                                                                expected-standard-error ,
-                                                                                                                scripts-arguments ,
-                                                                                                                fail ? false
+                                                                                                                seed
                                                                                                             } :
                                                                                                                 ''
-                                                                                                                    message ( )
-                                                                                                                        {
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ builtins.toString seed } &&
-                                                                                                                                ${ pkgs.coreutils }/bin/echo -n " : " &&
-                                                                                                                                ${ builtins.concatStringsSep " && " ( builtins.map ( value : "${ pkgs.coreutils }/bin/echo OBSERVED_${ value }=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_${ value }_FILE" } )" ) [ "HAS_ARGUMENTS" "ARGUMENTS" "HAS_STANDARD_INPUT" "SCRIPT" "TARGET" ] ) } &&
-                                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }
-                                                                                                                        } &&
-                                                                                                                        OBSERVED_STANDARD_OUTPUT_FILE=$( ${ mktemp } ) &&
-                                                                                                                        OBSERVED_STANDARD_ERROR_FILE=$( ${ mktemp } ) &&
-                                                                                                                        if [ ! -e ${ log-directory } ]
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ log-directory }
-                                                                                                                        fi &&
-                                                                                                                        exec 201> ${ log-directory }.lock &&
-                                                                                                                        ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                                        EXPECTED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/echo ${ builtins.toString seed } arguments | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                        EXPECTED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/echo ${ builtins.toString seed } standard-input | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 )
-                                                                                                                        assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_STANDARD_INPUT" } | " else "" }${ script } ${ environment-variable "EXPECTED_ARGUMENTS" } > ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } 2> ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" }" &&
-                                                                                                                        ${ pkgs.flock }/bin/flock -u 201 &&
-                                                                                                                        export OBSERVED_HAS_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        export OBSERVED_ARGUMENTS_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } )  &&
-                                                                                                                        export OBSERVED_HAS_STANDARD_INPUT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        export OBSERVED_HAS_STANDARD_INPUT=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        # export OBSERVED_SCRIPT_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        # export OBSERVED_TARGET_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        # OBSERVED_TEMPORARY_FILE=$( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 10 --event create --format "%w%f" ${ log-directory } ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo SEED=${ builtins.toString seed } &&
-                                                                                                                        assert_not_equals ${ expected-standard-output } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_OUTPUT_FILE" } ) $( message "We expect the standard output to match." ) &&
-                                                                                                                        assert_equals ${ expected-standard-error } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_STANDARD_ERROR_FILE" } ) "We expect the standard error to match." &&
-                                                                                                                        assert_equals true $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_ARGUMENTS_FILE" } ) "We expect to have arguments." &&
-                                                                                                                        assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        assert_equals ${ if has-standard-input then "true" else "false" } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_HAS_STANDARD_INPUT_FILE" } ) "We expect to ${ if has-standard-input then "have" else "not have" } standard input." &&
-                                                                                                                        assert_equals ${ arguments } $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_ARGUMENTS_FILE" } ) "We expect the arguments to match." &&
-                                                                                                                        # assert_equals "${ scripts-arguments }" $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_SCRIPT_FILE" } ) "We expect the predicted OBSERVED_SCRIPT_FILE" &&
-                                                                                                                        # assert_equals "" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_TARGET" } )" "The TARGET should be empty." &&
-                                                                                                                        # if [ -e ${ environment-variable "OBSERVED_TEMPORARY_FILE" } ]
-                                                                                                                        # then
-                                                                                                                        #     fail "We expect the TEMPORARY FILE to be deleted."
-                                                                                                                        # fi &&
-                                                                                                                        ${ pkgs.coreutils }/bin/true
+                                                                                                                    EXPECTED_SEED=${ builtins.toString seed } &&
+                                                                                                                        EXPECTED_STATUS=${ builtins.toString status } &&
+                                                                                                                        EXPECTED_ARGUMENTS=${ builtins.hashString "sha512" "${ builtins.toString seed } arguments" } &&
+                                                                                                                        EXPECTED_STANDARD_INPUT=${ if has-standard-input then builtins.hashString "sha512" "${ builtins.toString seed } - standard input" else "" } &&
+                                                                                                                        EXPECTED_STANDARD_OUTPUT=${ builtins.hashString "sha512" "${ builtins.toString seed } - standard output" } &&
+                                                                                                                        EXPECTED_STANDARD_ERROR=${ builtins.hashString "sha512" "${ builtins.toString seed } - standard error" } &&
+                                                                                                                        ${ builtins.concatStringsSep "&& \n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo EXPECTED_${ name }=${ environment-variable "EXPECTED_${ name }" }" ) [ "SEED" "STATUS" "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
+                                                                                                                        assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_STANDARD_INPUT" } | " else "" }${ script } ${ environment-variable "EXPECTED_ARGUMENTS" } > /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - observed standard output" } 2> /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - observed standard error" }" &&
+                                                                                                                        # OBSERVED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - arguments" } )" &&
+                                                                                                                        # OBSERVED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - standard input" } ) &&
+                                                                                                                        OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - observed standard output" } ) &&
+                                                                                                                        OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "${ builtins.toString seed } - observed standard error" } ) &&
+                                                                                                                        ${ builtins.concatStringsSep "&& \n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo OBSERVED_${ name }=${ environment-variable "OBSERVED_${ name }" }" ) [ "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
+                                                                                                                        # assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } ${ environment-variable "OBSERVED_ARGUMENTS" } "We expect the arguments to match." &&
+                                                                                                                        # assert_equals ${ environment-variable "EXPECTED_STANDARD_INPUT" } ${ environment-variable "OBSERVED_STANDARD_INPUT" } "We expect the standard input to match." &&
+                                                                                                                        # assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to match." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to match."
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             [
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            script = scripts.verification.init.bad.fast.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 12 ;
                                                                                                                             seed = 28903 ;
-                                                                                                                            arguments = "nrg" ;
-                                                                                                                            standard-input = "byn" ;
-                                                                                                                            status = 81 ;
-                                                                                                                            expected-standard-output = "epz" ;
-                                                                                                                            expected-standard-error = "vdl" ;
-                                                                                                                            scripts-arguments = "yby" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast ;
+                                                                                                                            script = scripts.verification.init.bad.fast.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 11 ;
                                                                                                                             seed = 18773 ;
-                                                                                                                            arguments = "tro" ;
-                                                                                                                            standard-input = "jvz" ;
-                                                                                                                            status = 81 ;
-                                                                                                                            expected-standard-output = "epz" ;
-                                                                                                                            expected-standard-error = "vdl" ;
-                                                                                                                            scripts-arguments = "yby" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            script = scripts.verification.init.bad.slow.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 14 ;
                                                                                                                             seed = 9657 ;
-                                                                                                                            arguments = "xgz" ;
-                                                                                                                            standard-input = "uqx" ;
-                                                                                                                            status = 82 ;
-                                                                                                                            expected-standard-output = "orj" ;
-                                                                                                                            expected-standard-error = "bri" ;
-                                                                                                                            scripts-arguments = "yew" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow ;
+                                                                                                                            script = scripts.verification.init.bad.slow.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 13 ;
                                                                                                                             seed = 23438 ;
-                                                                                                                            arguments = "zsx" ;
-                                                                                                                            standard-input = "ioc" ;
-                                                                                                                            status = 82 ;
-                                                                                                                            expected-standard-output = "orj" ;
-                                                                                                                            expected-standard-error = "bri" ;
-                                                                                                                            scripts-arguments = "yew" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            script = scripts.verification.init.evictor.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 25733 ;
-                                                                                                                            arguments = "fzm" ;
-                                                                                                                            standard-input = "ivo" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "dcs" ;
-                                                                                                                            expected-standard-error = "bae" ;
-                                                                                                                            scripts-arguments = "ikw" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor ;
+                                                                                                                            script = scripts.verification.init.evictor.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 6810 ;
-                                                                                                                            arguments = "pip" ;
-                                                                                                                            standard-input = "ggu" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "dcs" ;
-                                                                                                                            expected-standard-error = "bae" ;
-                                                                                                                            scripts-arguments = "ikw" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            script = scripts.verification.init.good.fast.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 29220 ;
-                                                                                                                            arguments = "vqm" ;
-                                                                                                                            standard-input = "frw" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "zus" ;
-                                                                                                                            expected-standard-error = "qki" ;
-                                                                                                                            scripts-arguments = "sxt" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast ;
+                                                                                                                            script = scripts.verification.init.good.fast.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 6944 ;
-                                                                                                                            arguments = "vfy" ;
-                                                                                                                            standard-input = "ykz" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "zus" ;
-                                                                                                                            expected-standard-error = "qki" ;
-                                                                                                                            scripts-arguments = "sxt" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            script = scripts.verification.init.good.slow.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 21287 ;
-                                                                                                                            arguments = "oeh" ;
-                                                                                                                            standard-input = "jaw" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "fsw" ;
-                                                                                                                            expected-standard-error = "brc" ;
-                                                                                                                            scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow ;
+                                                                                                                            script = scripts.verification.init.good.slow.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 17771 ;
-                                                                                                                            arguments = "tlb" ;
-                                                                                                                            standard-input = "vtw" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "fsw" ;
-                                                                                                                            expected-standard-error = "brc" ;
-                                                                                                                            scripts-arguments = "pum" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.bad ;
+                                                                                                                            script = scripts.verification.release.bad.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 16 ;
                                                                                                                             seed = 10186 ;
-                                                                                                                            arguments = "xec" ;
-                                                                                                                            standard-input = "edu" ;
-                                                                                                                            status = 83 ;
-                                                                                                                            expected-standard-output = "uoz" ;
-                                                                                                                            expected-standard-error = "jtg" ;
-                                                                                                                            scripts-arguments = "vev" ;
-                                                                                                                            fail = true ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.bad ;
+                                                                                                                            script = scripts.verification.release.bad.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 15 ;
                                                                                                                             seed = 31934 ;
-                                                                                                                            arguments = "lqf" ;
-                                                                                                                            standard-input = "jff" ;
-                                                                                                                            status = 83 ;
-                                                                                                                            expected-standard-output = "uoz" ;
-                                                                                                                            expected-standard-error = "jtg" ;
-                                                                                                                            scripts-arguments = "vev" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.evictor ;
+                                                                                                                            script = scripts.verification.release.evictor.yes ;
                                                                                                                             has-standard-input = true ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 5621 ;
-                                                                                                                            arguments = "hrp" ;
-                                                                                                                            standard-input = "fgt" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "frd" ;
-                                                                                                                            expected-standard-error = "iqw" ;
-                                                                                                                            scripts-arguments = "zru" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.evictor ;
+                                                                                                                            script = scripts.verification.release.evictor.no ;
                                                                                                                             has-standard-input = false ;
+                                                                                                                            status = 0 ;
                                                                                                                             seed = 16346 ;
-                                                                                                                            arguments = "cmd" ;
-                                                                                                                            standard-input = "ojh" ;
-                                                                                                                            status = 0 ;
-                                                                                                                            expected-standard-output = "frd" ;
-                                                                                                                            expected-standard-error = "iqw" ;
-                                                                                                                            scripts-arguments = "zru" ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.good ;
+                                                                                                                            script = scripts.verification.release.good.yes ;
                                                                                                                             has-standard-input = true ;
-                                                                                                                            seed = 1603 ;
-                                                                                                                            arguments = "elw" ;
-                                                                                                                            standard-input = "eeu" ;
                                                                                                                             status = 0 ;
-                                                                                                                            expected-standard-output = "eec" ;
-                                                                                                                            expected-standard-error = "jxv" ;
-                                                                                                                            scripts-arguments = "aop" ;
+                                                                                                                            seed = 1603 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.good ;
+                                                                                                                            script = scripts.verification.release.good.no ;
                                                                                                                             has-standard-input = false ;
-                                                                                                                            seed = 28971 ;
-                                                                                                                            arguments = "ddv" ;
-                                                                                                                            standard-input = "isr" ;
                                                                                                                             status = 0 ;
-                                                                                                                            expected-standard-output = "eec" ;
-                                                                                                                            expected-standard-error = "jxv" ;
-                                                                                                                            scripts-arguments = "aop" ;
+                                                                                                                            seed = 28971 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
                                                                                         let
-                                                                                            script =
-                                                                                                 {
-                                                                                                    status-code ,
-                                                                                                    standard-output ,
-                                                                                                    standard-error ,
-                                                                                                    scripts-argument
-                                                                                                } : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                                    let
-                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run ${ log-directory }/XXXXXXXX" ;
-                                                                                                        in
-                                                                                                            ''
-                                                                                                                if [ -z "${ environment-variable "@" }" ]
-                                                                                                                then
-                                                                                                                    HAS_ARGUMENTS=false &&
-                                                                                                                        ARGUMENTS=""
-                                                                                                                else
-                                                                                                                    HAS_ARGUMENTS=true &&
-                                                                                                                        ARGUMENTS=${ environment-variable "@" }
-                                                                                                                fi &&
-                                                                                                                    if ${ has-standard-input }
-                                                                                                                    then
-                                                                                                                        HAS_STANDARD_INPUT=true &&
-                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                    else
-                                                                                                                        HAS_STANDARD_INPUT=false &&
-                                                                                                                            STANDARD_INPUT=""
-                                                                                                                    fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ standard-output } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ standard-error } >&2 &&
-                                                                                                                    SCRIPTS=$( ${ scripts.terminal } ${ scripts-argument } ) &&
-                                                                                                                    TEMPORARY=$( ${ temporary.terminal } ${ scripts-argument } ) &&
-                                                                                                                    ( ${ scripts.delay } ${ environment-variable "HAS_ARGUMENTS" } "${ environment-variable "ARGUMENTS" }" ${ environment-variable "HAS_STANDARD_INPUT" } "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "SCRIPTS" }" "${ environment-variable target }" ${ environment-variable "TEMPORARY" } & ) &&
-                                                                                                                    exit ${ builtins.toString status-code }
-                                                                                                            '' ;
                                                                                             in
                                                                                                 {
                                                                                                     init =
@@ -800,127 +656,57 @@
                                                                                                             bad =
                                                                                                                 {
                                                                                                                     fast =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 81 ;
-                                                                                                                                standard-output = "epz" ;
-                                                                                                                                standard-error = "vdl" ;
-                                                                                                                                scripts-argument = "yby" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            no = script 18773 11 ;
+                                                                                                                            yes = script 28903 12 ;
+                                                                                                                        } ;
                                                                                                                     slow =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 82 ;
-                                                                                                                                standard-output = "orj" ;
-                                                                                                                                standard-error = "bri" ;
-                                                                                                                                scripts-argument = "yew" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            no = script 23438 13 ;
+                                                                                                                            yes = script 9657 14 ;
+                                                                                                                        } ;
                                                                                                                 } ;
                                                                                                             evictor =
-                                                                                                                script
                                                                                                                     {
-                                                                                                                        status-code = 0 ;
-                                                                                                                        standard-output = "dcs" ;
-                                                                                                                        standard-error = "bae" ;
-                                                                                                                        scripts-argument = "ikw" ;
+                                                                                                                        no = script 6810 0 ;
+                                                                                                                        yes = script 25733 0 ;
                                                                                                                     } ;
                                                                                                             good =
                                                                                                                 {
                                                                                                                     fast =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                standard-output = "zus" ;
-                                                                                                                                standard-error = "qki" ;
-                                                                                                                                scripts-argument = "sxt" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            no = script 6944 0 ;
+                                                                                                                            yes = script 29220 0 ;
+                                                                                                                        } ;
                                                                                                                     slow =
-                                                                                                                        script
-                                                                                                                            {
-                                                                                                                                status-code = 0 ;
-                                                                                                                                standard-output = "fsw" ;
-                                                                                                                                standard-error = "brc" ;
-                                                                                                                                scripts-argument = "pum" ;
-                                                                                                                            } ;
+                                                                                                                        {
+                                                                                                                            no = script 17771 0 ;
+                                                                                                                            yes = script 21287 0 ;
+                                                                                                                        } ;
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                     release =
                                                                                                         {
                                                                                                             bad =
-                                                                                                                script
-                                                                                                                    {
-                                                                                                                        status-code = 83 ;
-                                                                                                                        standard-output = "uoz" ;
-                                                                                                                        standard-error = "jtg" ;
-                                                                                                                        scripts-argument = "vev" ;
-                                                                                                                    } ;
+                                                                                                                {
+                                                                                                                    no = script 31934 15 ;
+                                                                                                                    yes = script 10186 16 ;
+                                                                                                                } ;
                                                                                                             evictor =
-                                                                                                                script
-                                                                                                                    {
-                                                                                                                        status-code = 0 ;
-                                                                                                                        standard-output = "frd" ;
-                                                                                                                        standard-error = "iqw" ;
-                                                                                                                        scripts-argument = "zru" ;
-                                                                                                                    } ;
+                                                                                                                {
+                                                                                                                    no = script 16346 0 ;
+                                                                                                                    yes = script 5621 0 ;
+                                                                                                                } ;
                                                                                                             good =
-                                                                                                                script
-                                                                                                                    {
-                                                                                                                        status-code = 0 ;
-                                                                                                                        standard-output = "eec" ;
-                                                                                                                        standard-error = "jxv" ;
-                                                                                                                        scripts-argument = "aop" ;
-                                                                                                                    } ;
+                                                                                                                {
+                                                                                                                    no = script 28971 0 ;
+                                                                                                                    yes = script 1603 0 ;
+                                                                                                                } ;
                                                                                                         } ;
                                                                                                 } ;
                                                                                 } ;
                                                                             temporary =
                                                                                 {
-                                                                                    terminal = scripts : { init = scripts.terminal ; release = scripts.terminal ; } ;
-                                                                                    verification =
-                                                                                        {
-                                                                                            bad =
-                                                                                                {
-                                                                                                    bad =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.bad ; } ;
-                                                                                                        } ;
-                                                                                                    good =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; release = scripts.verification.release.good ; } ;
-                                                                                                        } ;
-                                                                                                    null =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.bad.fast ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.bad.fast ; } ;
-                                                                                                        } ;
-                                                                                                } ;
-                                                                                            good =
-                                                                                                {
-                                                                                                    bad =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.bad ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.bad ; } ;
-                                                                                                        } ;
-                                                                                                    good =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; release = scripts.verification.release.good ; } ;
-                                                                                                        } ;
-                                                                                                    null =
-                                                                                                        {
-                                                                                                            fast = scripts : { init = scripts.verification.init.good.fast ; } ;
-                                                                                                            slow = scripts : { init = scripts.verification.init.good.fast ; } ;
-                                                                                                        } ;
-                                                                                                } ;
-                                                                                            null =
-                                                                                                {
-                                                                                                    bad = scripts : { release = scripts.verification.release.bad ; } ;
-                                                                                                    good = scripts : { release = scripts.verification.release.good ; } ;
-                                                                                                    null = scripts : { } ;
-                                                                                                } ;
-                                                                                        } ;
                                                                                 } ;
                                                                             temporary-init-error-code = 90 ;
                                                                             temporary-init-error-message = "jsq" ;
