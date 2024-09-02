@@ -438,7 +438,12 @@
                                                                                         { pkgs , ... } : { ... } :
                                                                                             ''
                                                                                             '' ;
-                                                                                    verification = { } ;
+                                                                                    verification =
+                                                                                        let
+                                                                                            set =
+                                                                                                {
+                                                                                                } ;
+                                                                                            in { } ;
                                                                                 } ;
                                                                         } ;
                                                                 in
