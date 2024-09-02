@@ -433,7 +433,7 @@
                                                                             scripts =
                                                                                 let
                                                                                     deck =
-                                                                                        alpha : terminal : yes-script :
+                                                                                        alpha : terminal : no-script :
                                                                                             let
                                                                                                 script =
                                                                                                      beta : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
@@ -450,7 +450,7 @@
                                                                                                                         fi &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } >&2 &&
-                                                                                                                        ${ if terminal then "# " else "${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | ${ yes-script scripts } ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" }" } &&
+                                                                                                                        ${ if terminal then "# NO no script" else "${ no-script scripts } ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - no script arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } 2> /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - no script standard error" }" } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                                 '' ;
                                                                                                 in
@@ -539,7 +539,8 @@
                                                                                                                     seed = alpha + beta ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            EXPECTED_ALPHA=${ builtins.toString alpha } &&
+                                                                                                                            EXPECTED_SCRIPT=${ script } &&
+                                                                                                                                EXPECTED_ALPHA=${ builtins.toString alpha } &&
                                                                                                                                 EXPECTED_BETA=${ builtins.toString beta } &&
                                                                                                                                 EXPECTED_SEED=${ builtins.toString seed } &&
                                                                                                                                 EXPECTED_STATUS=${ builtins.toString status } &&
@@ -547,7 +548,7 @@
                                                                                                                                 EXPECTED_STANDARD_INPUT=${ if has-standard-input then builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard input" else "" } &&
                                                                                                                                 EXPECTED_STANDARD_OUTPUT=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
                                                                                                                                 EXPECTED_STANDARD_ERROR=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } &&
-                                                                                                                                ${ builtins.concatStringsSep "&& \n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo EXPECTED_${ name }=${ environment-variable "EXPECTED_${ name }" }" ) [ "SEED" "STATUS" "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
+                                                                                                                                ${ builtins.concatStringsSep " &&\n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo EXPECTED_${ name }=${ environment-variable "EXPECTED_${ name }" }" ) [ "SCRIPT" "ALPHA" "BETA" "SEED" "STATUS" "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
                                                                                                                                 assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_STANDARD_INPUT" } | " else "" }${ script } ${ environment-variable "EXPECTED_ARGUMENTS" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard output" } 2> /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard error" }" &&
                                                                                                                                 OBSERVED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
                                                                                                                                 OBSERVED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
@@ -729,7 +730,7 @@
                                                                                         } ;
                                                                                     verification =
                                                                                         {
-                                                                                            scripts = deck 16801 true ( scripts : scripts.util.scripts.release.evictor.yes ) ;
+                                                                                            scripts = deck 16801 false ( scripts : scripts.util.scripts.release.evictor.no ) ;
                                                                                         } ;
                                                                                 } ;
                                                                             temporary =
