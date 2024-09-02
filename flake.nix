@@ -442,6 +442,58 @@
                                                                                         let
                                                                                             set =
                                                                                                 {
+                                                                                                    init =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    no =
+                                                                                                                        {
+                                                                                                                            fast = 31 ;
+                                                                                                                            slow = 32 ;
+                                                                                                                        } ;
+                                                                                                                    yes =
+                                                                                                                        {
+                                                                                                                            fast = 33 ;
+                                                                                                                            slow = 34 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                {
+                                                                                                                    no = 0 ;
+                                                                                                                    yes = 0 ;
+                                                                                                                } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    no =
+                                                                                                                        {
+                                                                                                                            fast = 0 ;
+                                                                                                                            slow = 0 ;
+                                                                                                                        } ;
+                                                                                                                    yes =
+                                                                                                                        {
+                                                                                                                            fast = 0 ;
+                                                                                                                            slow = 0 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                                    release =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    no = 35 ;
+                                                                                                                    yes = 36 ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                {
+                                                                                                                    no = 0 ;
+                                                                                                                    yes = 0 ;
+                                                                                                                } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    no = 0 ;
+                                                                                                                    yes = 0 ;
+                                                                                                                } ;
+                                                                                                        } ;
                                                                                                 } ;
                                                                                             in { } ;
                                                                                 } ;
