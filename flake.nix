@@ -446,12 +446,23 @@
                                                                                                         let
                                                                                                             in
                                                                                                                 {
+                                                                                                                    util =
+                                                                                                                        {
+                                                                                                                            script =
+                                                                                                                                {
+                                                                                                                                    no =
+                                                                                                                                        { pkgs , ... } : { environment-variable , ... } :
+                                                                                                                                            ''
+                                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" }
+                                                                                                                                            '' ;
+                                                                                                                                } ;
+                                                                                                                        } ;
                                                                                                                     verification =
                                                                                                                         let
                                                                                                                             seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
                                                                                                                             status = builtins.toString value ;
                                                                                                                             in
-                                                                                                                                { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                                                { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                                                     ''
                                                                                                                                         SEED=${ seed "" } &&
                                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /built/${ seed "arguments" } &&
@@ -465,6 +476,7 @@
                                                                                                                                             STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "standard input" } ) &&
                                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
                                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
+                                                                                                                                            ###
                                                                                                                                             exit ${ status }
                                                                                                                                     '' ;
                                                                                                                 }
