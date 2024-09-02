@@ -563,7 +563,9 @@
                                                                                                                                 assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } ${ environment-variable "OBSERVED_ARGUMENTS" } "We expect the arguments to match." &&
                                                                                                                                 assert_equals "${ environment-variable "EXPECTED_STANDARD_INPUT" }" "${ environment-variable "OBSERVED_STANDARD_INPUT" }" "We expect the standard input to match." &&
                                                                                                                                 assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to match."
+                                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to match."
                                                                                                                         '' ;
+
                                                                                                         in
                                                                                                             [
                                                                                                                 (
