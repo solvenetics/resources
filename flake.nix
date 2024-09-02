@@ -435,29 +435,32 @@
                                                                             scripts =
                                                                                 {
                                                                                     test =
-                                                                                        { pkgs , ... } : { scripts , ... } :
-                                                                                            let
-                                                                                                functions =
+                                                                                        let
+                                                                                            in
+                                                                                                { pkgs , ... } : { scripts , ... } :
                                                                                                     let
-                                                                                                        generator =
-                                                                                                            index :
+                                                                                                        functions =
+                                                                                                            let
+                                                                                                                generator =
+                                                                                                                    index :
+                                                                                                                        ''
+                                                                                                                            test_${ builtins.toString index } ( )
+                                                                                                                                {
+                                                                                                                                    ${ builtins.elemAt list index }
+                                                                                                                                }
+                                                                                                                        '' ;
+                                                                                                                in builtins.genList generator ( builtins.length list ) ;
+                                                                                                        list =
+                                                                                                            [
+                                                                                                                ( script "" 31 scripts.verification.scripts.init.bad.no.fast.verification )
+                                                                                                            ] ;
+                                                                                                        script =
+                                                                                                            seed : status : command :
                                                                                                                 ''
-                                                                                                                    test_${ builtins.toString index } ( )
-                                                                                                                        {
-                                                                                                                            ${ builtins.elemAt list index }
-                                                                                                                        }
+                                                                                                                    ARGUMENTS=${ builtins.hashString "sha512" "${ seed }-arguments" } &&
+                                                                                                                        assert_status_code ${ builtins.toString status } ${ command }
                                                                                                                 '' ;
-                                                                                                        in builtins.genList generator ( builtins.length list ) ;
-                                                                                                list =
-                                                                                                    [
-                                                                                                        ( script 31 scripts.verification.scripts.init.bad.no.fast.verification )
-                                                                                                    ] ;
-                                                                                                script =
-                                                                                                    status : command :
-                                                                                                        ''
-                                                                                                            assert_status_code ${ builtins.toString status } ${ command }
-                                                                                                        '' ;
-                                                                                                in builtins.concatStringsSep "&&\n" functions ;
+                                                                                                        in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
                                                                                         let
                                                                                             mapper =
