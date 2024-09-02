@@ -434,8 +434,8 @@
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 let
-                                                                                    scripts =
-                                                                                        alpha :
+                                                                                    deck =
+                                                                                        alpha : internal :
                                                                                             let
                                                                                                 script =
                                                                                                      beta : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
@@ -733,8 +733,8 @@
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
                                                                                         {
-                                                                                            scripts = scripts 16801 ;
-                                                                                            util = scripts 18494 ;
+                                                                                            scripts = deck 16801 ( { scripts , ... } : scripts.verification.util ) ;
+                                                                                            util = deck 18494 false ;
                                                                                         } ;
                                                                                 } ;
                                                                             temporary =
