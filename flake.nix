@@ -449,11 +449,23 @@
                                                                                                                     verification =
                                                                                                                         let
                                                                                                                             seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
+                                                                                                                            status = builtins.toString value ;
                                                                                                                             in
                                                                                                                                 { pkgs , ... } : { environment-variable , has-standard-input , ... } :
                                                                                                                                     ''
                                                                                                                                         SEED=${ seed "" } &&
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /built/${ seed "arguments" }
+                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /built/${ seed "arguments" } &&
+                                                                                                                                            if ${ has-standard-input }
+                                                                                                                                            then
+                                                                                                                                                ${ pkgs.coreutils }/bin/tee > /built/${ seed "standard input" }
+                                                                                                                                            else
+                                                                                                                                                ${ pkgs.coreutils }/bin/touch /built/${ seed "standard input" }
+                                                                                                                                            fi &&
+                                                                                                                                            ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "arguments" } ) &&
+                                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "standard input" } ) &&
+                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
+                                                                                                                                            exit ${ status }
                                                                                                                                     '' ;
                                                                                                                 }
                                                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
