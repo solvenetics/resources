@@ -417,8 +417,6 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
-                                                                log-directory = "/build/T9FYcU5F.confirm" ;
-                                                                log-cache = "/build/cp9FGgb4.confirm" ;
                                                                 resources =
                                                                     lib
                                                                         {
@@ -529,12 +527,6 @@
                                                                                                         in builtins.genList fun ( builtins.length list ) ;
                                                                                                 list =
                                                                                                     let
-                                                                                                        grab =
-                                                                                                            strip
-                                                                                                                ''
-                                                                                                                    $( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --timeout 1 --event create --format "%w%f" ${ log-directory } ) )
-                                                                                                                '' ;
-                                                                                                        mktemp = "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.verification" ;
                                                                                                         script =
                                                                                                             {
                                                                                                                 script ,
