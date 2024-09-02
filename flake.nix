@@ -450,12 +450,12 @@
                                                                                                         in builtins.genList generator ( builtins.length list ) ;
                                                                                                 list =
                                                                                                     [
-                                                                                                        ( script 111 scripts.verification.scripts.init.bad.yes.fast )
+                                                                                                        ( script 111 scripts.verification.scripts.init.bad.yes.fast.verification )
                                                                                                     ] ;
                                                                                                 script =
                                                                                                     status : command :
                                                                                                         ''
-                                                                                                            assert_status_code ${ builtins.toString status }
+                                                                                                            assert_status_code ${ builtins.toString status } ${ command }
                                                                                                         '' ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
@@ -464,7 +464,9 @@
                                                                                                 path : name : value :
                                                                                                     if builtins.typeOf value == "int" then
                                                                                                         let
-                                                                                                            in
+                                                                                                            seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
+                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ [ "verification" ] path [ name ] xxx ] ) ;
+                                                                                                            status = builtins.toString value ;                                                                                                            in
                                                                                                                 {
                                                                                                                     util =
                                                                                                                         {
@@ -478,28 +480,23 @@
                                                                                                                                 } ;
                                                                                                                         } ;
                                                                                                                     verification =
-                                                                                                                        let
-                                                                                                                            seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
-                                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ [ "verification" ] path [ name ] xxx ] ) ;
-                                                                                                                            status = builtins.toString value ;
-                                                                                                                            in
-                                                                                                                                { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
-                                                                                                                                    ''
-                                                                                                                                        SEED=${ seed "" } &&
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /built/${ seed "arguments" } &&
-                                                                                                                                            if ${ has-standard-input }
-                                                                                                                                            then
-                                                                                                                                                ${ pkgs.coreutils }/bin/tee > /built/${ seed "standard input" }
-                                                                                                                                            else
-                                                                                                                                                ${ pkgs.coreutils }/bin/touch /built/${ seed "standard input" }
-                                                                                                                                            fi &&
-                                                                                                                                            ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "arguments" } ) &&
-                                                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "standard input" } ) &&
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
-                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
-                                                                                                                                            ${ site scripts [ "util" "script" "no" ] } &&
-                                                                                                                                            exit ${ status }
-                                                                                                                                    '' ;
+                                                                                                                        { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
+                                                                                                                            ''
+                                                                                                                                SEED=${ seed "" } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/{ seed "arguments" } &&
+                                                                                                                                    if ${ has-standard-input }
+                                                                                                                                    then
+                                                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ seed "standard input" }
+                                                                                                                                    else
+                                                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ seed "standard input" }
+                                                                                                                                    fi &&
+                                                                                                                                    ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ seed "arguments" } ) &&
+                                                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ seed "standard input" } ) &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
+                                                                                                                                    ${ site scripts [ "util" "script" "no" ] } &&
+                                                                                                                                    exit ${ status }
+                                                                                                                            '' ;
                                                                                                                 }
                                                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                                                             set =
@@ -566,7 +563,9 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export ${ out }=${ builtins.trace ( builtins.toString resources ) resources }
+                                                                            ${ pkgs.coreutils }/bin/mktemp > $out/xxx
+                                                                            export ${ out }=${ builtins.trace ( builtins.toString resources ) resources } &&
+                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
                                         } ;
