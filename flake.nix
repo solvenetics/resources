@@ -435,7 +435,7 @@
                                                                             scripts =
                                                                                 let
                                                                                     deck =
-                                                                                        alpha : internal :
+                                                                                        alpha : terminal : yes-script :
                                                                                             let
                                                                                                 script =
                                                                                                      beta : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
@@ -452,7 +452,7 @@
                                                                                                                         fi &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } >&2 &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" }
+                                                                                                                        ${ if terminal then "# " else "${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | ${ yes-script scripts } ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" }" } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                                 '' ;
                                                                                                 in
@@ -731,10 +731,13 @@
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
+                                                                                    util =
+                                                                                        {
+                                                                                            scripts = deck 18494 true null ;
+                                                                                        } ;
                                                                                     verification =
                                                                                         {
-                                                                                            scripts = deck 16801 ( { scripts , ... } : scripts.verification.util ) ;
-                                                                                            util = deck 18494 false ;
+                                                                                            scripts = deck 16801 true ( scripts : scripts.util.scripts.release.evictor.yes ) ;
                                                                                         } ;
                                                                                 } ;
                                                                             temporary =
