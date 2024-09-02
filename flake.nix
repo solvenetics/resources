@@ -440,6 +440,19 @@
                                                                                             '' ;
                                                                                     verification =
                                                                                         let
+                                                                                            mapper =
+                                                                                                path : name : value :
+                                                                                                    if builtins.typeOf value == "int" then
+                                                                                                        let
+                                                                                                            in
+                                                                                                                {
+                                                                                                                    verification =
+                                                                                                                        { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                                            ''
+                                                                                                                                SEED=${ builtins.hashString "sha512" ( builtins.concatLists [ path [ name ] ] ) }
+                                                                                                                            '' ;
+                                                                                                                }
+                                                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                                                             set =
                                                                                                 {
                                                                                                     init =
