@@ -446,6 +446,7 @@
                                                                                                     fi &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } >&2 &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" }
                                                                                                     exit ${ builtins.toString status }
                                                                                             '' ;
                                                                                     in
@@ -647,6 +648,17 @@
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
+                                                                                    util =
+                                                                                        {
+                                                                                            init =
+                                                                                                {
+                                                                                                    good =
+                                                                                                        {
+                                                                                                            no = script 16841 0 ;
+                                                                                                            yes = script 12157 0 ;
+                                                                                                        } ;
+                                                                                                } ;
+                                                                                        } ;
                                                                                     verification =
                                                                                         let
                                                                                             in
