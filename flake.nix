@@ -447,10 +447,14 @@
                                                                                                             in
                                                                                                                 {
                                                                                                                     verification =
-                                                                                                                        { pkgs , ... } : { environment-variable , has-standard-input , ... } :
-                                                                                                                            ''
-                                                                                                                                SEED=${ builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name ] ] ) ) }
-                                                                                                                            '' ;
+                                                                                                                        let
+                                                                                                                            seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
+                                                                                                                            in
+                                                                                                                                { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                                                    ''
+                                                                                                                                        SEED=${ seed "" } &&
+                                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /built/${ seed "arguments" }
+                                                                                                                                    '' ;
                                                                                                                 }
                                                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                                                             set =
@@ -510,7 +514,7 @@
                                                                                                 } ;
                                                                                             in
                                                                                                 {
-                                                                                                    scripts = builtins.mapAttrs ( mapper [ ] ) set ;
+                                                                                                    scripts = builtins.mapAttrs ( mapper [ "scripts" ] ) set ;
                                                                                                 } ;
                                                                                 } ;
                                                                         } ;
