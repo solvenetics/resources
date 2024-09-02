@@ -562,7 +562,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast.yes ;
+                                                                                                                            script = scripts.verification.scripts.init.bad.fast.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 12 ;
                                                                                                                             seed = 28903 ;
@@ -571,7 +571,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.fast.no ;
+                                                                                                                            script = scripts.verification.scripts.init.bad.fast.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 11 ;
                                                                                                                             seed = 18773 ;
@@ -580,7 +580,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow.yes ;
+                                                                                                                            script = scripts.verification.scripts.init.bad.slow.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 14 ;
                                                                                                                             seed = 9657 ;
@@ -589,7 +589,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.bad.slow.no ;
+                                                                                                                            script = scripts.verification.scripts.init.bad.slow.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 13 ;
                                                                                                                             seed = 23438 ;
@@ -598,7 +598,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor.yes ;
+                                                                                                                            script = scripts.verification.scripts.init.evictor.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 25733 ;
@@ -607,7 +607,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.evictor.no ;
+                                                                                                                            script = scripts.verification.scripts.init.evictor.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 6810 ;
@@ -616,7 +616,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast.yes ;
+                                                                                                                            script = scripts.verification.scripts.init.good.fast.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 29220 ;
@@ -625,7 +625,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.fast.no ;
+                                                                                                                            script = scripts.verification.scripts.init.good.fast.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 6944 ;
@@ -634,7 +634,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow.yes ;
+                                                                                                                            script = scripts.verification.scripts.init.good.slow.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 21287 ;
@@ -643,7 +643,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.init.good.slow.no ;
+                                                                                                                            script = scripts.verification.scripts.init.good.slow.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 17771 ;
@@ -652,7 +652,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.bad.yes ;
+                                                                                                                            script = scripts.verification.scripts.release.bad.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 16 ;
                                                                                                                             seed = 10186 ;
@@ -661,7 +661,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.bad.no ;
+                                                                                                                            script = scripts.verification.scripts.release.bad.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 15 ;
                                                                                                                             seed = 31934 ;
@@ -670,7 +670,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.evictor.yes ;
+                                                                                                                            script = scripts.verification.scripts.release.evictor.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 5621 ;
@@ -679,7 +679,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.evictor.no ;
+                                                                                                                            script = scripts.verification.scripts.release.evictor.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 16346 ;
@@ -688,7 +688,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.good.yes ;
+                                                                                                                            script = scripts.verification.scripts.release.good.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 1603 ;
@@ -697,7 +697,7 @@
                                                                                                                 (
                                                                                                                     script
                                                                                                                         {
-                                                                                                                            script = scripts.verification.release.good.no ;
+                                                                                                                            script = scripts.verification.scripts.release.good.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
                                                                                                                             seed = 28971 ;
@@ -705,7 +705,11 @@
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
-                                                                                    verification = scripts ;
+                                                                                    verification =
+                                                                                        {
+                                                                                            scripts = scripts ;
+                                                                                            util = scripts ;
+                                                                                        } ;
                                                                                 } ;
                                                                             temporary =
                                                                                 {
