@@ -434,84 +434,38 @@
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 let
-                                                                                    deck =
-                                                                                        alpha : terminal : no-script :
-                                                                                            let
-                                                                                                script =
-                                                                                                     beta : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                                        let
-                                                                                                            seed = alpha + beta ;
-                                                                                                            in
-                                                                                                                ''
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" }
-                                                                                                                        if ${ has-standard-input }
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
-                                                                                                                        else
-                                                                                                                            ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
-                                                                                                                        fi &&
-                                                                                                                        ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
-                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status }  &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status } >&2 &&
-                                                                                                                        # ${ if terminal then "# NO no script" else "${ no-script scripts } ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - no script arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - no script standard output" } 2> /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - no script standard error" }" } &&
-                                                                                                                        exit ${ builtins.toString status }
-                                                                                                                '' ;
-                                                                                                in
-                                                                                                    {
-                                                                                                        init =
-                                                                                                            {
-                                                                                                                bad =
-                                                                                                                    {
-                                                                                                                        fast =
-                                                                                                                            {
-                                                                                                                                no = script 18773 11 ;
-                                                                                                                                yes = script 28903 12 ;
-                                                                                                                            } ;
-                                                                                                                        slow =
-                                                                                                                            {
-                                                                                                                                no = script 23438 13 ;
-                                                                                                                                yes = script 9657 14 ;
-                                                                                                                            } ;
-                                                                                                                    } ;
-                                                                                                                evictor =
-                                                                                                                        {
-                                                                                                                            no = script 6810 0 ;
-                                                                                                                            yes = script 25733 0 ;
-                                                                                                                        } ;
-                                                                                                                good =
-                                                                                                                    {
-                                                                                                                        fast =
-                                                                                                                            {
-                                                                                                                                no = script 6944 0 ;
-                                                                                                                                yes = script 29220 0 ;
-                                                                                                                            } ;
-                                                                                                                        slow =
-                                                                                                                            {
-                                                                                                                                no = script 17771 0 ;
-                                                                                                                                yes = script 21287 0 ;
-                                                                                                                            } ;
-                                                                                                                    } ;
-                                                                                                            } ;
-                                                                                                        release =
-                                                                                                            {
-                                                                                                                bad =
-                                                                                                                    {
-                                                                                                                        no = script 31934 15 ;
-                                                                                                                        yes = script 10186 16 ;
-                                                                                                                    } ;
-                                                                                                                evictor =
-                                                                                                                    {
-                                                                                                                        no = script 16346 0 ;
-                                                                                                                        yes = script 5621 0 ;
-                                                                                                                    } ;
-                                                                                                                good =
-                                                                                                                    {
-                                                                                                                        no = script 28971 0 ;
-                                                                                                                        yes = script 1603 0 ;
-                                                                                                                    } ;
-                                                                                                            } ;
-                                                                                                } ;
+                                                                                    internal =
+                                                                                        seed : status : { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" }
+                                                                                                    if ${ has-standard-input }
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                    fi &&
+                                                                                                    ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
+                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status }  &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status } >&2 &&
+                                                                                                    exit ${ builtins.toString status }
+                                                                                            '' ;
+                                                                                    terminal =
+                                                                                        seed : status : { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" }
+                                                                                                    if ${ has-standard-input }
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                    fi &&
+                                                                                                    ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
+                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status }  &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" }_${ builtins.toString status } >&2 &&
+                                                                                                    exit ${ builtins.toString status }
+                                                                                            '' ;
                                                                                     in
                                                                                 {
                                                                                     test =
@@ -536,38 +490,28 @@
                                                                                                                 script ,
                                                                                                                 has-standard-input ,
                                                                                                                 status ,
-                                                                                                                alpha ,
-                                                                                                                beta
+                                                                                                                seed
                                                                                                             } :
-                                                                                                                let
-                                                                                                                    seed = alpha + beta ;
-                                                                                                                    in
-                                                                                                                        ''
-                                                                                                                            EXPECTED_SCRIPT=${ script } &&
-                                                                                                                                EXPECTED_ALPHA=${ builtins.toString alpha } &&
-                                                                                                                                EXPECTED_BETA=${ builtins.toString beta } &&
-                                                                                                                                EXPECTED_SEED=${ builtins.toString seed } &&
-                                                                                                                                EXPECTED_STATUS=${ builtins.toString status } &&
-                                                                                                                                EXPECTED_ARGUMENTS=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } arguments" } &&
-                                                                                                                                EXPECTED_STANDARD_INPUT=${ if has-standard-input then builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard input" else "" } &&
-                                                                                                                                EXPECTED_STANDARD_OUTPUT=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" }_${ environment-variable "EXPECTED_ARGUMENTS" }_${ environment-variable "EXPECTED_STANDARD_INPUT" }_${ environment-variable "EXPECTED_STATUS" } &&
-                                                                                                                                EXPECTED_STANDARD_ERROR=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" }_${ environment-variable "EXPECTED_ARGUMENTS" }_${ environment-variable "EXPECTED_STANDARD_INPUT" }_${ environment-variable "EXPECTED_STATUS" } &&
-                                                                                                                                EXPECTED_NO_SCRIPT_STANDARD_OUTPUT="WTF" &&
-                                                                                                                                ${ builtins.concatStringsSep " &&\n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo EXPECTED_${ name }=${ environment-variable "EXPECTED_${ name }" }" ) [ "SCRIPT" "ALPHA" "BETA" "SEED" "STATUS" "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" "NO_SCRIPT_STANDARD_OUTPUT" ] ) } &&
-                                                                                                                                assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_STANDARD_INPUT" } | " else "" }${ script } ${ environment-variable "EXPECTED_ARGUMENTS" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard output" } 2> /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard error" }" &&
-                                                                                                                                OBSERVED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
-                                                                                                                                OBSERVED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
-                                                                                                                                OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard output" } ) &&
-                                                                                                                                OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard error" } ) &&
-                                                                                                                                OBSERVED_NO_SCRIPT_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - no script standard output" } ) &&
-                                                                                                                                ${ builtins.concatStringsSep "&& \n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo OBSERVED_${ name }=${ environment-variable "OBSERVED_${ name }" }" ) [ "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
-                                                                                                                                assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } ${ environment-variable "OBSERVED_ARGUMENTS" } "We expect the arguments to match." &&
-                                                                                                                                assert_equals "${ environment-variable "EXPECTED_STANDARD_INPUT" }" "${ environment-variable "OBSERVED_STANDARD_INPUT" }" "We expect the standard input to match." &&
-                                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to match."
-                                                                                                                                assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to match."
-                                                                                                                                assert_equals ${ environment-variable "EXPECTED_NO_SCRIPT_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_NO_SCRIPT_STANDARD_OUTPUT" } "WTF"
-                                                                                                                        '' ;
-
+                                                                                                                ''
+                                                                                                                    EXPECTED_SCRIPT=${ script } &&
+                                                                                                                        EXPECTED_SEED=${ builtins.toString seed } &&
+                                                                                                                        EXPECTED_STATUS=${ builtins.toString status } &&
+                                                                                                                        EXPECTED_ARGUMENTS=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } arguments" } &&
+                                                                                                                        EXPECTED_STANDARD_INPUT=${ if has-standard-input then builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard input" else "" } &&
+                                                                                                                        EXPECTED_STANDARD_OUTPUT=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" }_${ environment-variable "EXPECTED_ARGUMENTS" }_${ environment-variable "EXPECTED_STANDARD_INPUT" }_${ environment-variable "EXPECTED_STATUS" } &&
+                                                                                                                        EXPECTED_STANDARD_ERROR=${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" }_${ environment-variable "EXPECTED_ARGUMENTS" }_${ environment-variable "EXPECTED_STANDARD_INPUT" }_${ environment-variable "EXPECTED_STATUS" } &&
+                                                                                                                        ${ builtins.concatStringsSep " &&\n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo EXPECTED_${ name }=${ environment-variable "EXPECTED_${ name }" }" ) [ "SCRIPT" "ALPHA" "BETA" "SEED" "STATUS" "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
+                                                                                                                        assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_STANDARD_INPUT" } | " else "" }${ script } ${ environment-variable "EXPECTED_ARGUMENTS" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard output" } 2> /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard error" }" &&
+                                                                                                                        OBSERVED_ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" } ) &&
+                                                                                                                        OBSERVED_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" } ) &&
+                                                                                                                        OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard output" } ) &&
+                                                                                                                        OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard error" } ) &&
+                                                                                                                        ${ builtins.concatStringsSep "&& \n" ( builtins.map ( name : "${ pkgs.coreutils }/bin/echo OBSERVED_${ name }=${ environment-variable "OBSERVED_${ name }" }" ) [ "ARGUMENTS" "STANDARD_INPUT" "STANDARD_OUTPUT" "STANDARD_ERROR" ] ) } &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_ARGUMENTS" } ${ environment-variable "OBSERVED_ARGUMENTS" } "We expect the arguments to match." &&
+                                                                                                                        assert_equals "${ environment-variable "EXPECTED_STANDARD_INPUT" }" "${ environment-variable "OBSERVED_STANDARD_INPUT" }" "We expect the standard input to match." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to match." &&
+                                                                                                                        assert_equals ${ environment-variable "EXPECTED_STANDARD_ERROR" } ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to match."
+                                                                                                                '' ;
                                                                                                         in
                                                                                                             [
                                                                                                                 (
@@ -576,8 +520,7 @@
                                                                                                                             script = scripts.verification.scripts.init.bad.fast.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 12 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 28903 ;
+                                                                                                                            seed = 28903 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -586,8 +529,7 @@
                                                                                                                             script = scripts.verification.scripts.init.bad.fast.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 11 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 18773 ;
+                                                                                                                            seed = 18773 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -596,8 +538,7 @@
                                                                                                                             script = scripts.verification.scripts.init.bad.slow.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 14 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 9657 ;
+                                                                                                                            seed = 9657 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -606,8 +547,7 @@
                                                                                                                             script = scripts.verification.scripts.init.bad.slow.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 13 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 23438 ;
+                                                                                                                            seed = 23438 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -616,8 +556,7 @@
                                                                                                                             script = scripts.verification.scripts.init.evictor.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 25733 ;
+                                                                                                                            seed = 25733 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -626,8 +565,7 @@
                                                                                                                             script = scripts.verification.scripts.init.evictor.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 6810 ;
+                                                                                                                            seed = 6810 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -636,8 +574,7 @@
                                                                                                                             script = scripts.verification.scripts.init.good.fast.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 29220 ;
+                                                                                                                            seed = 29220 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -646,8 +583,7 @@
                                                                                                                             script = scripts.verification.scripts.init.good.fast.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 6944 ;
+                                                                                                                            seed = 6944 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -656,8 +592,7 @@
                                                                                                                             script = scripts.verification.scripts.init.good.slow.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 21287 ;
+                                                                                                                            seed = 21287 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -666,8 +601,7 @@
                                                                                                                             script = scripts.verification.scripts.init.good.slow.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 17771 ;
+                                                                                                                            seed = 17771 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -676,8 +610,7 @@
                                                                                                                             script = scripts.verification.scripts.release.bad.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 16 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 10186 ;
+                                                                                                                            seed = 10186 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -686,8 +619,7 @@
                                                                                                                             script = scripts.verification.scripts.release.bad.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 15 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 31934 ;
+                                                                                                                            seed = 31934 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -696,8 +628,7 @@
                                                                                                                             script = scripts.verification.scripts.release.evictor.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 5621 ;
+                                                                                                                            seed = 5621 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -706,8 +637,7 @@
                                                                                                                             script = scripts.verification.scripts.release.evictor.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 16346 ;
+                                                                                                                            seed = 16346 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -716,8 +646,7 @@
                                                                                                                             script = scripts.verification.scripts.release.good.yes ;
                                                                                                                             has-standard-input = true ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 1603 ;
+                                                                                                                            seed = 1603 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                                 (
@@ -726,20 +655,70 @@
                                                                                                                             script = scripts.verification.scripts.release.good.no ;
                                                                                                                             has-standard-input = false ;
                                                                                                                             status = 0 ;
-                                                                                                                            alpha = 16801 ;
-                                                                                                                            beta = 28971 ;
+                                                                                                                            seed = 28971 ;
                                                                                                                         }
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
-                                                                                    util =
-                                                                                        {
-                                                                                            scripts = deck 18494 true null ;
-                                                                                        } ;
                                                                                     verification =
                                                                                         {
-                                                                                            scripts = deck 16801 false ( scripts : scripts.util.scripts.release.evictor.no ) ;
+                                                                                            scripts =
+                                                                                                {
+                                                                                                    init =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    fast =
+                                                                                                                        {
+                                                                                                                            no = internal 18773 11 ;
+                                                                                                                            yes = internal 28903 12 ;
+                                                                                                                        } ;
+                                                                                                                    slow =
+                                                                                                                        {
+                                                                                                                            no = internal 23438 13 ;
+                                                                                                                            yes = internal 9657 14 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                    {
+                                                                                                                        no = internal 6810 0 ;
+                                                                                                                        yes = internal 25733 0 ;
+                                                                                                                    } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    fast =
+                                                                                                                        {
+                                                                                                                            no = internal 6944 0 ;
+                                                                                                                            yes = internal 29220 0 ;
+                                                                                                                        } ;
+                                                                                                                    slow =
+                                                                                                                        {
+                                                                                                                            no = internal 17771 0 ;
+                                                                                                                            yes = internal 21287 0 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                                    release =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    no = internal 31934 15 ;
+                                                                                                                    yes = internal 10186 16 ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                {
+                                                                                                                    no = internal 16346 0 ;
+                                                                                                                    yes = internal 5621 0 ;
+                                                                                                                } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    no = internal 28971 0 ;
+                                                                                                                    yes = internal 1603 0 ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                                } ;
                                                                                         } ;
+
                                                                                 } ;
                                                                             temporary =
                                                                                 {
