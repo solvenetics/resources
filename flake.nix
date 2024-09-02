@@ -432,7 +432,14 @@
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
-                                                                            scripts = { } ;
+                                                                            scripts =
+                                                                                {
+                                                                                    test =
+                                                                                        { pkgs , ... } : { ... } :
+                                                                                            ''
+                                                                                            '' ;
+                                                                                    verification = { } ;
+                                                                                } ;
                                                                         } ;
                                                                 in
                                                                     ''
