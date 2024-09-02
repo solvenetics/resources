@@ -450,7 +450,7 @@
                                                                                                         in builtins.genList generator ( builtins.length list ) ;
                                                                                                 list =
                                                                                                     [
-                                                                                                        ( script 111 scripts.verification.scripts.init.bad.yes.fast.verification )
+                                                                                                        ( script 31 scripts.verification.scripts.init.bad.no.fast.verification )
                                                                                                     ] ;
                                                                                                 script =
                                                                                                     status : command :
@@ -483,7 +483,7 @@
                                                                                                                         { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                                             ''
                                                                                                                                 SEED=${ seed "" } &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/{ seed "arguments" } &&
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ seed "arguments" } &&
                                                                                                                                     if ${ has-standard-input }
                                                                                                                                     then
                                                                                                                                         ${ pkgs.coreutils }/bin/tee > /build/${ seed "standard input" }
@@ -563,9 +563,8 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/mktemp > $out/xxx
                                                                             export ${ out }=${ builtins.trace ( builtins.toString resources ) resources } &&
-                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
                                         } ;
