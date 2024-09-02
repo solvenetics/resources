@@ -434,21 +434,78 @@
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 let
-                                                                                    script =
-                                                                                         seed : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                            ''
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" }
-                                                                                                    if ${ has-standard-input }
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
-                                                                                                    else
-                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
-                                                                                                    fi &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } >&2 &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" }
-                                                                                                    exit ${ builtins.toString status }
-                                                                                            '' ;
+                                                                                    scripts =
+                                                                                        let
+                                                                                            script =
+                                                                                                 seed : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - arguments" }
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/tee > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/touch /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - standard input" }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard output" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - standard error" } >&2 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard input" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } > /build/${ builtins.hashString "sha512" "file - ${ builtins.toString seed } - script a standard output" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" } 2> /build/${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a standard error" } | scripts.util.init.yes ${ builtins.hashString "sha512" "value - ${ builtins.toString seed } - script a arguments" }
+                                                                                                            exit ${ builtins.toString status }
+                                                                                                    '' ;
+                                                                                            in
+                                                                                                {
+                                                                                                    init =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    fast =
+                                                                                                                        {
+                                                                                                                            no = script 18773 11 ;
+                                                                                                                            yes = script 28903 12 ;
+                                                                                                                        } ;
+                                                                                                                    slow =
+                                                                                                                        {
+                                                                                                                            no = script 23438 13 ;
+                                                                                                                            yes = script 9657 14 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                    {
+                                                                                                                        no = script 6810 0 ;
+                                                                                                                        yes = script 25733 0 ;
+                                                                                                                    } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    fast =
+                                                                                                                        {
+                                                                                                                            no = script 6944 0 ;
+                                                                                                                            yes = script 29220 0 ;
+                                                                                                                        } ;
+                                                                                                                    slow =
+                                                                                                                        {
+                                                                                                                            no = script 17771 0 ;
+                                                                                                                            yes = script 21287 0 ;
+                                                                                                                        } ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                                    release =
+                                                                                                        {
+                                                                                                            bad =
+                                                                                                                {
+                                                                                                                    no = script 31934 15 ;
+                                                                                                                    yes = script 10186 16 ;
+                                                                                                                } ;
+                                                                                                            evictor =
+                                                                                                                {
+                                                                                                                    no = script 16346 0 ;
+                                                                                                                    yes = script 5621 0 ;
+                                                                                                                } ;
+                                                                                                            good =
+                                                                                                                {
+                                                                                                                    no = script 28971 0 ;
+                                                                                                                    yes = script 1603 0 ;
+                                                                                                                } ;
+                                                                                                        } ;
+                                                                                            } ;
                                                                                     in
                                                                                 {
                                                                                     test =
@@ -648,74 +705,7 @@
                                                                                                                 )
                                                                                                             ] ;
                                                                                                 in builtins.concatStringsSep "&&\n" functions ;
-                                                                                    util =
-                                                                                        {
-                                                                                            init =
-                                                                                                {
-                                                                                                    good =
-                                                                                                        {
-                                                                                                            no = script 16841 0 ;
-                                                                                                            yes = script 12157 0 ;
-                                                                                                        } ;
-                                                                                                } ;
-                                                                                        } ;
-                                                                                    verification =
-                                                                                        let
-                                                                                            in
-                                                                                                {
-                                                                                                    init =
-                                                                                                        {
-                                                                                                            bad =
-                                                                                                                {
-                                                                                                                    fast =
-                                                                                                                        {
-                                                                                                                            no = script 18773 11 ;
-                                                                                                                            yes = script 28903 12 ;
-                                                                                                                        } ;
-                                                                                                                    slow =
-                                                                                                                        {
-                                                                                                                            no = script 23438 13 ;
-                                                                                                                            yes = script 9657 14 ;
-                                                                                                                        } ;
-                                                                                                                } ;
-                                                                                                            evictor =
-                                                                                                                    {
-                                                                                                                        no = script 6810 0 ;
-                                                                                                                        yes = script 25733 0 ;
-                                                                                                                    } ;
-                                                                                                            good =
-                                                                                                                {
-                                                                                                                    fast =
-                                                                                                                        {
-                                                                                                                            no = script 6944 0 ;
-                                                                                                                            yes = script 29220 0 ;
-                                                                                                                        } ;
-                                                                                                                    slow =
-                                                                                                                        {
-                                                                                                                            no = script 17771 0 ;
-                                                                                                                            yes = script 21287 0 ;
-                                                                                                                        } ;
-                                                                                                                } ;
-                                                                                                        } ;
-                                                                                                    release =
-                                                                                                        {
-                                                                                                            bad =
-                                                                                                                {
-                                                                                                                    no = script 31934 15 ;
-                                                                                                                    yes = script 10186 16 ;
-                                                                                                                } ;
-                                                                                                            evictor =
-                                                                                                                {
-                                                                                                                    no = script 16346 0 ;
-                                                                                                                    yes = script 5621 0 ;
-                                                                                                                } ;
-                                                                                                            good =
-                                                                                                                {
-                                                                                                                    no = script 28971 0 ;
-                                                                                                                    yes = script 1603 0 ;
-                                                                                                                } ;
-                                                                                                        } ;
-                                                                                                } ;
+                                                                                    verification = scripts ;
                                                                                 } ;
                                                                             temporary =
                                                                                 {
