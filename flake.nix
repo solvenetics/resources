@@ -517,7 +517,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export ${ out }=${ resources }
+                                                                            export ${ out }=${ builtins.trace ( builtins.toString resources ) resources }
                                                                     '' ;
                                                     } ;
                                         } ;
