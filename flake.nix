@@ -417,6 +417,7 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
+                                                                out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
                                                                     lib
                                                                         {
@@ -429,6 +430,7 @@
                                                                             cache =
                                                                                 {
                                                                                 } ;
+                                                                            out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
                                                                                 let
@@ -744,7 +746,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d=${ resources } &&
+                                                                            export ${ out }=${ resources } &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
