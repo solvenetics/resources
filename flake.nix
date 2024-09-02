@@ -460,6 +460,7 @@
                                                                                                                     verification =
                                                                                                                         let
                                                                                                                             seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
+                                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ [ "verification" ] path [ name ] xxx ] ) ;
                                                                                                                             status = builtins.toString value ;
                                                                                                                             in
                                                                                                                                 { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
@@ -476,7 +477,7 @@
                                                                                                                                             STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /built/${ seed "standard input" } ) &&
                                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
                                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
-                                                                                                                                            ###
+                                                                                                                                            ${ site scripts [ "util" "script" "no" ] } &&
                                                                                                                                             exit ${ status }
                                                                                                                                     '' ;
                                                                                                                 }
