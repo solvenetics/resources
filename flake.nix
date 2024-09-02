@@ -444,7 +444,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export ${ out }
+                                                                            export ${ out }=${ resources }
                                                                     '' ;
                                                     } ;
                                         } ;
