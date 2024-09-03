@@ -435,143 +435,15 @@
                                                                             scripts =
                                                                                 {
                                                                                     test =
-                                                                                        let
-                                                                                            in
-                                                                                                { pkgs , ... } : { scripts , ... } :
-                                                                                                    let
-                                                                                                        functions =
-                                                                                                            let
-                                                                                                                generator =
-                                                                                                                    index :
-                                                                                                                        ''
-                                                                                                                            test_${ builtins.toString index } ( )
-                                                                                                                                {
-                                                                                                                                    ${ builtins.elemAt list index }
-                                                                                                                                }
-                                                                                                                        '' ;
-                                                                                                                in builtins.genList generator ( builtins.length list ) ;
-                                                                                                        list =
-                                                                                                            [
-                                                                                                                ( script [ "init" "bad" "no" "fast" ] 31 )
-                                                                                                            ] ;
-                                                                                                        script =
-                                                                                                            path : status :
-                                                                                                                let
-                                                                                                                    fully-qualified-name = builtins.concatStringsSep "/" ( builtins.concatLists [ [ "verification" "scripts" ] path ] ) ;
-                                                                                                                    seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ description ] ] ) ) ;
-                                                                                                                    in
-                                                                                                                        ''
-                                                                                                                            ${ pkgs.coreutils }/bin/true ${ fully-qualified-name }
-                                                                                                                        '' ;
-                                                                                                        in builtins.concatStringsSep "&&\n" functions ;
-                                                                                    verification =
-                                                                                        let
-                                                                                            mapper =
-                                                                                                path : name : value :
-                                                                                                    if builtins.typeOf value == "int" then
-                                                                                                        let
-                                                                                                            fully-qualified-name = builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) ;
-                                                                                                            seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
-                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ path [ name ] xxx ] ) ;
-                                                                                                            status = builtins.toString value ;                                                                                                            in
-                                                                                                                {
-                                                                                                                    util =
-                                                                                                                        {
-                                                                                                                            script =
-                                                                                                                                {
-                                                                                                                                    no =
-                                                                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                                                                            ''
-                                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" }
-                                                                                                                                            '' ;
-                                                                                                                                } ;
-                                                                                                                        } ;
-                                                                                                                    verification =
-                                                                                                                        { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
-                                                                                                                            ''
-                                                                                                                                # ${ fully-qualified-name }
-                                                                                                                                SEED=${ seed "" } &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ seed "arguments" } &&
-                                                                                                                                    if ${ has-standard-input }
-                                                                                                                                    then
-                                                                                                                                        ${ pkgs.coreutils }/bin/tee > /build/${ seed "standard input" }
-                                                                                                                                    else
-                                                                                                                                        ${ pkgs.coreutils }/bin/touch /build/${ seed "standard input" }
-                                                                                                                                    fi &&
-                                                                                                                                    ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat /build/${ seed "arguments" } ) &&
-                                                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat /build/${ seed "standard input" } ) &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ seed "standard output" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } &&
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ seed "standard error" }_${ environment-variable "ARGUMENTS" }_${ environment-variable "STANDARD_INPUT" } >&2 &&
-                                                                                                                                    ${ site scripts [ "util" "script" "no" ] } &&
-                                                                                                                                    exit ${ status }
-                                                                                                                            '' ;
-                                                                                                                }
-                                                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                                                            set =
-                                                                                                {
-                                                                                                    init =
-                                                                                                        {
-                                                                                                            bad =
-                                                                                                                {
-                                                                                                                    no =
-                                                                                                                        {
-                                                                                                                            fast = 31 ;
-                                                                                                                            slow = 32 ;
-                                                                                                                        } ;
-                                                                                                                    yes =
-                                                                                                                        {
-                                                                                                                            fast = 33 ;
-                                                                                                                            slow = 34 ;
-                                                                                                                        } ;
-                                                                                                                } ;
-                                                                                                            evictor =
-                                                                                                                {
-                                                                                                                    no = 0 ;
-                                                                                                                    yes = 0 ;
-                                                                                                                } ;
-                                                                                                            good =
-                                                                                                                {
-                                                                                                                    no =
-                                                                                                                        {
-                                                                                                                            fast = 0 ;
-                                                                                                                            slow = 0 ;
-                                                                                                                        } ;
-                                                                                                                    yes =
-                                                                                                                        {
-                                                                                                                            fast = 0 ;
-                                                                                                                            slow = 0 ;
-                                                                                                                        } ;
-                                                                                                                } ;
-                                                                                                        } ;
-                                                                                                    release =
-                                                                                                        {
-                                                                                                            bad =
-                                                                                                                {
-                                                                                                                    no = 35 ;
-                                                                                                                    yes = 36 ;
-                                                                                                                } ;
-                                                                                                            evictor =
-                                                                                                                {
-                                                                                                                    no = 0 ;
-                                                                                                                    yes = 0 ;
-                                                                                                                } ;
-                                                                                                            good =
-                                                                                                                {
-                                                                                                                    no = 0 ;
-                                                                                                                    yes = 0 ;
-                                                                                                                } ;
-                                                                                                        } ;
-                                                                                                } ;
-                                                                                            in
-                                                                                                {
-                                                                                                    scripts = builtins.mapAttrs ( mapper [ "verification" "scripts" ] ) set ;
-                                                                                                } ;
+                                                                                        { pkgs , ... } : { ... } :
+                                                                                            ''
+                                                                                            '' ;
                                                                                 } ;
                                                                         } ;
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export ${ out }=${ builtins.trace ( builtins.toString resources ) resources } &&
+                                                                            export ${ out }=${ resources } &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
