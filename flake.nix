@@ -452,14 +452,17 @@
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         list =
                                                                                                             [
-                                                                                                                ( script "" 31 scripts.verification.scripts.init.bad.no.fast.verification )
+                                                                                                                ( script [ "init" "bad" "no" "fast" ] 31 )
                                                                                                             ] ;
                                                                                                         script =
-                                                                                                            seed : status : command :
-                                                                                                                ''
-                                                                                                                    ARGUMENTS=${ builtins.hashString "sha512" "${ seed }-arguments" } &&
-                                                                                                                        assert_status_code ${ builtins.toString status } ${ command }
-                                                                                                                '' ;
+                                                                                                            path : status :
+                                                                                                                let
+                                                                                                                    fully-qualified-name = builtins.concatStringsSep "/" ( builtins.concatLists [ [ "verification" "scripts" ] path ] ) ;
+                                                                                                                    seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ description ] ] ) ) ;
+                                                                                                                    in
+                                                                                                                        ''
+                                                                                                                            ${ pkgs.coreutils }/bin/true ${ fully-qualified-name }
+                                                                                                                        '' ;
                                                                                                         in builtins.concatStringsSep "&&\n" functions ;
                                                                                     verification =
                                                                                         let
@@ -467,8 +470,9 @@
                                                                                                 path : name : value :
                                                                                                     if builtins.typeOf value == "int" then
                                                                                                         let
+                                                                                                            fully-qualified-name = builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) ;
                                                                                                             seed = description : builtins.hashString "sha512" ( builtins.concatStringsSep "_" ( builtins.concatLists [ path [ name description ] ] ) ) ;
-                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ [ "verification" ] path [ name ] xxx ] ) ;
+                                                                                                            site = scripts : xxx : builtins.foldl' ( current : next : builtins.getAttr next current ) scripts ( builtins.concatLists [ path [ name ] xxx ] ) ;
                                                                                                             status = builtins.toString value ;                                                                                                            in
                                                                                                                 {
                                                                                                                     util =
@@ -485,6 +489,7 @@
                                                                                                                     verification =
                                                                                                                         { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                                             ''
+                                                                                                                                # ${ fully-qualified-name }
                                                                                                                                 SEED=${ seed "" } &&
                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } > /build/${ seed "arguments" } &&
                                                                                                                                     if ${ has-standard-input }
@@ -559,7 +564,7 @@
                                                                                                 } ;
                                                                                             in
                                                                                                 {
-                                                                                                    scripts = builtins.mapAttrs ( mapper [ "scripts" ] ) set ;
+                                                                                                    scripts = builtins.mapAttrs ( mapper [ "verification" "scripts" ] ) set ;
                                                                                                 } ;
                                                                                 } ;
                                                                         } ;
