@@ -467,7 +467,7 @@
                                                                                                                                                     {
                                                                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status }
                                                                                                                                                     } &&
-                                                                                                                                                assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ standard-input } |" else "" }${ command } ${ arguments } > /build/$( hash standard output file ) 2> /build/$( hash standard error file )" &&
+                                                                                                                                                assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ standard-input } | " else "" }${ command } ${ arguments } > /build/$( hash standard output file ) 2> /build/$( hash standard error file )" &&
                                                                                                                                                 OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard output file" ) ) &&
                                                                                                                                                 OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard error file" ) ) &&
                                                                                                                                                 assert_equals "$( string standard output value )" "${ environment-variable "OBSERVED_STANDARD_OUTPUT" }" "We expect the standard output to be exactly as predicted.  This will confirm that that script received the arguments and standard input correctly." &&
@@ -482,7 +482,7 @@
                                                                                             verification =
                                                                                                 let
                                                                                                     internal =
-                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                             ''
                                                                                                                 hash ( )
                                                                                                                     {
@@ -501,7 +501,7 @@
                                                                                                                     fi &&
                                                                                                                     string standard output value &&
                                                                                                                     string standard error value >&2 &&
-                                                                                                                    # scripts.verification.terminal $( hash no-script arguments value ) > /build/$( hash no-script standard output file ) 2> /build/$( hash no-script standard error file ) &&
+                                                                                                                    ${ scripts.verification.terminal } $( hash no-script arguments value ) > /build/$( hash no-script standard output file ) 2> /build/$( hash no-script standard error file ) &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo $( hash yes-script standard input value ) | scripts.verification.terminal $( hash yes-script arguments value ) > /build/$( hash yes-script standard output file ) 2> /build/$( hash yes-script standard error file ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
