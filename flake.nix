@@ -540,8 +540,7 @@
                                                                                                                                 fi &&
                                                                                                                                 string standard output value &&
                                                                                                                                 string standard error value >&2 &&
-                                                                                                                                # ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( hash scripts file ) &&
-                                                                                                                                    true
+                                                                                                                                ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( hash scripts file )
                                                                                                                         '' ;
                                                                                                     in
                                                                                                         {
