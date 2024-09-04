@@ -485,9 +485,9 @@
                                                                                                         status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                             let
                                                                                                                 mapper =
-                                                                                                                    name : value :
-                                                                                                                        if builtins.typeOf value == "string" then [ value ]
-                                                                                                                        else builtins.concatLists ( builtins.mapAttrs mapper value ) ;
+                                                                                                                    path : name : value :
+                                                                                                                        if builtins.typeOf value == "string" then [ "${ builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) }=${ value }" ]
+                                                                                                                        else builtins.concatLists ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ;
                                                                                                                 in
                                                                                                                     ''
                                                                                                                         hash ( )
@@ -507,7 +507,7 @@
                                                                                                                             fi &&
                                                                                                                             string standard output value &&
                                                                                                                             string standard error value >&2 &&
-                                                                                                                            
+                                                                                                                            ${ pkgs.coreutils }/bin/echo hi > /build/$( hash scripts ) &&
                                                                                                                             exit ${ builtins.toString status }
                                                                                                                     '' ;
                                                                                                     terminal =
