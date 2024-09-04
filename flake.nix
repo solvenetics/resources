@@ -483,26 +483,33 @@
                                                                                                 let
                                                                                                     internal =
                                                                                                         status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
-                                                                                                            ''
-                                                                                                                hash ( )
-                                                                                                                    {
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n $( string ${ environment-variable "@" } ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
-                                                                                                                    } &&
-                                                                                                                    string ( )
-                                                                                                                        {
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
-                                                                                                                        } &&
-                                                                                                                    ARGUMENTS=${ environment-variable "@" } &&
-                                                                                                                    if ${ has-standard-input }
-                                                                                                                    then
-                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                    else
-                                                                                                                        STANDARD_INPUT=""
-                                                                                                                    fi &&
-                                                                                                                    string standard output value &&
-                                                                                                                    string standard error value >&2 &&
-                                                                                                                    exit ${ builtins.toString status }
-                                                                                                            '' ;
+                                                                                                            let
+                                                                                                                mapper =
+                                                                                                                    name : value :
+                                                                                                                        if builtins.typeOf value == "string" then [ value ]
+                                                                                                                        else builtins.concatLists ( builtins.mapAttrs mapper value ) ;
+                                                                                                                in
+                                                                                                                    ''
+                                                                                                                        hash ( )
+                                                                                                                            {
+                                                                                                                                ${ pkgs.coreutils }/bin/echo -n $( string ${ environment-variable "@" } ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                            } &&
+                                                                                                                            string ( )
+                                                                                                                                {
+                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
+                                                                                                                                } &&
+                                                                                                                            ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                            if ${ has-standard-input }
+                                                                                                                            then
+                                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                            else
+                                                                                                                                STANDARD_INPUT=""
+                                                                                                                            fi &&
+                                                                                                                            string standard output value &&
+                                                                                                                            string standard error value >&2 &&
+                                                                                                                            
+                                                                                                                            exit ${ builtins.toString status }
+                                                                                                                    '' ;
                                                                                                     terminal =
                                                                                                         seed :
                                                                                                             { pkgs , ... } : { environment-variable , has-standard-input , ... } :
