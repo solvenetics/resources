@@ -476,7 +476,7 @@
                                                                                                                                                 assert_equals "$( string standard output value )" "${ environment-variable "OBSERVED_STANDARD_OUTPUT" }" "We expect the standard output to be exactly as predicted.  This will confirm that that script received the arguments and standard input correctly." &&
                                                                                                                                                 assert_equals "$( string standard error value )" "${ environment-variable "OBSERVED_STANDARD_ERROR" }" "We expect the standard error to be exactly as predicted.  This will confirm that the script received the arguments and standard input correctly." &&
                                                                                                                                                 assert_equals ${ environment-variable "EXPECTED_SCRIPTS" } ${ environment-variable "OBSERVED_SCRIPTS" } "We expect the following scripts." &&
-                                                                                                                                                assert_equals "standard output value" "${ environment-variable "OBSERVED_NO_SCRIPT_STANDARD_OUTPUT" }" "WTF"
+                                                                                                                                                assert_equals "standard output value 0 $( string no-script arguments )" "${ environment-variable "OBSERVED_NO_SCRIPT_STANDARD_OUTPUT" }" "WTF"
                                                                                                                                         '' ;
                                                                                                                         in
                                                                                                                             [
@@ -529,7 +529,7 @@
                                                                                                                             } &&
                                                                                                                                 string ( )
                                                                                                                                     {
-                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" }
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ builtins.toString seed } ${ environment-variable "ARGUMENTS" }
                                                                                                                                     } &&
                                                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                                 if ${ has-standard-input }
