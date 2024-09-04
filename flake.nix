@@ -501,39 +501,38 @@
                                                                                                                     fi &&
                                                                                                                     string standard output value &&
                                                                                                                     string standard error value >&2 &&
-                                                                                                                    ${ scripts.verification.terminal } $( hash no-script arguments value ) > /build/$( hash no-script standard output file ) 2> /build/$( hash no-script standard error file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo $( hash yes-script standard input value ) | ${ scripts.verification.terminal } $( hash yes-script arguments value ) > /build/$( hash yes-script standard output file ) 2> /build/$( hash yes-script standard error file ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     terminal =
-                                                                                                        { pkgs , ... } : { environment-variable , has-standard-input , ... } :
-                                                                                                            let
-                                                                                                                status = "0" ;
-                                                                                                                in
-                                                                                                                    ''
-                                                                                                                        hash ( )
+                                                                                                        seed :
+                                                                                                            { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                                let
+                                                                                                                    status = "0" ;
+                                                                                                                    in
+                                                                                                                        ''
+                                                                                                                            hash ( )
                                                                                                                             {
                                                                                                                                 ${ pkgs.coreutils }/bin/echo -n $( string ${ environment-variable "@" } ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                                             } &&
-                                                                                                                            string ( )
-                                                                                                                                {
-                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
-                                                                                                                                } &&
-                                                                                                                            ARGUMENTS=${ environment-variable "@" } &&
-                                                                                                                            if ${ has-standard-input }
-                                                                                                                            then
-                                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                            else
-                                                                                                                                STANDARD_INPUT=""
-                                                                                                                            fi &&
-                                                                                                                            string standard output value &&
-                                                                                                                            string standard error value >&2
-                                                                                                                    '' ;
+                                                                                                                                string ( )
+                                                                                                                                    {
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ builtins.toString seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
+                                                                                                                                    } &&
+                                                                                                                                ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                                if ${ has-standard-input }
+                                                                                                                                then
+                                                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                                else
+                                                                                                                                    STANDARD_INPUT=""
+                                                                                                                                fi &&
+                                                                                                                                string standard output value &&
+                                                                                                                                string standard error value >&2
+                                                                                                                        '' ;
                                                                                                     in
                                                                                                         {
                                                                                                             bad = internal 1 ;
                                                                                                             good = internal 0 ;
-                                                                                                            terminal = terminal ;
+                                                                                                            terminal = terminal 0 ;
                                                                                                         } ;
                                                                                         } ;
                                                                         } ;
