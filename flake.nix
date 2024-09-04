@@ -502,7 +502,7 @@
                                                                                                                     string standard output value &&
                                                                                                                     string standard error value >&2 &&
                                                                                                                     ${ scripts.verification.terminal } $( hash no-script arguments value ) > /build/$( hash no-script standard output file ) 2> /build/$( hash no-script standard error file ) &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo $( hash yes-script standard input value ) | scripts.verification.terminal $( hash yes-script arguments value ) > /build/$( hash yes-script standard output file ) 2> /build/$( hash yes-script standard error file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo $( hash yes-script standard input value ) | ${ scripts.verification.terminal } $( hash yes-script arguments value ) > /build/$( hash yes-script standard output file ) 2> /build/$( hash yes-script standard error file ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     terminal =
