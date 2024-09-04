@@ -447,7 +447,7 @@
                                                                                                                         ''
                                                                                                                             test_${ builtins.toString index } ( )
                                                                                                                                 {
-                                                                                                                                    ${ builtins.elem list index ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index ) ) ] ) )  ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index + 1 ) ) ] ) ) }
+                                                                                                                                    ${ builtins.elemAt list index ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index ) ) ] ) ) ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index + 1 ) ) ] ) ) }
                                                                                                                                 }
                                                                                                                         '' ;
                                                                                                                 list =
@@ -461,16 +461,21 @@
                                                                                                                                         ''
                                                                                                                                             hash ( )
                                                                                                                                                 {
-                                                                                                                                                    ${ pkgs.coreutils }/echo -n ${ seed } ${ arguments } ${ if has-standard-input then standard-input else "" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                                                                 } &&
-                                                                                                                                                assert_exit_status ${ builtins.toString status } "${ if has-standard-input then "hash standard input |" else "" } | ${ command } > /build/$( hash "standard output file" ) 2> /build/$( hash "standard error file" )" &&
+                                                                                                                                            string ( )
+                                                                                                                                                {
+                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status }
+                                                                                                                                                } &&
+                                                                                                                                                assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ standard-input } |" else "" }${ command } ${ arguments } > /build/$( hash standard output file ) 2> /build/$( hash standard error file )" &&
                                                                                                                                                 OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard output file" ) ) &&
                                                                                                                                                 OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard error file" ) ) &&
-                                                                                                                                                assert_equals $( hash arguments ) ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to be exactly as predicted.  This will confirm that that script received the arguments and standard input correctly." &&
-                                                                                                                                                assert_equals $( hash standard input ) ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to be exactly as predicted.  This will confirm that the script received the arguments and standard input correctly."
+                                                                                                                                                assert_equals "$( string standard output value )" "${ environment-variable "OBSERVED_STANDARD_OUTPUT" }" "We expect the standard output to be exactly as predicted.  This will confirm that that script received the arguments and standard input correctly." &&
+                                                                                                                                                assert_equals "$( string standard error value )" "${ environment-variable "OBSERVED_STANDARD_ERROR" }" "We expect the standard error to be exactly as predicted.  This will confirm that the script received the arguments and standard input correctly."
                                                                                                                                         '' ;
                                                                                                                         in
                                                                                                                             [
+                                                                                                                                ( script true true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
@@ -483,6 +488,10 @@
                                                                                                                     {
                                                                                                                         ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                                     } &&
+                                                                                                                string ( )
+                                                                                                                    {
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
+                                                                                                                    } &&
                                                                                                                     ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
@@ -490,8 +499,8 @@
                                                                                                                     else
                                                                                                                         STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    hash "standard input value" &&
-                                                                                                                    hash "standard error value" >&2 &&
+                                                                                                                    string standard output value &&
+                                                                                                                    string standard error value >&2 &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     in
