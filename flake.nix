@@ -487,7 +487,7 @@
                                                                                                                 mapper =
                                                                                                                     path : name : value :
                                                                                                                         if builtins.typeOf value == "string" then [ "${ builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) }=${ value }" ]
-                                                                                                                        else builtins.concatLists ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ;
+                                                                                                                        else builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ;
                                                                                                                 in
                                                                                                                     ''
                                                                                                                         hash ( )
@@ -507,7 +507,7 @@
                                                                                                                             fi &&
                                                                                                                             string standard output value &&
                                                                                                                             string standard error value >&2 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo hi > /build/$( hash scripts ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( hash scripts ) &&
                                                                                                                             exit ${ builtins.toString status }
                                                                                                                     '' ;
                                                                                                     terminal =
