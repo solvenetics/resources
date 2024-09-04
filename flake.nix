@@ -433,12 +433,73 @@
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
-                                                                                {
-                                                                                    test =
-                                                                                        { pkgs , ... } : { ... } :
-                                                                                            ''
-                                                                                            '' ;
-                                                                                } ;
+                                                                                let
+                                                                                    seed = "9e1080281ac5543c0bee9e50d6349afe5b0e26644c57d52faed76cc17905f2928613bb17e3549a648297696971ceb10f2d8811aee353cc23bd0e9833d392a022" ;
+                                                                                    in
+                                                                                        {
+                                                                                            test =
+                                                                                                { pkgs , ... } : { scripts , ... } :
+                                                                                                    let
+                                                                                                        functions =
+                                                                                                            let
+                                                                                                                generator =
+                                                                                                                    index :
+                                                                                                                        ''
+                                                                                                                            test_${ builtins.toString index } ( )
+                                                                                                                                {
+                                                                                                                                    ${ builtins.elem list index ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index ) ) ] ) )  ( builtins.hashString "sha512" ( builtins.concatStringsSep "" [ seed ( builtins.toString ( 2 * index + 1 ) ) ] ) ) }
+                                                                                                                                }
+                                                                                                                        '' ;
+                                                                                                                list =
+                                                                                                                    let
+                                                                                                                        script =
+                                                                                                                             delta : has-standard-input : arguments : standard-input :
+                                                                                                                                let
+                                                                                                                                    command = if delta then scripts.verification.good else scripts.verification.bad ;
+                                                                                                                                    status = builtins.toString ( if delta then 0 else 1 ) ;
+                                                                                                                                    in
+                                                                                                                                        ''
+                                                                                                                                            hash ( )
+                                                                                                                                                {
+                                                                                                                                                    ${ pkgs.coreutils }/echo -n ${ seed } ${ arguments } ${ if has-standard-input then standard-input else "" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                                                } &&
+                                                                                                                                                assert_exit_status ${ builtins.toString status } "${ if has-standard-input then "hash standard input |" else "" } | ${ command } > /build/$( hash "standard output file" ) 2> /build/$( hash "standard error file" )" &&
+                                                                                                                                                OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard output file" ) ) &&
+                                                                                                                                                OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard error file" ) ) &&
+                                                                                                                                                assert_equals $( hash arguments ) ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect the standard output to be exactly as predicted.  This will confirm that that script received the arguments and standard input correctly." &&
+                                                                                                                                                assert_equals $( hash standard input ) ${ environment-variable "OBSERVED_STANDARD_ERROR" } "We expect the standard error to be exactly as predicted.  This will confirm that the script received the arguments and standard input correctly."
+                                                                                                                                        '' ;
+                                                                                                                        in
+                                                                                                                            [
+                                                                                                                            ] ;
+                                                                                                                in builtins.genList generator ( builtins.length list ) ;
+                                                                                                        in builtins.concatStringsSep " &&\n" functions ;
+                                                                                            verification =
+                                                                                                let
+                                                                                                    internal =
+                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , ... } :
+                                                                                                            ''
+                                                                                                                hash ( )
+                                                                                                                    {
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                    } &&
+                                                                                                                    ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                    else
+                                                                                                                        STANDARD_INPUT=""
+                                                                                                                    fi &&
+                                                                                                                    hash "standard input value" &&
+                                                                                                                    hash "standard error value" >&2 &&
+                                                                                                                    exit ${ builtins.toString status }
+                                                                                                            '' ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            bad = internal 1 ;
+                                                                                                            good = internal 0 ;
+                                                                                                        } ;
+                                                                                        } ;
                                                                         } ;
                                                                 in
                                                                     ''
