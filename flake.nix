@@ -461,12 +461,12 @@
                                                                                                                                         ''
                                                                                                                                             hash ( )
                                                                                                                                                 {
-                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n $( string ${ environment-variable "@" } ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                                                                 } &&
-                                                                                                                                            string ( )
-                                                                                                                                                {
-                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status }
-                                                                                                                                                } &&
+                                                                                                                                                string ( )
+                                                                                                                                                    {
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ arguments } ${ if delta then standard-input else "" } ${ builtins.toString status }
+                                                                                                                                                    } &&
                                                                                                                                                 assert_status_code ${ builtins.toString status } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ standard-input } |" else "" }${ command } ${ arguments } > /build/$( hash standard output file ) 2> /build/$( hash standard error file )" &&
                                                                                                                                                 OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard output file" ) ) &&
                                                                                                                                                 OBSERVED_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( hash "standard error file" ) ) &&
@@ -486,12 +486,12 @@
                                                                                                             ''
                                                                                                                 hash ( )
                                                                                                                     {
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n $( string ${ environment-variable "@" } ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                                     } &&
-                                                                                                                string ( )
-                                                                                                                    {
-                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
-                                                                                                                    } &&
+                                                                                                                    string ( )
+                                                                                                                        {
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ builtins.toString status }
+                                                                                                                        } &&
                                                                                                                     ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                     if ${ has-standard-input }
                                                                                                                     then
