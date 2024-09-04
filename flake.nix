@@ -511,6 +511,7 @@
                                                                                                                             string standard output value &&
                                                                                                                             string standard error value >&2 &&
                                                                                                                             ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( hash scripts file ) &&
+                                                                                                                            ${ scripts.verification.terminal } $( string no-script arguments ) > /build/$( hash no-script standard output file ) 2> /build/$( hash no-script standard error file ) &&
                                                                                                                             exit ${ builtins.toString status }
                                                                                                                     '' ;
                                                                                                     terminal =
