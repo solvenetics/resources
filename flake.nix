@@ -529,7 +529,7 @@
                                                                                                                             } &&
                                                                                                                                 string ( )
                                                                                                                                     {
-                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ builtins.toString seed } ${ environment-variable "ARGUMENTS" }
+                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } ${ builtins.toString seed } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" }
                                                                                                                                     } &&
                                                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                                 if ${ has-standard-input }
