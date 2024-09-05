@@ -504,7 +504,7 @@
                                                                                                                     ${ scripts.verification.write } $( identity ) /build/$( identity file ) &&
                                                                                                                     ${ scripts.verification.write } ${ environment-variable "ARGUMENTS" } /build/$( identity arguments file ) &&
                                                                                                                     ${ scripts.verification.write } "${ environment-variable "STANDARD_INPUT" }" /build/$( identity standard input file ) &&
-                                                                                                                    # ${ scripts.verification.write } "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( identity scripts file ) &&
+                                                                                                                    # ${ scripts.verification.write } "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( identity wtf ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
