@@ -501,10 +501,10 @@
                                                                                                                     else
                                                                                                                         STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    ${ scripts.verification.write } $( identity ) /build/$( identity file ) &&
-                                                                                                                    ${ scripts.verification.write } ${ environment-variable "ARGUMENTS" } /build/$( identity arguments file ) &&
-                                                                                                                    ${ scripts.verification.write } "${ environment-variable "STANDARD_INPUT" }" /build/$( identity standard input file ) &&
-                                                                                                                    # ${ scripts.verification.write } "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" > /build/$( identity wtf ) &&
+                                                                                                                    identity | ${ scripts.verification.write } /build/$( identity file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.verification.write } /build/$( identity arguments file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.verification.write } /build/$( identity standard input file ) &&
+                                                                                                                    # ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.verification.write } > /build/$( identity wtf ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
@@ -544,13 +544,13 @@
                                                                                                             write =
                                                                                                                 { pkgs , ... } : { environment-variable , ... } :
                                                                                                                     ''
-                                                                                                                        if [ -e ${ environment-variable 2 } ]
+                                                                                                                        if [ -e ${ environment-variable "@" } ]
                                                                                                                         then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo We can not write ${ environment-variable 1 } to ${ environment-variable 2 } because it already has content. >&2 &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo We can not write to ${ environment-variable "@" } because it already has content. >&2 &&
                                                                                                                                 exit 65
                                                                                                                         else
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 1 } > ${ environment-variable 2 } &&
-                                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable 2 }
+                                                                                                                            ${ pkgs.coreutils }/bin/tee > ${ environment-variable "@" } &&
+                                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "@" }
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                         } ;
