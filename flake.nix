@@ -465,7 +465,7 @@
                                                                                                                                         STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
                                                                                                                                         EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                         EXPECTED_IDENTITY=$( identity ) &&
-                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test;verification.bad=${ environment-variable out }/scripts/verification/bad;verification.good=${ environment-variable out }/scripts/verification/good;verification.terminal=${ environment-variable out }/scripts/verification/terminal" &&
+                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test;verification.bad=${ environment-variable out }/scripts/verification/bad;verification.good=${ environment-variable out }/scripts/verification/good;verification.terminal=${ environment-variable out }/scripts/verification/terminal;verification.write=${ environment-variable out }/scripts/verification/write" &&
                                                                                                                                         ${ pkgs.coreutils }/bin/echo "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" &&
                                                                                                                                         assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > /build/$( identity standard output file ) 2> /build/$( identity standard error file )" &&
                                                                                                                                         OBSERVED_IDENTITY=$( ${ pkgs.coreutils }/bin/cat /build/$( identity file ) ) &&
@@ -541,6 +541,17 @@
                                                                                                             bad = internal 1 ;
                                                                                                             good = internal 0 ;
                                                                                                             terminal = terminal 0 ;
+                                                                                                            write =
+                                                                                                                { pkgs , ... } : { environment-variable , ... } :
+                                                                                                                    ''
+                                                                                                                        if [ -e ${ environment-variable 2 } ]
+                                                                                                                        then
+                                                                                                                            exit 65
+                                                                                                                        else
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable 1 } > ${ environment-variable 2 } &&
+                                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable 2 }
+                                                                                                                        fi
+                                                                                                                    '' ;
                                                                                                         } ;
                                                                                         } ;
                                                                         } ;
