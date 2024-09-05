@@ -547,7 +547,7 @@
                                                                                                                         if [ -e ${ environment-variable 2 } ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/echo We can not write ${ environment-variable 1 } to ${ environment-variable 2 } because it already has content. >&2 &&
-                                                                                                                                exit 0
+                                                                                                                                exit 65
                                                                                                                         else
                                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable 1 } > ${ environment-variable 2 } &&
                                                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable 2 }
