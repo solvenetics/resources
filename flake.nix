@@ -504,7 +504,7 @@
                                                                                                                     identity | ${ scripts.verification.write } /build/$( identity file ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.verification.write } /build/$( identity arguments file ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.verification.write } /build/$( identity standard input file ) &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo '${ builtins.concatStringsSep ";" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }' | ${ scripts.verification.write } > /build/$( identity wtf ) &&
+                                                                                                                    # ${ pkgs.coreutils }/bin/echo '${ builtins.concatStringsSep "_" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }' | ${ scripts.verification.write } > /build/$( identity wtf ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
