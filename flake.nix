@@ -465,7 +465,7 @@
                                                                                                                                         STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
                                                                                                                                         EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                         EXPECTED_IDENTITY=$( identity ) &&
-                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test_util.write=${ environment-variable out }/scripts/util/write_verification.bad=${ environment-variable out }/scripts/verification/bad_verification.good=${ environment-variable out }/scripts/verification/good_verification.terminal=${ environment-variable out }/scripts/verification/terminal" &&
+                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/test_util.identity=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/util/identity_util.write=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/util/write_verification.bad=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/verification/bad_verification.good=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/verification/good_verification.terminal=/nix/store/r1j1xqqksirkq9cyxs6i4pwfgrxkqrq0-implementation/scripts/verification/termina" &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_ARGUMENTS=$( identity ) &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_STANDARD_INPUT="" &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_IDENTITY=$( identity ) &&
@@ -487,6 +487,12 @@
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
                                                                                             util =
                                                                                                 {
+                                                                                                    identity =
+                                                                                                        { pkgs , ... } : { environment-variable , ... } :
+                                                                                                            ''
+                                                                                                                IDENTITY=$( ${ pkgs.coreutils }/bin/echo -n "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n "${ environment-variable "IDENTITY" } ${ environment-variable "@" }" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                            '' ;
                                                                                                     write =
                                                                                                         { pkgs , ... } : { environment-variable , ... } :
                                                                                                             ''
