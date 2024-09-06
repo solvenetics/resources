@@ -511,23 +511,18 @@
                                                                                                     internal =
                                                                                                         status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                             ''
-                                                                                                                identity ( )
-                                                                                                                    {
-                                                                                                                        IDENTITY=$( ${ pkgs.coreutils }/bin/echo -n "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -n "${ environment-variable "IDENTITY" } ${ environment-variable "@" }" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
-                                                                                                                    } &&
-                                                                                                                    ARGUMENTS=${ environment-variable "@" } &&
-                                                                                                                    if ${ has-standard-input }
-                                                                                                                    then
-                                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                    else
-                                                                                                                        STANDARD_INPUT=""
-                                                                                                                    fi &&
-                                                                                                                    identity | ${ scripts.util.write } /build/$( identity file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write } /build/$( identity arguments file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write } /build/$( identity standard input file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "_" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( identity scripts file ) &&
-                                                                                                                    ${ scripts.verification.terminal } $( identity no-scripts  arguments ) | ${ scripts.util.write } /build/$( identity no-script standard output ) &&
+                                                                                                                if ${ has-standard-input }
+                                                                                                                then
+                                                                                                                    export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                else
+                                                                                                                    export STANDARD_INPUT=""
+                                                                                                                fi &&
+                                                                                                                    export STANDADARD_INPUT=${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                                    ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } arguments file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } standard input file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "_" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
+                                                                                                                    ${ scripts.verification.terminal } $( ${ scripts.util.identity } no-scripts  arguments ) | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard output ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
