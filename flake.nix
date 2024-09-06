@@ -465,7 +465,7 @@
                                                                                                                                         STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
                                                                                                                                         EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                         EXPECTED_IDENTITY=$( identity ) &&
-                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test_verification.bad=${ environment-variable out }/scripts/verification/bad_verification.good=${ environment-variable out }/scripts/verification/good_verification.terminal=${ environment-variable out }/scripts/verification/terminal_verification.write=${ environment-variable out }/scripts/verification/write" &&
+                                                                                                                                        EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test_util.write=${ environment-variable out }/scripts/util/write_verification.bad=${ environment-variable out }/scripts/verification/bad_verification.good=${ environment-variable out }/scripts/verification/good_verification.terminal=${ environment-variable out }/scripts/verification/terminal" &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_ARGUMENTS=$( identity ) &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_STANDARD_INPUT="" &&
                                                                                                                                         EXPECTED_NO_SCRIPTS_IDENTITY=$( identity ) &&
@@ -485,6 +485,21 @@
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
+                                                                                            util =
+                                                                                                {
+                                                                                                    write =
+                                                                                                        { pkgs , ... } : { environment-variable , ... } :
+                                                                                                            ''
+                                                                                                                if [ -e ${ environment-variable "@" } ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo We can not write to ${ environment-variable "@" } because it already has content. >&2 &&
+                                                                                                                        exit 65
+                                                                                                                else
+                                                                                                                    ${ pkgs.coreutils }/bin/tee > ${ environment-variable "@" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "@" }
+                                                                                                                fi
+                                                                                                            '' ;
+                                                                                                } ;
                                                                                             verification =
                                                                                                 let
                                                                                                     internal =
@@ -502,11 +517,11 @@
                                                                                                                     else
                                                                                                                         STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    identity | ${ scripts.verification.write } /build/$( identity file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.verification.write } /build/$( identity arguments file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.verification.write } /build/$( identity standard input file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "_" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.verification.write } /build/$( identity scripts file ) &&
-                                                                                                                    ${ scripts.verification.terminal } $( identity no-scripts  arguments ) | ${ scripts.verification.write } /build/$( identity no-script standard output ) &&
+                                                                                                                    identity | ${ scripts.util.write } /build/$( identity file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write } /build/$( identity arguments file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write } /build/$( identity standard input file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "_" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( identity scripts file ) &&
+                                                                                                                    ${ scripts.verification.terminal } $( identity no-scripts  arguments ) | ${ scripts.util.write } /build/$( identity no-script standard output ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
@@ -532,25 +547,13 @@
                                                                                                                                 else
                                                                                                                                     STANDARD_INPUT=""
                                                                                                                                 fi &&
-                                                                                                                                identity | ${ scripts.verification.write } /build/$( identity file )
+                                                                                                                                identity | ${ scripts.util.write } /build/$( identity file )
                                                                                                                         '' ;
                                                                                                     in
                                                                                                         {
                                                                                                             bad = internal 1 ;
                                                                                                             good = internal 0 ;
                                                                                                             terminal = terminal 0 ;
-                                                                                                            write =
-                                                                                                                { pkgs , ... } : { environment-variable , ... } :
-                                                                                                                    ''
-                                                                                                                        if [ -e ${ environment-variable "@" } ]
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo We can not write to ${ environment-variable "@" } because it already has content. >&2 &&
-                                                                                                                                exit 65
-                                                                                                                        else
-                                                                                                                            ${ pkgs.coreutils }/bin/tee > ${ environment-variable "@" } &&
-                                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "@" }
-                                                                                                                        fi
-                                                                                                                    '' ;
                                                                                                         } ;
                                                                                         } ;
                                                                         } ;
