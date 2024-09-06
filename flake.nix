@@ -471,7 +471,9 @@
                                                                                                                                         assert_equals ${ environment-variable "EXPECTED_IDENTITY" } ${ environment-variable "OBSERVED_IDENTITY" } "We expect this identity.  Since we use this identity to form our expectations if this does not match then the other expectations will predictably fail." &&
                                                                                                                                         assert_equals ${ environment-variable "ARGUMENTS" } ${ environment-variable "OBSERVED_ARGUMENTS" } "We expect the arguments.  Since we use the arguments to form our expectations then if this does not match they will predictably fail." &&
                                                                                                                                         assert_equals "${ environment-variable "STANDARD_INPUT" }" "${ environment-variable "OBSERVED_STANDARD_INPUT" }" "We expect the standard input.  Since we use the standard input to for our expectations if this does not match then the other expectations will predictably fail." &&
-                                                                                                                                        assert_equals ${ environment-variable "EXPECTED_SCRIPTS_FILE" } "${ environment-variable "OBSERVED_SCRIPTS_FILE" }" "We expected the predicted scripts to be available to our script."
+                                                                                                                                        assert_equals ${ environment-variable "EXPECTED_SCRIPTS_FILE" } "${ environment-variable "OBSERVED_SCRIPTS_FILE" }" "We expected the predicted scripts to be available to our script." &&
+                                                                                                                                        # assert_equals "${ environment-variable "EXPECTED_NO_SCRIPT_IDENTITY" }" "${ environment-variable "OBSERVED_NO_SCRIPT_STANDARD_OUTPUT" }" "WTF"
+                                                                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                                                                 '' ;
                                                                                                                         in
                                                                                                                             [
@@ -516,7 +518,8 @@
                                                                                                                 else
                                                                                                                     export STANDARD_INPUT=""
                                                                                                                 fi &&
-                                                                                                                    export STANDADARD_INPUT=${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                                    ${ scripts.util.identity } standard output &&
+                                                                                                                    ${ scripts.util.identity } standard error >&2 &&
                                                                                                                     ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } arguments file ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } standard input file ) &&
@@ -542,6 +545,7 @@
                                                                                                                                 else
                                                                                                                                     STANDARD_INPUT=""
                                                                                                                                 fi &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo WTF1 &&
                                                                                                                                 ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file )
                                                                                                                         '' ;
                                                                                                     in
