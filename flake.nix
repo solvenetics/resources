@@ -541,7 +541,7 @@
                                                                                                             else builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ;
                                                                                                     terminal =
                                                                                                         seed :
-                                                                                                            { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
+                                                                                                            { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                                 let
                                                                                                                     status = "0" ;
                                                                                                                     in
