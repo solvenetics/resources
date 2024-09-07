@@ -519,6 +519,8 @@
                                                                                                                             [
                                                                                                                                 ( script true true )
                                                                                                                                 ( script true false )
+                                                                                                                                ( script false true )
+                                                                                                                                ( script false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
@@ -603,7 +605,7 @@
                                                                                                             '' ;
                                                                                                     in
                                                                                                         {
-                                                                                                            bad = internal 1 ;
+                                                                                                            bad = internal 64 ;
                                                                                                             good = internal 0 ;
                                                                                                             terminal = terminal 0 ;
                                                                                                         } ;
