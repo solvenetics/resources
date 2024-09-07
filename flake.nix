@@ -460,18 +460,18 @@
                                                                                                                                         export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
                                                                                                                                         EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                         EXPECTED_IDENTITY=$( ${ scripts.util.identity } ) &&
-                                                                                                                                        EXPECTED_STANDARD_OUTPUT=$( ${ scripts.util.hash } ${ environment-variable "EXPECTED_IDENTITY" } standard output ) &&
+                                                                                                                                        EXPECTED_STANDARD_OUTPUT=$( ${ scripts.util.identity } standard output ) &&
 
                                                                                                                                         EXPECTED_SCRIPTS_FILE="test=${ environment-variable out }/scripts/test_util.hash=${ environment-variable out }/scripts/util/hash_util.identity=${ environment-variable out }/scripts/util/identity_util.write=${ environment-variable out }/scripts/util/write_verification.bad=${ environment-variable out }/scripts/verification/bad_verification.good=${ environment-variable out }/scripts/verification/good_verification.terminal=${ environment-variable out }/scripts/verification/terminal" &&
                                                                                                                                         EXPECTED_NO_SCRIPT_IDENTITY=$( ARGUMENTS=$( ${ scripts.util.hash } ${ environment-variable "EXPECTED_IDENTITY" } no-script argument ) STANDARD_INPUT="" ${ scripts.util.identity } ) &&
                                                                                                                                         assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > /build/$( ${ scripts.util.identity } standard output file ) 2> /build/$( ${ scripts.util.identity } standard error file )" &&
                                                                                                                                         OBSERVED_IDENTITY=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } file ) ) &&
-                                                                                                                                        OBSERVED_STANDARD_IDENTITY=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } standard output file ) ) &&
+                                                                                                                                        OBSERVED_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } standard output file ) ) &&
 
                                                                                                                                         OBSERVED_SCRIPTS_FILE=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } scripts file ) ) &&
                                                                                                                                         OBSERVED_NO_SCRIPT_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } no-script standard output ) ) &&
                                                                                                                                         assert_equals ${ environment-variable "EXPECTED_IDENTITY" } ${ environment-variable "OBSERVED_IDENTITY" } "We expect this identity.  Since we use this identity to form our expectations if this does not match then the other expectations will predictably fail." &&
-                                                                                                                                        # assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect this standard output.  Since this uses identity, arguments, and standard input this confirm these values." &&
+                                                                                                                                        assert_equals ${ environment-variable "EXPECTED_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_STANDARD_OUTPUT" } "We expect this standard output.  Since this uses identity, arguments, and standard input this confirm these values." &&
 
                                                                                                                                         assert_equals ${ environment-variable "EXPECTED_SCRIPTS_FILE" } "${ environment-variable "OBSERVED_SCRIPTS_FILE" }" "We expected the predicted scripts to be available to our script." &&
                                                                                                                                         # assert_equals "${ environment-variable "EXPECTED_NO_SCRIPT_IDENTITY" }" "${ environment-variable "OBSERVED_NO_SCRIPT_STANDARD_OUTPUT" }" "WTF"
@@ -485,16 +485,16 @@
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
                                                                                             util =
                                                                                                 {
+                                                                                                    hash =
+                                                                                                        { pkgs , ... } : { environment-variable , ... } :
+                                                                                                            ''
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                            '' ;
                                                                                                     identity =
                                                                                                         { pkgs , ... } : { environment-variable , ... } :
                                                                                                             ''
                                                                                                                 IDENTITY=$( ${ pkgs.coreutils }/bin/echo -n "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "${ environment-variable "IDENTITY" } ${ environment-variable "@" }" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
-                                                                                                            '' ;
-                                                                                                    hash =
-                                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                                            ''
-                                                                                                                ${ pkgs.coreutils }/bin/sha512sum ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                             '' ;
                                                                                                     write =
                                                                                                         { pkgs , ... } : { environment-variable , ... } :
@@ -514,12 +514,13 @@
                                                                                                     internal =
                                                                                                         status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
                                                                                                             ''
-                                                                                                                if ${ has-standard-input }
-                                                                                                                then
-                                                                                                                    export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                else
-                                                                                                                    export STANDARD_INPUT=""
-                                                                                                                fi &&
+                                                                                                                export ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                    else
+                                                                                                                        export STANDARD_INPUT=""
+                                                                                                                    fi &&
                                                                                                                     ${ scripts.util.identity } standard output &&
                                                                                                                     ${ scripts.util.identity } standard error >&2 &&
                                                                                                                     ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
