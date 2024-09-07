@@ -532,7 +532,7 @@
                                                                                                                     NO_SCRIPT_ARGUMENTS=$( ${ scripts.util.identity } no-script arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_SCRIPT_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script arguments file ) &&
                                                                                                                     ${ scripts.verification.terminal } ${ environment-variable "NO_SCRIPT_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard error file ) ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
