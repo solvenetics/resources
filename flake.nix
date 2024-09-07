@@ -486,11 +486,6 @@
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
                                                                                             util =
                                                                                                 {
-                                                                                                    hash =
-                                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                                            ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
-                                                                                                            '' ;
                                                                                                     identity =
                                                                                                         { pkgs , ... } : { environment-variable , strip , ... } :
                                                                                                             let
