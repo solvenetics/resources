@@ -515,7 +515,7 @@
                                                                                                                                 '' ;
                                                                                                                         in
                                                                                                                             [
-                                                                                                                                ( script true true )
+                                                                                                                                ( script true false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
