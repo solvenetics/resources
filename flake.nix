@@ -463,7 +463,7 @@
                                                                                                                                             EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                             EXPECTED_STANDARD_OUTPUT=$( ${ scripts.util.identity } standard output ) &&
                                                                                                                                             EXPECTED_STANDARD_ERROR=$( ${ scripts.util.identity } standard error ) &&
-                                                                                                                                            EXPECTED_SCRIPTS_FILE="scripts.test=${ environment-variable out }/scripts/test,scripts.util.identity=${ environment-variable out }/scripts/util/identity,scripts.util.write=${ environment-variable out }/scripts/util/write,scripts.verification.internal.bad=${ environment-variable out }/scripts/verification/internal/bad,scripts.verification.internal.good=${ environment-variable out }/scripts/verification/internal/good,scripts.verification.terminal.bad=${ environment-variable out }/scripts/verification/terminal/bad,scripts.verification.terminal.good=${ environment-variable out }/scripts/verification/terminal/good,temporary.null=${ environment-variable out }/temporary/null" &&
+                                                                                                                                            EXPECTED_SCRIPTS_FILE="scripts.test=${ environment-variable out }/scripts/test,scripts.util.identity=${ environment-variable out }/scripts/util/identity,scripts.util.write=${ environment-variable out }/scripts/util/write,scripts.verification.internal.bad=${ environment-variable out }/scripts/verification/internal/bad,scripts.verification.internal.good=${ environment-variable out }/scripts/verification/internal/good,scripts.verification.terminal.bad=${ environment-variable out }/scripts/verification/terminal/bad,scripts.verification.terminal.good=${ environment-variable out }/scripts/verification/terminal/good,temporary.bad.bad=${ environment-variable out }/temporary/bad/bad,temporary.bad.good=${ environment-variable out }/temporary/bad/good,temporary.bad.null=${ environment-variable out }/temporary/bad/null,temporary.good.bad=${ environment-variable out }/temporary/good/bad,temporary.good.good=${ environment-variable out }/temporary/good/good,temporary.good.null=${ environment-variable out }/temporary/good/null,temporary.null.bad=${ environment-variable out }/temporary/null/bad,temporary.null.good=${ environment-variable out }/temporary/null/good,temporary.null.null=${ environment-variable out }/temporary/null/null" &&
                                                                                                                                             EXPECTED_STRIP="715f817552f2e98e7e0ef267a8da8a762f4ad673c6dbc95c0a20a7d8c87cf078eb6f8d79cff71ea7fd981c05251dc238827abce2488ccda42887654026dd604d" &&
                                                                                                                                             EXPECTED_TARGET="${ environment-variable "c8725e4d573bd4d32254ea39a3fb3c77a823eb505445f5d4299e4a6d26fda26ee71af14503e1b6c401618b5cf7e6789ad0777ddd9e7eb0a9df7a6c61e119c089" }" &&
                                                                                                                                             EXPECTED_NO_SCRIPT_ARGUMENTS=$( ${ scripts.util.identity } no-script arguments ) &&
@@ -635,7 +635,24 @@
                                                                                 target = "c8725e4d573bd4d32254ea39a3fb3c77a823eb505445f5d4299e4a6d26fda26ee71af14503e1b6c401618b5cf7e6789ad0777ddd9e7eb0a9df7a6c61e119c089" ;
                                                                                 temporary =
                                                                                     {
-                                                                                        null = scripts : { } ;
+                                                                                        bad =
+                                                                                            {
+                                                                                                bad = scripts : { init = scripts.verification.terminal.bad ; release = scripts.verification.terminal.bad ; } ;
+                                                                                                good = scripts : { init = scripts.verification.terminal.bad ; release = scripts.verification.terminal.good ; } ;
+                                                                                                null = scripts : { init = scripts.verification.terminal.bad ; } ;
+                                                                                            } ;
+                                                                                        good =
+                                                                                            {
+                                                                                                bad = scripts : { init = scripts.verification.terminal.good ; release = scripts.verification.terminal.bad ; } ;
+                                                                                                good = scripts : { init = scripts.verification.terminal.good ; release = scripts.verification.terminal.good ; } ;
+                                                                                                null = scripts : { init = scripts.verification.terminal.good ; } ;
+                                                                                            } ;
+                                                                                        null =
+                                                                                            {
+                                                                                                bad = scripts : { release = scripts.verification.terminal.bad ; } ;
+                                                                                                good = scripts : { release = scripts.verification.terminal.good ; } ;
+                                                                                                null = scripts : { } ;
+                                                                                            } ;
                                                                                     } ;
                                                                         } ;
                                                                 in
