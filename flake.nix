@@ -517,7 +517,7 @@
                                                                                             verification =
                                                                                                 let
                                                                                                     internal =
-                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
+                                                                                                        status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
                                                                                                             ''
                                                                                                                 export ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                     if ${ has-standard-input }
