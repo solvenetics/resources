@@ -492,11 +492,23 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                             '' ;
                                                                                                     identity =
-                                                                                                        { pkgs , ... } : { environment-variable , ... } :
-                                                                                                            ''
-                                                                                                                IDENTITY=$( ${ pkgs.coreutils }/bin/echo -n "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n "${ environment-variable "IDENTITY" } ${ environment-variable "@" }" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
-                                                                                                            '' ;
+                                                                                                        { pkgs , ... } : { environment-variable , strip , ... } :
+                                                                                                            let
+                                                                                                                identity =
+                                                                                                                    strip
+                                                                                                                        ''
+                                                                                                                            ${ environment-variable "IDENTITY:=$( ${ null-identity } )" }
+                                                                                                                        '' ;
+                                                                                                                null-identity =
+                                                                                                                    strip
+                                                                                                                        ''
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n "-${ environment-variable "ARGUMENTS" }-${ environment-variable "STANDARD_INPUT" }-" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                        '' ;
+                                                                                                                in
+                                                                                                                ''
+                                                                                                                    IDENTITY=$( ${ identity } )
+                                                                                                                        ${ pkgs.coreutils }/bin/echo -n "${ environment-variable "IDENTITY" } ${ environment-variable "@" }" | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
+                                                                                                                '' ;
                                                                                                     write =
                                                                                                         { pkgs , ... } : { environment-variable , ... } :
                                                                                                             ''
