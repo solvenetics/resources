@@ -572,7 +572,8 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file ) &&
                                                                                                                     NO_TEMPORARY_ARGUMENTS=$( ${ scripts.util.identity } no-temporary arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_TEMPORARY_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-temporary arguments ) &&
-                                                                                                                     exit ${ builtins.toString status }
+                                                                                                                    ${ temporary.good.good } ${ environment-variable "NO_TEMPORARY_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-temporary standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-temporary standard error file ) ) &&
+                                                                                                                    exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
                                                                                                         path : name : value :
