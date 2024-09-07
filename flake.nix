@@ -531,8 +531,8 @@
                                                                                                                     else
                                                                                                                         export STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write }/build/$( ${ scripts.util.identity } arguments file ) &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write }/build/$( ${ scripts.util.identity } standard input file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } arguments file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } standard input file ) &&
                                                                                                                     ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
                                                                                                                     ${ scripts.util.identity } standard output &&
                                                                                                                     ${ scripts.util.identity } standard error >&2 &&
