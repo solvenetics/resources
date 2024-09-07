@@ -532,6 +532,7 @@
                                                                                                                     NO_SCRIPT_ARGUMENTS=$( ${ scripts.util.identity } no-script arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_SCRIPT_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script arguments file ) &&
                                                                                                                     ${ scripts.verification.terminal } ${ environment-variable "NO_SCRIPT_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard error file ) ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ strip ( wild "715f817552f2e98e7e0ef267a8da8a762f4ad673c6dbc95c0a20a7d8c87cf078eb6f8d79cff71ea7fd981c05251dc238827abce2488ccda42887654026dd604d" ) } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } strip file )
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file ) &&
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
@@ -556,8 +557,16 @@
                                                                                                                                 ${ scripts.util.identity } standard output &&
                                                                                                                                 ${ scripts.util.identity } standard error >&2
                                                                                                                                 ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "," ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ strip ( wild "2595332087bd2ebeebd3624af4be8541452ade795cb047b32a296dafb68375723b7e2b523855bb45b4770ae3ac811b6462f378a4b88477770bac7afb17979eed" ) } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } strip file )
                                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
                                                                                                                         '' ;
+                                                                                                    wild =
+                                                                                                        middle :
+                                                                                                            ''
+
+                                                                                                                ${ middle }
+
+                                                                                                            '' ;
                                                                                                     in
                                                                                                         {
                                                                                                             bad = internal 1 ;
