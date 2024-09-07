@@ -527,7 +527,6 @@
                                                                                                                     else
                                                                                                                         export STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
                                                                                                                     ${ scripts.util.identity } standard output &&
                                                                                                                     ${ scripts.util.identity } standard error >&2 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "," ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
@@ -554,7 +553,6 @@
                                                                                                                                 else
                                                                                                                                     STANDARD_INPUT=""
                                                                                                                                 fi &&
-                                                                                                                                ${ scripts.util.identity } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } file ) &&
                                                                                                                                 ${ scripts.util.identity } standard output &&
                                                                                                                                 ${ scripts.util.identity } standard error >&2
                                                                                                                         '' ;
