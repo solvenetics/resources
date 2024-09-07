@@ -509,7 +509,7 @@
                                                                                             verification =
                                                                                                 let
                                                                                                     internal =
-                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
+                                                                                                        status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
                                                                                                             ''
                                                                                                                 export ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                     if ${ has-standard-input }
@@ -524,6 +524,7 @@
                                                                                                                     NO_SCRIPT_ARGUMENTS=$( ${ scripts.util.identity } no-script arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_SCRIPT_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script arguments file ) &&
                                                                                                                     ${ scripts.verification.terminal } ${ environment-variable "NO_SCRIPT_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-script standard error file ) ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
                                                                                                                     exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     mapper =
@@ -532,20 +533,22 @@
                                                                                                             else builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ;
                                                                                                     terminal =
                                                                                                         seed :
-                                                                                                            { pkgs , ... } : { environment-variable , has-standard-input , scripts , ... } :
+                                                                                                            { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
                                                                                                                 let
                                                                                                                     status = "0" ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                            export ARGUMENTS=${ environment-variable "@" } &&
                                                                                                                                 if ${ has-standard-input }
                                                                                                                                 then
-                                                                                                                                    STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                                    export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
                                                                                                                                 else
-                                                                                                                                    STANDARD_INPUT=""
+                                                                                                                                    export STANDARD_INPUT=""
                                                                                                                                 fi &&
                                                                                                                                 ${ scripts.util.identity } standard output &&
                                                                                                                                 ${ scripts.util.identity } standard error >&2
+                                                                                                                                ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "," ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) scripts ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
+                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
                                                                                                                         '' ;
                                                                                                     in
                                                                                                         {
