@@ -438,7 +438,7 @@
                                                                                     in
                                                                                         {
                                                                                             test =
-                                                                                                { pkgs , ... } : { scripts , strip , ... } :
+                                                                                                { pkgs , ... } : { environment-variable , scripts , strip , ... } :
                                                                                                     let
                                                                                                         functions =
                                                                                                             let
