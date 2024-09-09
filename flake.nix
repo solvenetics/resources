@@ -50,11 +50,11 @@
                                                             '' ;
                                                     mappers =
                                                         let
-                                                            cache2 =
+                                                            cache =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
-                                                                            cache2 =
+                                                                            cache =
                                                                                 ''
                                                                                     export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                         EPOCH_TIMESTAMP=$( ${ pkgs.coreutils }/bin/date --date @$(( ( ${ environment-variable cache-timestamp } / ${ temporary.epoch } ) * ${ temporary.epoch } )) +%s ) &&
@@ -344,8 +344,7 @@
                                                             in
                                                                 {
                                                                     ## ENTRYPOINT 1
-                                                                    cache = cache2 [ ( environment-variable out ) "cache" ] ;
-                                                                    cache2 = cache [ ( environment-variable out ) "cache" ] ;
+                                                                    cache = cache [ ( environment-variable out ) "cache" ] ;
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
@@ -372,7 +371,7 @@
                                                             in
                                                                 {
                                                                     ## ENTRYPOINT 2
-                                                                    cache2 = builtins.mapAttrs ( mapper [ ( environment-variable out ) "cache" ] ) cache ;
+                                                                    cache = builtins.mapAttrs ( mapper [ ( environment-variable out ) "cache" ] ) cache ;
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
@@ -387,7 +386,7 @@
                                                                     "${ environment-variable out }" =
                                                                         {
                                                                             ## ENTRYPOINT 3
-                                                                            cache2 = builtins.mapAttrs mappers.cache ( builtins.trace ( builtins.concatStringsSep "," ( builtins.attrNames cache ) ) cache ) ;
+                                                                            # cache = builtins.mapAttrs mappers.cache ( builtins.trace ( builtins.concatStringsSep "," ( builtins.attrNames cache ) ) cache ) ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
