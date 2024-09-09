@@ -386,7 +386,7 @@
                                                                     "${ environment-variable out }" =
                                                                         {
                                                                             ## ENTRYPOINT 3
-                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            cache = builtins.mapAttrs mappers.temporary cache ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -432,7 +432,7 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    null = temporary : { temporary = temporary.null ; } ;
+                                                                                    null2 = temporary : { } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
