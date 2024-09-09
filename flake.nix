@@ -654,6 +654,22 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ strip ( wild "2595332087bd2ebeebd3624af4be8541452ade795cb047b32a296dafb68375723b7e2b523855bb45b4770ae3ac811b6462f378a4b88477770bac7afb17979eed" ) } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } strip file )
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
                                                                                                             '' ;
+                                                                                                    temporary =
+                                                                                                        {
+                                                                                                            init =
+                                                                                                                { pkgs , ... } : { environment-variable , scripts , target , ... } :
+                                                                                                                    ''
+                                                                                                                        IDENTITY=$( ${ scripts.util.identity } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "IDENTITY" } | ${ scripts.util.write } ${ target } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -e INIT > /build/${ environment-variable "IDENTITY" }
+                                                                                                                    '' ;
+                                                                                                            release =
+                                                                                                                { pkgs , ... } : { environment-variable , target , ... } :
+                                                                                                                    ''
+                                                                                                                        IDENTITY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -e _RELEASE >> /build/${ environment-variable "IDENTITY" }
+                                                                                                                    '' ;
+                                                                                                        } ;
                                                                                                     wild =
                                                                                                         middle :
                                                                                                             ''
