@@ -50,7 +50,7 @@
                                                             '' ;
                                                     mappers =
                                                         let
-                                                            cache = path : name : value : builtins.trace "hi" "${ pkgs.coreutils }/bin/true" ;
+                                                            cache = path : name : value : builtins.trace "hi ${ name }" "${ pkgs.coreutils }/bin/true" ;
                                                             cache2 =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
