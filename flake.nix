@@ -429,7 +429,6 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    # null = temporary : { } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
