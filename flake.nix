@@ -197,7 +197,8 @@
                                                                                                 epoch = builtins.toString ( if builtins.typeOf epoch == "null" then cache-default-epoch else epoch ) ;
                                                                                                 temporary = temporary ;
                                                                                             } ;
-                                                                                    in identity ( value tertiary.temporary ) ;
+                                                                                    # in identity ( value tertiary.temporary ) ;
+                                                                                    in identity ( value { } ) ;
                                                                             in pkgs.writeShellScript name cache
                                                                     else builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             script =
