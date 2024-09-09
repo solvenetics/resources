@@ -363,6 +363,16 @@
                                                                     else if builtins.any ( w : w == first ) whitespace then strip tail
                                                                     else if builtins.any ( w : w == last ) whitespace then strip head
                                                                     else string ;
+                                                    wtf =
+                                                        let
+                                                            mapper =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
+                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
+                                                            in
+                                                                {
+                                                                    temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
+                                                                } ;
                                                     tertiary =
                                                         let
                                                             mapper =
@@ -377,7 +387,7 @@
                                                                     has-standard-input = has-standard-input ;
                                                                     scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
                                                                     target = target ;
-                                                                    temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
+                                                                    temporary = wtf.temporary ;
                                                                     strip = strip ;
                                                                 } ;
                                                     write =
