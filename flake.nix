@@ -343,6 +343,7 @@
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
+                                                                    ## ENTRYPOINT 1
                                                                     cache = cache [ ( environment-variable out ) "cache" ] ;
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
@@ -369,6 +370,7 @@
                                                                     else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             in
                                                                 {
+                                                                    ## ENTRYPOINT 2
                                                                     cache = builtins.mapAttrs ( mapper [ ( environment-variable out ) "cache" ] ) cache ;
                                                                     environment-variable = environment-variable ;
                                                                     has-standard-input = has-standard-input ;
@@ -383,7 +385,8 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            ## ENTRYPOINT 3
+                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -429,6 +432,7 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
+                                                                                    null = temporary : { temporary = temporary.null ; } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
