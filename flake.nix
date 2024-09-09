@@ -386,7 +386,7 @@
                                                                     "${ environment-variable out }" =
                                                                         {
                                                                             ## ENTRYPOINT 3
-                                                                            cache = builtins.mapAttrs mappers.temporary cache ;
+                                                                            # cache = builtins.mapAttrs mappers.cache ( builtins.trace ( builtins.concatStringsSep "," ( builtins.attrNames cache ) ) cache ) ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
