@@ -53,6 +53,10 @@
                                                         let
                                                             cache =
                                                                 path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ""
+                                                                    else builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value ;
+                                                            cache2 =
+                                                                path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
                                                                             cache =
@@ -429,6 +433,7 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
+                                                                                    # null = temporary : { } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
