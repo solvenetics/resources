@@ -383,7 +383,7 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            cache = builtins.mapAttrs mappers.cache ( builtins.trace ( builtins.typeOf cache.null ) { } ) ;
+                                                                            cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -429,7 +429,7 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    null = temporary : { } ;
+                                                                                    # null = temporary : { } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
