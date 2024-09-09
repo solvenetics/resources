@@ -45,17 +45,12 @@
                                                 let
                                                     has-standard-input =
                                                         strip
-
                                                             ''
                                                                 [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
                                                             '' ;
                                                     mappers =
                                                         let
                                                             cache =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then pkgs.writeShellScript name ""
-                                                                    else builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                            cache2 =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
@@ -387,7 +382,7 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -433,7 +428,7 @@
                                                                                     '' ;
                                                                             cache =
                                                                                 {
-                                                                                    # null = temporary : { } ;
+                                                                                    null = temporary : { } ;
                                                                                 } ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
