@@ -666,7 +666,7 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            export ${ out }=${ resources } &&
+                                                                            export ${ out }=${ builtins.trace ( builtins.toString resources ) resources } &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
                                                                     '' ;
                                                     } ;
