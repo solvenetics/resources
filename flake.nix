@@ -382,7 +382,7 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            cache = builtins.mapAttrs mappers.cache {} ;
                                                                             scripts = builtins.mapAttrs mappers.script scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
