@@ -1,7 +1,0 @@
-mtide/flake-utils/b1d9ab70662946ef0850d488da1c9019f3a9752a' (2024-03-11)
-• Added input 'flake-utils/systems':
-    'github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e' (2023-04-09)
-• Added input 'nixpkgs':
-    'github:NixOs/nixpkgs/9afce28a1719e35c295fe8b379a491659acd9cd6' (2024-07-12)
-[1/0/1 built] building simple: /nix/store/gjka36ckmhahjclflrykqs7a36f4j6kq-cache: line 54: [: too many arguments
-
