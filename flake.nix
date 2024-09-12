@@ -23,7 +23,8 @@
                                     cache-lock-exit ? 64 ,
                                     cache-lock-message ? "We were unable to lock the cache." ,
                                     cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
-                                    invalid-script-throw ?  value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
+                                    invalid-cache-throw ? value : "02bc1acea7eb0055c96f9f39d90f2c348666ddc2a4f3c72c148ea61da4ddfc3d06fc851eefcf6821ec0708328f81d5eccb13c730447de562c2f19bddc5c83135: ${ builtins.typeOf value }" ,
+                                    invalid-script-throw ? value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
                                     lock ? "/tmp/tmp.JnWlkWVHzR.lock" ,
                                     out ? "e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d" ,
@@ -53,12 +54,9 @@
                                                             # cache2 = path : name : value : builtins.trace "hi ${ name }" "${ pkgs.coreutils }/bin/true" ;
                                                             cache =
                                                                 path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then
-                                                                        let
-
-                                                                            in builtins.trace "WTF2 ${ name }" ( pkgs.writeShellScript ( builtins.trace "WTF3 ${ name } - XXX -" name ) ( builtins.trace "WTF4" "" ) )
-                                                                    else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value )
-                                                                    else builtins.throw ( invalid-cache-throw value )
+                                                                    if builtins.typeOf value == "lambda" then "${ pkgs.coreutils }/bin/true"
+                                                                    else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                    else builtins.throw ( invalid-cache-throw value ) ;
                                                             script =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
