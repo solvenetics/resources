@@ -16,7 +16,7 @@
                                     at ? "/run/wrappers/bin/at" ,
                                     cache ? { } ,
                                     cache-default-epoch ? 1 ,
-                                    cache-directory ? "/tmp" ,
+                                    cache-directory ? environment-variable "TMPDIR" ,
                                     cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
                                     cache-instantiation-exit ? 64 ,
                                     cache-instantiation-message ? "We were unable to instantiate." ,
@@ -59,6 +59,9 @@
                                                                                 ''
                                                                                     ${ cache-timestamp }=${ environment-variable "${ cache-epoch-hash }:=$( ${ pkgs.coreutils }/bin/date %s )" } &&
                                                                                         CACHE=${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.cache } )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.map builtins.toString ( builtins.concatLists [ path [ temporary.temporary temporary.cache ] ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                        if [ -d ${ cache-directory }/${ environment-variable cache-timestamp } ]
+                                                                                        else
+                                                                                        fi
                                                                                 '' ;
                                                                             temporary =
                                                                                 let
