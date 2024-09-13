@@ -59,8 +59,8 @@
                                                                                 ''
                                                                                     ${ cache-timestamp }=${ environment-variable "${ cache-epoch-hash }:=$( ${ pkgs.coreutils }/bin/date %s )" } &&
                                                                                         CACHE=${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.cache } )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.map builtins.toString ( builtins.concatLists [ path [ temporary.temporary temporary.cache ] ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        if [ -d ${ cache-directory }/${ environment-variable cache-timestamp } ]
-                                                                                        else
+                                                                                        if [ ! -d ${ cache-directory }/${ environment-variable cache-timestamp } ]
+                                                                                            ${ pkgs.coreutils }/bin/true
                                                                                         fi
                                                                                 '' ;
                                                                             temporary =
