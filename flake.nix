@@ -51,10 +51,28 @@
                                                             '' ;
                                                     mappers =
                                                         let
-                                                            # cache2 = path : name : value : builtins.trace "hi ${ name }" "${ pkgs.coreutils }/bin/true" ;
                                                             cache =
                                                                 path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then "${ pkgs.coreutils }/bin/true"
+                                                                    if builtins.typeOf value == "lambda" then
+                                                                        let
+                                                                            cache =
+                                                                                ''
+                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-epoch-hash }:=$( ${ pkgs.coreutils }/bin/date %s )" } &&
+                                                                                        CACHE=${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.cache } )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.map builtins.toString ( builtins.concatLists [ path [ temporary.temporary temporary.cache ] ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                '' ;
+                                                                            temporary =
+                                                                                let
+                                                                                    identity =
+                                                                                        {
+                                                                                            cache ? cache-default-epoch
+                                                                                            temporary
+                                                                                        } :
+                                                                                            {
+                                                                                                cache = cache ;
+                                                                                                temporary = temporary ;
+                                                                                            } ;
+                                                                                    in identity ( tertiary.temporary ) ;
+                                                                            in "${ pkgs.coreutils }/bin/true"
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
                                                             script =
