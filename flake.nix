@@ -84,7 +84,7 @@
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/true ) &&
-                                                                                                exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                                exec 200> ${ cache-directory }/AAAA.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 200
                                                                                                 then
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
