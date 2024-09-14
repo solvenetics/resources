@@ -71,10 +71,10 @@
                                                                                                 ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                 ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                         done &&
-                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.cache" | while read CACHE_FILE
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.sh" | while read CACHE_FILE
                                                                                         do
-                                                                                            ${ environment-variable "CACHE_LINK" }/clear.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_LINK" }
+                                                                                            ${ environment-variable "CACHE_FILE" } &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_FILE" }
                                                                                         done &&
                                                                                         ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIRECTORY" }
                                                                                 '' ;
@@ -106,7 +106,7 @@
                                                                                                     HAS_STANDARD_INPUT=false &&
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
-                                                                                                PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                                PARENT_CACHHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
@@ -133,14 +133,13 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
                                                                                                                     exit ${ builtins.toString cache-init-error-code }
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/true
-                                                                                                    fi
+                                                                                                            fi
+                                                                                                    fi &&
+                                                                                                        ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
-                                                                                                fi &&
-                                                                                                ${ pkgs.coreutils }/bin/true
+                                                                                                fi
                                                                                         '' ;
                                                                             manage =
                                                                                 ''
@@ -180,7 +179,11 @@
                                                                                             ${ environment-variable "CLEAR" }
                                                                                         fi
                                                                                 '' ;
-                                                                            in strip hook
+                                                                            in
+                                                                                strip
+                                                                                    ''
+                                                                                        write_it ${ pkgs.writeShellScript name "" } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                    ''
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
                                                             script =
@@ -611,7 +614,7 @@
 
                                                                                                                     NO_CACHE_ARGUMENTS=$( ${ scripts.util.identity } no-cache arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache arguments file ) &&
-                                                                                                                    # ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
+                                                                                                                    ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
                                                                                                                     YES_CACHE_ARGUMENTS=$( ${ scripts.util.identity } yes-cache arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache arguments file ) &&
                                                                                                                     YES_CACHE_STANDARD_INPUT=$( ${ scripts.util.identity } yes-cache standard input ) &&
