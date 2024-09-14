@@ -61,9 +61,9 @@
                                                                                     ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
                                                                                         exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                        ${ pkgs.flock }/bin/flock 200 &&
+                                                                                        ${ pkgs.flock }/bin/flock 10 &&
                                                                                         ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable cache-work-directory } &&
-                                                                                        ${ pkgs.flock }/bin/flock -u 200 &&
+                                                                                        ${ pkgs.flock }/bin/flock -u 10 &&
                                                                                         ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                         do
                                                                                             PID=${ environment-variable "PID_FILE*.%" } &&
