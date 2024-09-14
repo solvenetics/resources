@@ -75,7 +75,17 @@
                                                                                         fi &&
                                                                                         export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                         exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        if ${ pkgs.flock }/bin/flock 200
+                                                                                        then
+                                                                                            if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
+                                                                                            then
 
+                                                                                                    ${ pkgs.coreutils }/bin/true
+                                                                                            fi
+                                                                                        else
+                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
+                                                                                                exit ${ builtins.toString cache-lock-exit }
+                                                                                        fi &&
                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                 '' ;
                                                                             clear =
