@@ -569,7 +569,7 @@
                                                                                                                         in
                                                                                                                             [
                                                                                                                                 ( script true true )
-                                                                                                                                # ( script true false )
+                                                                                                                                ( script true false )
                                                                                                                                 # ( script false true )
                                                                                                                                 # ( script false false )
                                                                                                                             ] ;
@@ -614,11 +614,11 @@
 
                                                                                                                     NO_CACHE_ARGUMENTS=$( ${ scripts.util.identity } no-cache arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache arguments file ) &&
-                                                                                                                    ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
-                                                                                                                    YES_CACHE_ARGUMENTS=$( ${ scripts.util.identity } yes-cache arguments ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache arguments file ) &&
-                                                                                                                    YES_CACHE_STANDARD_INPUT=$( ${ scripts.util.identity } yes-cache standard input ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_STANDARD_INPUT" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache standard input file ) &&
+                                                                                                                    # ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
+                                                                                                                    # YES_CACHE_ARGUMENTS=$( ${ scripts.util.identity } yes-cache arguments ) &&
+                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache arguments file ) &&
+                                                                                                                    # YES_CACHE_STANDARD_INPUT=$( ${ scripts.util.identity } yes-cache standard input ) &&
+                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_STANDARD_INPUT" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache standard input file ) &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_STANDARD_INPUT" } | ${ cache.null } ${ environment-variable "YES_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache standard error file ) ) &&
 
 
