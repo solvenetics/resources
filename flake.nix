@@ -66,11 +66,10 @@
                                                                                                     temporary
                                                                                                 } :
                                                                                                     {
-                                                                                                        cache = cache ;
                                                                                                         temporary = temporary tertiary.temporary ;
-                                                                                                        string = "HI" ;
+                                                                                                        validity = builtins.toString cache ;
                                                                                                     } ;
-                                                                                            in identity value ;
+                                                                                            in { validity = 22 ; } ;
                                                                                     wtf =
                                                                                         ''
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name populate.temporary populate.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
