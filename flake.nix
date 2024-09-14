@@ -79,7 +79,11 @@
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary.sh &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary &&
+                                                                                                    ${ pkgs.coreutils }/bin/date --date @$(( ${ builtins.toString temporary.epoch } + ${ builtins.toString temporary.epoch } * ( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } ) )) +%s > ${ environment-variable "WORK_DIRECTORY" }/epoch &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
+                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/epoch &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
                                                                                                     ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
                                                                                                     if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
@@ -96,6 +100,22 @@
                                                                                                 exit ${ builtins.toString cache-lock-exit }
                                                                                         fi
                                                                                 '' ;
+                                                                            clear =
+                                                                                ''
+                                                                                    ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                        do
+                                                                                            PID=${ environment-variable "PID_FILE*.%" } &&
+                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                        done &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } -mindepth 1 -maxdepth 1 -type f -name "*.cache" | while read CACHE_FILE
+                                                                                        do
+                                                                                            ${ environment-variable "CACHE_LINK" }/clear.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_LINK" }
+                                                                                        done &&
+                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ cache-directory }/${ environment-variable cache-epoch-hash }
+                                                                                '' ;
                                                                             init =
                                                                                 ''
                                                                                     WORK_DIRECTORY=${ environment-variable "@" } &&
@@ -104,14 +124,14 @@
                                                                                         STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                         then
-                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "WORK_DIRECTORY" }/temporary.sh ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
+                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
                                                                                             then
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             else
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             fi
                                                                                         else
-                                                                                            ${ environment-variable "WORK_DIRECTORY" }/temporary.sh ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
+                                                                                            ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
                                                                                             then
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             else
@@ -120,8 +140,19 @@
                                                                                         fi &&
                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIRECTORY" }/status &&
                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/out ${ environment-variable "WORK_DIRECTORY" }/err ${ environment-variable "WORK_DIRECTORY" }/status &&
+                                                                                        if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                        then
+                                                                                            SLEEP=$(( $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/epoch ) - $( ${ pkgs.coreutils }/bin/date +%s ) ))
+                                                                                        else
+                                                                                            SLEEP=0
+                                                                                        fi &&
+                                                                                        CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
                                                                                         ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
-
+                                                                                        ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" } &&
+                                                                                        if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
+                                                                                        then
+                                                                                            ${ environment-variable "CLEAR" }
+                                                                                        fi
                                                                                 '' ;
                                                                             temporary =
                                                                                 let
