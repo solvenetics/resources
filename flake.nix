@@ -56,6 +56,27 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
+                                                                            clear =
+                                                                                ''
+                                                                                    ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
+                                                                                        WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
+                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        ${ pkgs.flock }/bin/flock 200 &&
+                                                                                        ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable cache-work-directory } &&
+                                                                                        ${ pkgs.flock }/bin/flock -u 200 &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                        do
+                                                                                            PID=${ environment-variable "PID_FILE*.%" } &&
+                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                        done &&
+                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.cache" | while read CACHE_FILE
+                                                                                        do
+                                                                                            ${ environment-variable "CACHE_LINK" }/clear.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_LINK" }
+                                                                                        done &&
+                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIRECTORY" }
+                                                                                '' ;
                                                                             hook =
                                                                                 let
                                                                                     populate =
@@ -116,22 +137,6 @@
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
-                                                                            clear =
-                                                                                ''
-                                                                                    ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
-                                                                                        ${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
-                                                                                        do
-                                                                                            PID=${ environment-variable "PID_FILE*.%" } &&
-                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
-                                                                                        done &&
-                                                                                        ${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } -mindepth 1 -maxdepth 1 -type f -name "*.cache" | while read CACHE_FILE
-                                                                                        do
-                                                                                            ${ environment-variable "CACHE_LINK" }/clear.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_LINK" }
-                                                                                        done &&
-                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ cache-directory }/${ environment-variable cache-epoch-hash }
-                                                                                '' ;
                                                                             manage =
                                                                                 ''
                                                                                     WORK_DIRECTORY=${ environment-variable "@" } &&
