@@ -62,36 +62,64 @@
 
                                                                                 '' ;
                                                                             hook =
-                                                                                ''
-                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
-                                                                                        ARGUMENTS=${ environment-variable "@" } &&
-                                                                                        if ${ has-standard-input }
-                                                                                        then
-                                                                                            HAS_STANDARD_INPUT=true &&
-                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                        else
-                                                                                            HAS_STANDARD_INPUT=false &&
-                                                                                                STANDARD_INPUT=""
-                                                                                        fi &&
-                                                                                        export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                        if ${ pkgs.flock }/bin/flock 200
-                                                                                        then
-                                                                                            if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
-                                                                                            then
-                                                                                                ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
+                                                                                let
+                                                                                    populate =
+                                                                                        let
+                                                                                            identity =
+                                                                                                {
+                                                                                                    cache ? cache-default-epoch
+                                                                                                    temporary
+                                                                                                } :
+                                                                                                    {
+                                                                                                        cache = cache ;
+                                                                                                        temporary = temporary tertiary.temporary ;
+                                                                                                        string = "HI" ;
+                                                                                                    } ;
+                                                                                            in identity value ;
+                                                                                    in
+                                                                                        ''
+                                                                                            ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+                                                                                                ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                if ${ has-standard-input }
+                                                                                                then
+                                                                                                    HAS_STANDARD_INPUT=true &&
+                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                else
+                                                                                                    HAS_STANDARD_INPUT=false &&
+                                                                                                        STANDARD_INPUT=""
+                                                                                                fi &&
+                                                                                                export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                                exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                                if ${ pkgs.flock }/bin/flock 200
+                                                                                                then
+                                                                                                    if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
+                                                                                                    then
+                                                                                                        ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
 
-                                                                                                    ${ pkgs.coreutils }/bin/true
-                                                                                            fi
-                                                                                        else
-                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
-                                                                                                exit ${ builtins.toString cache-lock-exit }
-                                                                                        fi &&
-                                                                                        ${ pkgs.coreutils }/bin/true
-                                                                                '' ;
+                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
+                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/epoch &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
+                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
+                                                                                                            if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
+                                                                                                                    exit ${ builtins.toString cache-init-error-code }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/true
+                                                                                                    fi
+                                                                                                else
+                                                                                                    ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
+                                                                                                        exit ${ builtins.toString cache-lock-exit }
+                                                                                                fi &&
+                                                                                                ${ pkgs.coreutils }/bin/true
+                                                                                        '' ;
                                                                             clear =
                                                                                 ''
                                                                                     ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
@@ -123,7 +151,7 @@
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             fi
                                                                                         else
-                                                                                            ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
+                                                                                            if ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
                                                                                             then
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             else
