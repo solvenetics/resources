@@ -56,6 +56,11 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
+                                                                            wtf =
+                                                                                ''
+                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name temporary.temporary temporary.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+
+                                                                                '' ;
                                                                             hook =
                                                                                 ''
                                                                                     ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
@@ -68,6 +73,8 @@
                                                                                             HAS_STANDARD_INPUT=false &&
                                                                                                 STANDARD_INPUT=""
                                                                                         fi &&
+                                                                                        export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
 
                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                 '' ;
