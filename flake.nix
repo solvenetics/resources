@@ -122,8 +122,9 @@
                                                                                                             ${ pkgs.coreutils }/bin/ln ${ populate.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
+                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" }/manage &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/validity &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } | ${ at } now &&
                                                                                                             ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
@@ -143,7 +144,7 @@
                                                                                         '' ;
                                                                             manage =
                                                                                 ''
-                                                                                    WORK_DIRECTORY=${ environment-variable "@" } &&
+                                                                                    WORK_DIRECTORY=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
                                                                                         ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
                                                                                         HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
                                                                                         STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
