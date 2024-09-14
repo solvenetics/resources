@@ -57,6 +57,7 @@
                                                                         let
                                                                             cache =
                                                                                 ''
+                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" }
                                                                                 '' ;
                                                                             init =
                                                                                 ''
