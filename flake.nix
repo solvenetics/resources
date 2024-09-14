@@ -59,7 +59,7 @@
                                                                                 ''
                                                                                     ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                         export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 )
+                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name temporary.temporary temporary.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 )
                                                                                 '' ;
                                                                             init =
                                                                                 ''
