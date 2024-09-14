@@ -115,8 +115,8 @@
                                                                                                     then
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" } &&
-exit 0 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
+exit 0 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
                                                                                                             ${ pkgs.coreutils }/bin/echo $(( ${ builtins.toString populate.epoch } + ${ builtins.toString populate.epoch } * ( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } ) )) > ${ environment-variable "WORK_DIRECTORY" }/validity &&
