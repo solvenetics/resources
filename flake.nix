@@ -182,7 +182,7 @@
                                                                             in
                                                                                 strip
                                                                                     ''
-                                                                                        write_it ${ pkgs.writeShellScript name hook } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                        write_it ${ pkgs.writeShellScript name "" } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                                     ''
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
@@ -614,7 +614,7 @@
 
                                                                                                                     NO_CACHE_ARGUMENTS=$( ${ scripts.util.identity } no-cache arguments ) &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "NO_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache arguments file ) &&
-                                                                                                                    # ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
+                                                                                                                    ${ cache.null } ${ environment-variable "NO_CACHE_ARGUMENTS" } > >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard output file ) ) 2> >( ${ scripts.util.write } /build/$( ${ scripts.util.identity } no-cache standard error file ) ) &&
                                                                                                                     # YES_CACHE_ARGUMENTS=$( ${ scripts.util.identity } yes-cache arguments ) &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable "YES_CACHE_ARGUMENTS" } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } yes-cache arguments file ) &&
                                                                                                                     # YES_CACHE_STANDARD_INPUT=$( ${ scripts.util.identity } yes-cache standard input ) &&
