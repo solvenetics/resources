@@ -129,8 +129,10 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } | ${ at } now &&
 exit 0 &&
                                                                                                             ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
+exit 0 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
+exit 0 &&
                                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
