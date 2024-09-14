@@ -15,6 +15,7 @@
                                 {
                                     at ? "/run/wrappers/bin/at" ,
                                     cache ? { } ,
+                                    cache-default-closure ? builtins.false ,
                                     cache-default-epoch ? 1 ,
                                     cache-directory ? environment-variable "TMPDIR" ,
                                     cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
@@ -83,10 +84,12 @@
                                                                                         let
                                                                                             identity =
                                                                                                 {
+                                                                                                    closure ? cache-default-closure ,
                                                                                                     epoch ? cache-default-epoch ,
                                                                                                     temporary
                                                                                                 } :
                                                                                                     {
+                                                                                                        closure = closure ;
                                                                                                         temporary = temporary ;
                                                                                                         epoch = builtins.toString epoch ;
                                                                                                     } ;
