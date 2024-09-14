@@ -79,6 +79,8 @@
                                                                                         then
                                                                                             if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                             then
+                                                                                                ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
 
                                                                                                     ${ pkgs.coreutils }/bin/true
                                                                                             fi
