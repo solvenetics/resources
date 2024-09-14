@@ -23,7 +23,7 @@
                                     cache-lock-exit ? 64 ,
                                     cache-lock-message ? "We were unable to lock the cache." ,
                                     cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
-                                    cache-work-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.work" ,
+                                    cache-work-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.work" ,
                                     invalid-cache-throw ? value : "02bc1acea7eb0055c96f9f39d90f2c348666ddc2a4f3c72c148ea61da4ddfc3d06fc851eefcf6821ec0708328f81d5eccb13c730447de562c2f19bddc5c83135: ${ builtins.typeOf value }" ,
                                     invalid-script-throw ? value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
@@ -104,21 +104,21 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -12 ) &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ) &&
+                                                                                                # export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -12 ) &&
                                                                                                 exec 200> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 200
                                                                                                 then
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
-                                                                                                        ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                        WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
 
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
-                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/epoch &&
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
                                                                                                             ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
