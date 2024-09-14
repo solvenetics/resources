@@ -111,9 +111,9 @@
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
-exit 0 &&
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
+exit 0 &&
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
