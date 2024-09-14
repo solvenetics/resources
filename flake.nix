@@ -56,11 +56,6 @@
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         let
-                                                                            wtf =
-                                                                                ''
-                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name temporary.temporary temporary.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-
-                                                                                '' ;
                                                                             hook =
                                                                                 let
                                                                                     populate =
@@ -76,6 +71,11 @@
                                                                                                         string = "HI" ;
                                                                                                     } ;
                                                                                             in identity value ;
+                                                                                    wtf =
+                                                                                        ''
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name populate.temporary populate.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+
+                                                                                        '' ;
                                                                                     in
                                                                                         ''
                                                                                             ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
@@ -174,18 +174,6 @@
                                                                                             ${ environment-variable "CLEAR" }
                                                                                         fi
                                                                                 '' ;
-                                                                            temporary =
-                                                                                let
-                                                                                    identity =
-                                                                                        {
-                                                                                            cache ? cache-default-epoch
-                                                                                            temporary
-                                                                                        } :
-                                                                                            {
-                                                                                                cache = cache ;
-                                                                                                temporary = temporary tertiary.temporary ;
-                                                                                            } ;
-                                                                                    in identity value ;
                                                                             in strip hook
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
