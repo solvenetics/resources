@@ -58,47 +58,8 @@
                                                                         let
                                                                             hook =
                                                                                 ''
-                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
-                                                                                        ARGUMENTS=${ environment-variable "@" } &&
-                                                                                        if ${ has-standard-input }
-                                                                                        then
-                                                                                            HAS_STANDARD_INPUT=true &&
-                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                        else
-                                                                                            HAS_STANDARD_INPUT=false &&
-                                                                                                STANDARD_INPUT="" &&
-                                                                                        fi &&
-                                                                                        export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                        export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name temporary.temporary temporary.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                        if ${ pkgs.flock }/bin/flock 200
-                                                                                        then
-                                                                                            if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
-                                                                                            then
-                                                                                                ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary &&
-                                                                                                    ${ pkgs.coreutils }/bin/date --date @$(( ${ builtins.toString temporary.epoch } + ${ builtins.toString temporary.epoch } * ( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } ) )) +%s > ${ environment-variable "WORK_DIRECTORY" }/epoch &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
-                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
-                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/epoch &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
-                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
-                                                                                                    if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
-                                                                                                    else
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
-                                                                                                            exit ${ builtins.toString cache-init-error-code }
-                                                                                                    fi
-                                                                                            fi
-                                                                                        else
-                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
-                                                                                                exit ${ builtins.toString cache-lock-exit }
-                                                                                        fi
+
+                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                 '' ;
                                                                             clear =
                                                                                 ''
@@ -163,10 +124,10 @@
                                                                                         } :
                                                                                             {
                                                                                                 cache = cache ;
-                                                                                                temporary = temporary ;
+                                                                                                temporary = temporary tertiary.temporary ;
                                                                                             } ;
-                                                                                    in identity ( tertiary.temporary ) ;
-                                                                            in "${ pkgs.coreutils }/bin/true"
+                                                                                    in identity value ;
+                                                                            in strip hook
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
                                                             script =
