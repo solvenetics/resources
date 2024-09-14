@@ -18,7 +18,7 @@
                                     cache-default-epoch ? 1 ,
                                     cache-directory ? environment-variable "TMPDIR" ,
                                     cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
-                                    cache-init-error-exit ? 64 ,
+                                    cache-init-error-code ? 64 ,
                                     cache-init-error-message ? "We were unable to instantiate:  ${ environment-variable "WORK_DIR" }" ,
                                     cache-lock-exit ? 64 ,
                                     cache-lock-message ? "We were unable to lock the cache." ,
@@ -70,19 +70,29 @@
                                                                                         fi &&
                                                                                         export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                         export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ] ( builtins.map builtins.toString [ name temporary.temporary temporary.epoch ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        exec 201> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                        if ${ pkgs.flock }/bin/flock 201
+                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                        if ${ pkgs.flock }/bin/flock 200
                                                                                         then
                                                                                             if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                             then
                                                                                                 WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
-                                                                                                    exec 202> ${ environment-variable "WORK_DIRECTORY" }.lock1 &&
-                                                                                                    ${ pkgs.flock }/bin/flock 202 &&
+                                                                                                    exec 201> ${ environment-variable "WORK_DIRECTORY" }.lock.1 &&
+                                                                                                    ${ pkgs.flock }/bin/flock 201 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
+                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary.sh &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
-                                                                                                    ${ pkgs.flock }/bin/flock -u 202 &&
+                                                                                                    ${ pkgs.flock }/bin/flock -u 201 &&
+                                                                                                    if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
+
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
+                                                                                                            exit ${ builtins.toString cache-init-error-code }
+                                                                                                    fi
                                                                                             fi
                                                                                         else
                                                                                             ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
@@ -91,36 +101,31 @@
                                                                                 '' ;
                                                                             init =
                                                                                 ''
-                                                                                    ARGUMENTS= &&
-                                                                                        HAS_STANDARD_INPUT= &&
-                                                                                        STANDARD_INPUT= &&
-                                                                                        WORK_DIR= &&
+                                                                                    WORK_DIRECTORY=${ environment-variable "@" } &&
+                                                                                        exec 202> ${ environment-variable "WORK_DIRECTORY" }/lock.2 &&
+                                                                                        ${ pkgs.flock }/bin/flock 202 &&
+                                                                                        ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
+                                                                                        HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
+                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
                                                                                         if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                         then
-                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/out 2> ${ environment-variable "WORK_DIR" }/err
+                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "WORK_DIRECTORY" }/temporary.sh ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
                                                                                             then
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             else
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             fi
                                                                                         else
-                                                                                            if ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/out 2> ${ environment-variable "WORK_DIR" }/err
+                                                                                            ${ environment-variable "WORK_DIRECTORY" }/temporary.sh ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
                                                                                             then
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             else
                                                                                                 STATUS=${ environment-variable "?" }
                                                                                             fi
                                                                                         fi &&
-                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIR" }/status &&
-                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIR" }/out ${ environment-variable "WORK_DIR" }/err ${ environment-variable "WORK_DIR" }/status &&
-                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag &&
-                                                                                        if [ ${ environment-variable "STATUS" } == 0 ]
-                                                                                        then
-                                                                                            ${ pkgs.coreutils }/bin/sleep
-                                                                                        else
-
-                                                                                        fi
-
+                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIRECTORY" }/status &&
+                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/out ${ environment-variable "WORK_DIRECTORY" }/err ${ environment-variable "WORK_DIRECTORY" }/status &&
+                                                                                        ${ pkgs.flock }/bin/flock -u 202
                                                                                 '' ;
                                                                             temporary =
                                                                                 let
