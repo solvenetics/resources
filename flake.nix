@@ -138,7 +138,7 @@
                                                                                                     fi &&
                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
                                                                                                 else
-                                                                                            exit 0 &&
+#                                                                                            exit 0 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
                                                                                                 fi
