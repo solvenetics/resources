@@ -83,14 +83,14 @@
                                                                                         let
                                                                                             identity =
                                                                                                 {
-                                                                                                    cache ? cache-default-epoch
+                                                                                                    epoch ? cache-default-epoch ,
                                                                                                     temporary
                                                                                                 } :
                                                                                                     {
                                                                                                         temporary = temporary tertiary.temporary ;
-                                                                                                        validity = builtins.toString cache ;
+                                                                                                        epoch = builtins.toString epoch ;
                                                                                                     } ;
-                                                                                            in value identity ;
+                                                                                            in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
@@ -104,7 +104,7 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.trace "HI ${ builtins.typeOf populate } ${ builtins.concatStringsSep "," ( builtins.attrNames populate ) } - ${ builtins.typeOf populate.epoch }" "60" } )) $( ${ pkgs.coreutils }/bin/whoami ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) $( ${ pkgs.coreutils }/bin/whoami ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
