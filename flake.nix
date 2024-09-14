@@ -182,7 +182,7 @@
                                                                             in
                                                                                 strip
                                                                                     ''
-                                                                                        write_it ${ pkgs.writeShellScript name "" } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                        write_it ${ pkgs.writeShellScript name hook } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                                     ''
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
@@ -569,9 +569,9 @@
                                                                                                                         in
                                                                                                                             [
                                                                                                                                 ( script true true )
-                                                                                                                                ( script true false )
-                                                                                                                                ( script false true )
-                                                                                                                                ( script false false )
+                                                                                                                                # ( script true false )
+                                                                                                                                # ( script false true )
+                                                                                                                                # ( script false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
