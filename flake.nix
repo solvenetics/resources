@@ -104,9 +104,9 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
                                                                                                 # export ${ cache-epoch-hash }= &&
-                                                                                                exec 10> ${ cache-directory }/f.lock &&
+                                                                                                exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
