@@ -58,6 +58,16 @@
                                                                         let
                                                                             hook =
                                                                                 ''
+                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+                                                                                        ARGUMENTS=${ environment-variable "@" } &&
+                                                                                        if ${ has-standard-input }
+                                                                                        then
+                                                                                            HAS_STANDARD_INPUT=true &&
+                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                        else
+                                                                                            HAS_STANDARD_INPUT=false &&
+                                                                                                STANDARD_INPUT=""
+                                                                                        fi &&
 
                                                                                         ${ pkgs.coreutils }/bin/true
                                                                                 '' ;
