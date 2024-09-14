@@ -72,7 +72,7 @@
                                                                                             in identity value ;
                                                                                     in
                                                                                         ''
-                                                                                            ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
@@ -83,7 +83,7 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo | ${ pkgs.coreutils }/bin/echo ) &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } ) &&
                                                                                                 exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 200
                                                                                                 then
