@@ -96,6 +96,7 @@
                                                                                             in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
+exit 0 &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
@@ -113,7 +114,6 @@
                                                                                                 then
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
-                                                                                            exit 0 &&
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
@@ -136,10 +136,11 @@
                                                                                                                     exit ${ builtins.toString cache-init-error-code }
                                                                                                             fi
                                                                                                     fi &&
-                                                                                                        if [  -L ${ cache-directory }/${ environment-variable cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh ]
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
-                                                                                                        fi
+                                                                                                        # if [  -L ${ cache-directory }/${ environment-variable cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh ]
+                                                                                                        # then
+                                                                                                        #    ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
+                                                                                                        # fi &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
