@@ -83,8 +83,9 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/true ) &&
-                                                                                                exec 200> ${ cache-directory }/AAAA.lock &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable cache-timestamp } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ) &&
+                                                                                                exec 200> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 200
                                                                                                 then
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
