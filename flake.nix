@@ -109,9 +109,9 @@
                                                                                                 PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -0 ) &&
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
-                                                                                            exit 0 &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
+                                                                                            exit 0 &&
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
@@ -138,6 +138,7 @@
                                                                                                     fi &&
                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
                                                                                                 else
+                                                                                            exit 0 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
                                                                                                 fi
