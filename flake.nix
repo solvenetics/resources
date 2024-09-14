@@ -96,8 +96,8 @@
                                                                                             in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
-exit 0 &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
+exit 0 &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
