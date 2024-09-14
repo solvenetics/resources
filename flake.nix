@@ -90,7 +90,7 @@
                                                                                                         temporary = temporary tertiary.temporary ;
                                                                                                         validity = builtins.toString cache ;
                                                                                                     } ;
-                                                                                            in identity value ;
+                                                                                            in value identity ;
                                                                                     in
                                                                                         ''
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
