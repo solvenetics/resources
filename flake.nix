@@ -75,21 +75,18 @@
                                                                                         then
                                                                                             if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                             then
-                                                                                                WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
-                                                                                                    exec 201> ${ environment-variable "WORK_DIRECTORY" }.lock.1 &&
-                                                                                                    ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                ${ pkgs.flock }/bin/flock 201 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary.sh &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "init" init } ${ environment-variable "WORK_DIRECTORY" } | ${ at } now &&
-                                                                                                    ${ pkgs.flock }/bin/flock -u 201 &&
+                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag > /dev/null 2>&1 &&
                                                                                                     if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
                                                                                                     else
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
-
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
                                                                                                             exit ${ builtins.toString cache-init-error-code }
                                                                                                     fi
@@ -102,8 +99,6 @@
                                                                             init =
                                                                                 ''
                                                                                     WORK_DIRECTORY=${ environment-variable "@" } &&
-                                                                                        exec 202> ${ environment-variable "WORK_DIRECTORY" }/lock.2 &&
-                                                                                        ${ pkgs.flock }/bin/flock 202 &&
                                                                                         ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
                                                                                         HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
                                                                                         STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
@@ -125,7 +120,8 @@
                                                                                         fi &&
                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIRECTORY" }/status &&
                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/out ${ environment-variable "WORK_DIRECTORY" }/err ${ environment-variable "WORK_DIRECTORY" }/status &&
-                                                                                        ${ pkgs.flock }/bin/flock -u 202
+                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
+
                                                                                 '' ;
                                                                             temporary =
                                                                                 let
