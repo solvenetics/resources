@@ -81,6 +81,8 @@
                                                                                             then
                                                                                                 ${ pkgs.flock }/bin/flock 201 &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
 
                                                                                                     ${ pkgs.coreutils }/bin/true
                                                                                             fi
