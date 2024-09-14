@@ -87,7 +87,8 @@
                                                                                                     HAS_STANDARD_INPUT=false &&
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
-                                                                                                export PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                                PARENT_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo ) &&
                                                                                                 exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 200
                                                                                                 then
