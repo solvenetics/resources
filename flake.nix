@@ -568,8 +568,8 @@
                                                                                                                                 '' ;
                                                                                                                         in
                                                                                                                             [
-                                                                                                                                # ( script true true )
-                                                                                                                                ( script true false )
+                                                                                                                                ( script true true )
+                                                                                                                                # ( script true false )
                                                                                                                                 # ( script false true )
                                                                                                                                 # ( script false false )
                                                                                                                             ] ;
