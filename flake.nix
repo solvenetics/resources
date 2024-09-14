@@ -18,8 +18,8 @@
                                     cache-default-epoch ? 1 ,
                                     cache-directory ? environment-variable "TMPDIR" ,
                                     cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
-                                    cache-instantiation-exit ? 64 ,
-                                    cache-instantiation-message ? "We were unable to instantiate." ,
+                                    cache-init-error-exit ? 64 ,
+                                    cache-init-error-message ? "We were unable to instantiate:  ${ environment-variable "WORK_DIR" }" ,
                                     cache-lock-exit ? 64 ,
                                     cache-lock-message ? "We were unable to lock the cache." ,
                                     cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
@@ -57,11 +57,39 @@
                                                                         let
                                                                             cache =
                                                                                 ''
-                                                                                    ${ cache-timestamp }=${ environment-variable "${ cache-epoch-hash }:=$( ${ pkgs.coreutils }/bin/date %s )" } &&
-                                                                                        CACHE=${ pkgs.coreutils }/bin/echo $(( ${ environment-variable cache-timestamp } / ${ builtins.toString temporary.cache } )) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.map builtins.toString ( builtins.concatLists [ path [ temporary.temporary temporary.cache ] ] ) ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        if [ ! -d ${ cache-directory }/${ environment-variable cache-timestamp } ]
-                                                                                            ${ pkgs.coreutils }/bin/true
+                                                                                '' ;
+                                                                            init =
+                                                                                ''
+                                                                                    ARGUMENTS= &&
+                                                                                        HAS_STANDARD_INPUT= &&
+                                                                                        STANDARD_INPUT= &&
+                                                                                        WORK_DIR= &&
+                                                                                        if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
+                                                                                        then
+                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/out 2> ${ environment-variable "WORK_DIR" }/err
+                                                                                            then
+                                                                                                STATUS=${ environment-variable "?" }
+                                                                                            else
+                                                                                                STATUS=${ environment-variable "?" }
+                                                                                            fi
+                                                                                        else
+                                                                                            if ${ temporary.temporary } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIR" }/out 2> ${ environment-variable "WORK_DIR" }/err
+                                                                                            then
+                                                                                                STATUS=${ environment-variable "?" }
+                                                                                            else
+                                                                                                STATUS=${ environment-variable "?" }
+                                                                                            fi
+                                                                                        fi &&
+                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIR" }/status &&
+                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIR" }/out ${ environment-variable "WORK_DIR" }/err ${ environment-variable "WORK_DIR" }/status &&
+                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIR" }/flag &&
+                                                                                        if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                        then
+                                                                                            ${ pkgs.coreutils }/bin/sleep
+                                                                                        else
+
                                                                                         fi
+
                                                                                 '' ;
                                                                             temporary =
                                                                                 let
@@ -286,6 +314,7 @@
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                 export ${ out }=$out &&
+                                                                ${ pkgs.coreutils }/bin/cp --recursive util $out &&
                                                                 write_it ( )
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 2 } &&
