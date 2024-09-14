@@ -97,7 +97,6 @@
                                                                                     in
                                                                                         ''
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
-exit 0 &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
@@ -108,6 +107,7 @@ exit 0 &&
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+exit 0 &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
