@@ -143,6 +143,11 @@
                                                                                                         then
                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
                                                                                                         fi &&
+                                                                                                        if [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid ]
+                                                                                                        then
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid
+                                                                                                        fi
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
