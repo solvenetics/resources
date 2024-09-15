@@ -139,11 +139,10 @@
                                                                                                                     exit ${ builtins.toString cache-init-error-code }
                                                                                                             fi
                                                                                                     fi &&
-                                                                                                        # if [ ! -L ${ cache-directory }/${ environment-variable cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh ]
-                                                                                                        # then
-                                                                                                        #     true
-                                                                                                           # ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
-                                                                                                        # fi &&
+                                                                                                        if [ ! -z "${ environment-variable "PARENT_CACHE_EPOCH_HASH" }" ] && [ ! -e ${ cache-directory }/${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh ]
+                                                                                                        then
+                                                                                                           ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
+                                                                                                        fi &&
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
