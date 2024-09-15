@@ -584,8 +584,8 @@ ${ pkgs.coreutils }/bin/sleep 3s &&
                                                                                                                             [
                                                                                                                                 ( script true true )
                                                                                                                                 ( script true false )
-                                                                                                                                # ( script false true )
-                                                                                                                                # ( script false false )
+                                                                                                                                ( script false true )
+                                                                                                                                ( script false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
