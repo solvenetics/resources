@@ -612,11 +612,7 @@
                                                                                                                                     in
                                                                                                                                         strip
                                                                                                                                             ''
-                                                                                                                                                export COMMAND=${ command } &&
-                                                                                                                                                    export ARGUMENTS=${ arguments } &&
-                                                                                                                                                    export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
-                                                                                                                                                    export STATUS=${ if builtins.typeOf init == "bool" && ! init then "66" else "0" } &&
-                                                                                                                                                    asssert_status_code ${ environment-variable "STATUS" } ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } |" else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                                                export COMMAND
                                                                                                                                             '' ;
                                                                                                                         in
                                                                                                                             [
@@ -624,7 +620,7 @@
                                                                                                                                 ( script true false )
                                                                                                                                 ( script false true )
                                                                                                                                 ( script false false )
-                                                                                                                                # ( temporary false false false )
+                                                                                                                                ( temporary false false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
