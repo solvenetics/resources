@@ -23,6 +23,7 @@
                                     cache-init-error-message ? "We were unable to instantiate:  ${ environment-variable "WORK_DIR" }" ,
                                     cache-lock-exit ? 64 ,
                                     cache-lock-message ? "We were unable to lock the cache." ,
+                                    cache-sleep ? 1 , # This is a kludge.  inotifywait is better but I can not get that to work.  Instead we are polling files and sleeping this amount of time between polls.  The smaller this is the faster this is but at the same time using more resources.
                                     cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
                                     cache-work-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.work" ,
                                     invalid-cache-throw ? value : "02bc1acea7eb0055c96f9f39d90f2c348666ddc2a4f3c72c148ea61da4ddfc3d06fc851eefcf6821ec0708328f81d5eccb13c730447de562c2f19bddc5c83135: ${ builtins.typeOf value }" ,
@@ -127,7 +128,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
                                                                                                             while [ ! -f ${ environment-variable "WORK_DIRECTORY" }/flag ]
                                                                                                             do
-                                                                                                                ${ pkgs.coreutils }/bin/sleep 1s
+                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ builtins.toString cache-sleep }
                                                                                                             done &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
