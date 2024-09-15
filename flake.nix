@@ -693,22 +693,6 @@
                                                                                                         path : name : value :
                                                                                                             if builtins.typeOf value == "string" then [ "${ builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) }=${ value }" ]
                                                                                                             else builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ;
-                                                                                                    terminal =
-                                                                                                        { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
-                                                                                                            ''
-                                                                                                                export ARGUMENTS=${ environment-variable "@" } &&
-                                                                                                                    if ${ has-standard-input }
-                                                                                                                    then
-                                                                                                                        export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                                    else
-                                                                                                                        export STANDARD_INPUT=""
-                                                                                                                    fi &&
-                                                                                                                    ${ scripts.util.identity } standard output &&
-                                                                                                                    ${ scripts.util.identity } standard error >&2
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "," ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) { cache = cache ; scripts = scripts ; temporary = temporary ; } ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ strip ( wild "2595332087bd2ebeebd3624af4be8541452ade795cb047b32a296dafb68375723b7e2b523855bb45b4770ae3ac811b6462f378a4b88477770bac7afb17979eed" ) } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } strip file )
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
-                                                                                                            '' ;
                                                                                                     temporary =
                                                                                                         { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
                                                                                                             ''
@@ -727,6 +711,22 @@
                                                                                                                     STATUS=${ environment-variable 3 } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ environment-variable "MESSAGE" }" >> ${ environment-variable target } &&
                                                                                                                     exit ${ environment-variable "STATUS" }
+                                                                                                            '' ;
+                                                                                                    terminal =
+                                                                                                        { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
+                                                                                                            ''
+                                                                                                                export ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                                    if ${ has-standard-input }
+                                                                                                                    then
+                                                                                                                        export STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
+                                                                                                                    else
+                                                                                                                        export STANDARD_INPUT=""
+                                                                                                                    fi &&
+                                                                                                                    ${ scripts.util.identity } standard output &&
+                                                                                                                    ${ scripts.util.identity } standard error >&2
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ builtins.concatStringsSep "," ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper [ ] ) { cache = cache ; scripts = scripts ; temporary = temporary ; } ) ) ) }" | ${ scripts.util.write } /build/$( ${ scripts.util.identity } scripts file ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ strip ( wild "2595332087bd2ebeebd3624af4be8541452ade795cb047b32a296dafb68375723b7e2b523855bb45b4770ae3ac811b6462f378a4b88477770bac7afb17979eed" ) } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } strip file )
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } | ${ scripts.util.write } /build/$( ${ scripts.util.identity } target file )
                                                                                                             '' ;
                                                                                                     wild =
                                                                                                         middle :
