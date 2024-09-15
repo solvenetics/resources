@@ -607,12 +607,16 @@
                                                                                                                         temp =
                                                                                                                             init : release : has-standard-input : arguments : standard-input :
                                                                                                                                 let
-                                                                                                                                    to-string = t : if builtins.typeOf t == "bool" && t then "bad" else if builtins.typeOf t == "bool" && ! t then "good" else "null" ;
+                                                                                                                                    to-string = t : if builtins.typeOf t == "bool" && t then "good" else if builtins.typeOf t == "bool" && ! t then "bad" else "null" ;
                                                                                                                                     command = builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
                                                                                                                                     in
                                                                                                                                         strip
                                                                                                                                             ''
-                                                                                                                                                export COMMAND=${ command }
+                                                                                                                                                export COMMAND=${ command } &&
+                                                                                                                                                    export ARGUMENTS=${ arguments } &&
+                                                                                                                                                    export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
+                                                                                                                                                    EXPECTED_STATUS=${ builtins.toString ( if builtins.typeOf init == "bool" && init then 0 else if builtins.typeOf init == "null" then 0 else 64 ) } &&
+                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > /build/$( ${ scripts.util.identity } standard output file ) 2> /build/$( ${ scripts.util.identity } standard error file )"
                                                                                                                                             '' ;
                                                                                                                         in
                                                                                                                             [
