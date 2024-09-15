@@ -476,7 +476,7 @@
                                                                                                                                             EXPECTED_STATUS=${ builtins.toString ( if delta then 0 else 64 ) } &&
                                                                                                                                             EXPECTED_STANDARD_OUTPUT=$( ${ scripts.util.identity } standard output ) &&
                                                                                                                                             EXPECTED_STANDARD_ERROR=$( ${ scripts.util.identity } standard error ) &&
-                                                                                                                                            EXPECTED_SCRIPTS_FILE="cache.null=${ environment-variable out }/cache/null,scripts.test=${ environment-variable out }/scripts/test,scripts.util.identity=${ environment-variable out }/scripts/util/identity,scripts.util.write=${ environment-variable out }/scripts/util/write,scripts.verification.bad=${ environment-variable out }/scripts/verification/bad,scripts.verification.good=${ environment-variable out }/scripts/verification/good,scripts.verification.temporary.init=${ environment-variable out }/scripts/verification/temporary/init,scripts.verification.temporary.release=${ environment-variable out }/scripts/verification/temporary/release,scripts.verification.terminal=${ environment-variable out }/scripts/verification/terminal,temporary.null=${ environment-variable out }/temporary/null,temporary.verification.good=${ environment-variable out }/temporary/verification/good" &&
+                                                                                                                                            EXPECTED_SCRIPTS_FILE="cache.null=${ environment-variable out }/cache/null,scripts.test=${ environment-variable out }/scripts/test,scripts.util.identity=${ environment-variable out }/scripts/util/identity,scripts.util.write=${ environment-variable out }/scripts/util/write,scripts.verification.bad=${ environment-variable out }/scripts/verification/bad,scripts.verification.good=${ environment-variable out }/scripts/verification/good,scripts.verification.terminal=${ environment-variable out }/scripts/verification/terminal,temporary.null=${ environment-variable out }/temporary/null" ;
                                                                                                                                             EXPECTED_STRIP="715f817552f2e98e7e0ef267a8da8a762f4ad673c6dbc95c0a20a7d8c87cf078eb6f8d79cff71ea7fd981c05251dc238827abce2488ccda42887654026dd604d" &&
                                                                                                                                             EXPECTED_TARGET="${ environment-variable "c8725e4d573bd4d32254ea39a3fb3c77a823eb505445f5d4299e4a6d26fda26ee71af14503e1b6c401618b5cf7e6789ad0777ddd9e7eb0a9df7a6c61e119c089" }" &&
                                                                                                                                             EXPECTED_NO_CACHE_ARGUMENTS=$( ${ scripts.util.identity } no-cache arguments ) &&
@@ -711,19 +711,7 @@
                                                                                                             '' ;
                                                                                                     temporary =
                                                                                                         {
-                                                                                                            init =
-                                                                                                                { pkgs , ... } : { environment-variable , scripts , target , ... } :
-                                                                                                                    ''
-                                                                                                                        IDENTITY=$( ${ scripts.util.identity } ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "IDENTITY" } | ${ scripts.util.write } ${ target } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -e INIT > /build/${ environment-variable "IDENTITY" }
-                                                                                                                    '' ;
-                                                                                                            release =
-                                                                                                                { pkgs , ... } : { environment-variable , target , ... } :
-                                                                                                                    ''
-                                                                                                                        IDENTITY=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable target } ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo -e _RELEASE >> /build/${ environment-variable "IDENTITY" }
-                                                                                                                    '' ;
+
                                                                                                         } ;
                                                                                                     wild =
                                                                                                         middle :
@@ -744,10 +732,6 @@
                                                                                 temporary =
                                                                                     {
                                                                                         null = scripts : { init = scripts.verification.terminal ; } ;
-                                                                                        verification =
-                                                                                            {
-                                                                                                good = scripts : { init = scripts.verification.temporary.init ; release = scripts.verification.temporary.release ; } ;
-                                                                                            } ;
                                                                                     } ;
                                                                         } ;
                                                                 in
