@@ -126,9 +126,9 @@
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/validity &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" }/flags &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
-${ pkgs.coreutils }/bin/sleep 10s &&
+${ pkgs.coreutils }/bin/sleep 1s &&
 #                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flags  &&
-${ pkgs.coreutils }/bin/sleep 10s &&
+${ pkgs.coreutils }/bin/sleep 1s &&
 # exit 0 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
@@ -186,6 +186,7 @@ ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flags/f
                                                                                             SLEEP=0
                                                                                         fi &&
                                                                                         CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
+${ pkgs.coreutils }/bin/sleep 3s &&
                                                                                         ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flags/flag &&
                                                                                         ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" } &&
                                                                                         if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
