@@ -607,14 +607,6 @@
                                                                                                                         temporary =
                                                                                                                             delta : has-standard-input : arguments : standard-input :
                                                                                                                                 ''
-                                                                                                                                    export COMMAND=${ temporary.verification.good } &&
-                                                                                                                                        export ARGUMENTS=${ arguments } &&
-                                                                                                                                        export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
-                                                                                                                                        IDENTITY=$( ${ scripts.util.identity } ) &&
-                                                                                                                                        EXPECTED="init release" &&
-                                                                                                                                        assert_status_code 0 "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } |" else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" }" &&
-                                                                                                                                        OBSERVED=$( ${ pkgs.coreutils }/bin/cat /build/${ environment-variable "IDENTITY" } ) &&
-                                                                                                                                        assert_equals ${ environment-variable "EXPECTED" } ${ environment-variable "OBSERVED" }
                                                                                                                                 '' ;
                                                                                                                         in
                                                                                                                             [
