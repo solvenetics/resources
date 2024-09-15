@@ -605,9 +605,14 @@
                                                                                                                                             assert_equals "${ environment-variable "OBSERVED_YES_TEMPORARY_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_YES_TEMPORARY_TARGET" }" "We expected the yes_temporary target to be as computed."
                                                                                                                                     '' ;
                                                                                                                         temporary =
-                                                                                                                            delta : has-standard-input : arguments : standard-input :
-                                                                                                                                ''
-                                                                                                                                '' ;
+                                                                                                                            init : release : arguments : standard-input :
+                                                                                                                                let
+                                                                                                                                    to-string = t : if builtins.typeOf t == "bool" && t then "true" else if builtins.typeOf t == "bool" && ! t then "false" else "null" ;
+                                                                                                                                    command = builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
+                                                                                                                                    in
+                                                                                                                                        ''
+                                                                                                                                            export COMMAND=${ command }
+                                                                                                                                        '' ;
                                                                                                                         in
                                                                                                                             [
                                                                                                                                 ( script true true )
