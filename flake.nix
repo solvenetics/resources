@@ -451,7 +451,7 @@
                                                                                     in
                                                                                         {
                                                                                             test =
-                                                                                                { pkgs , ... } : { environment-variable , scripts , strip , ... } :
+                                                                                                { pkgs , ... } : { environment-variable , scripts , strip , temporary , ... } :
                                                                                                     let
                                                                                                         functions =
                                                                                                             let
@@ -604,7 +604,7 @@
                                                                                                                                             assert_equals ${ environment-variable "EXPECTED_YES_TEMPORARY_STRIP" } ${ environment-variable "OBSERVED_YES_TEMPORARY_STRIP" } "We expect the the predicted strip value to the yes_temporary." &&
                                                                                                                                             assert_equals "${ environment-variable "OBSERVED_YES_TEMPORARY_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_YES_TEMPORARY_TARGET" }" "We expected the yes_temporary target to be as computed."
                                                                                                                                     '' ;
-                                                                                                                        temporary =
+                                                                                                                        temp =
                                                                                                                             init : release : has-standard-input : arguments : standard-input :
                                                                                                                                 let
                                                                                                                                     to-string = t : if builtins.typeOf t == "bool" && t then "true" else if builtins.typeOf t == "bool" && ! t then "false" else "null" ;
@@ -620,7 +620,7 @@
                                                                                                                                 ( script true false )
                                                                                                                                 ( script false true )
                                                                                                                                 ( script false false )
-                                                                                                                                ( temporary false false false )
+                                                                                                                                ( temp false false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
