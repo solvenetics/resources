@@ -137,11 +137,6 @@ then
     exit 98
 fi &&
                                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
-${ pkgs.findutils }/bin/find ${ cache-directory }/${ environment-variable cache-epoch-hash } &&
-if [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/flags/flag ]
-then
-    exit 99
-fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
