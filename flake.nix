@@ -607,12 +607,12 @@
                                                                                                                         temp =
                                                                                                                             init : release : has-standard-input : arguments : standard-input :
                                                                                                                                 let
-                                                                                                                                    to-string = t : if builtins.typeOf t == "bool" && t then "true" else if builtins.typeOf t == "bool" && ! t then "false" else "null" ;
+                                                                                                                                    to-string = t : if builtins.typeOf t == "bool" && t then "bad" else if builtins.typeOf t == "bool" && ! t then "good" else "null" ;
                                                                                                                                     command = builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
                                                                                                                                     in
                                                                                                                                         strip
                                                                                                                                             ''
-                                                                                                                                                export COMMAND
+                                                                                                                                                export COMMAND=${ command }
                                                                                                                                             '' ;
                                                                                                                         in
                                                                                                                             [
