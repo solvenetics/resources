@@ -124,19 +124,13 @@
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" }/manage &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/validity &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" }/flags &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
-${ pkgs.coreutils }/bin/sleep 1s &&
-#                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flags  &&
-${ pkgs.coreutils }/bin/sleep 1s &&
-# exit 0 &&
+                                                                                                            while [ ! -f ${ environment-variable "WORK_DIRECTORY" }/flag ]
+                                                                                                            do
+                                                                                                                ${ pkgs.coreutils }/bin/sleep 1s
+                                                                                                            done &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
-# exit 0 &&
-if [ ! -e ${ environment-variable "WORK_DIRECTORY" }/flags/flag ]
-then
-    exit 98
-fi &&
                                                                                                                 ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
@@ -157,7 +151,6 @@ fi &&
                                                                             manage =
                                                                                 ''
                                                                                     WORK_DIRECTORY=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
-${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flags/flag &&
                                                                                         ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
                                                                                         HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
                                                                                         STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
@@ -187,7 +180,7 @@ ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flags/f
                                                                                         fi &&
                                                                                         CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
 ${ pkgs.coreutils }/bin/sleep 3s &&
-                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flags/flag &&
+                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
                                                                                         ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" } &&
                                                                                         if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
                                                                                         then
