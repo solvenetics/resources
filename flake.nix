@@ -186,7 +186,7 @@
                                                                                         fi &&
                                                                                         CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
                                                                                         ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
-                                                                                        ${ pkgs.coreutils }/bin/sleep 10s && # ${ environment-variable "SLEEP" }s &&
+                                                                                        ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" }s &&
                                                                                         if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
                                                                                         then
                                                                                             ${ environment-variable "CLEAR" }
