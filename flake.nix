@@ -64,11 +64,11 @@
                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
                                                                                         exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
                                                                                         ${ pkgs.flock }/bin/flock 10 &&
-                                                                                        ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable cache-work-directory } &&
+                                                                                        ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIRECTORY" } &&
                                                                                         ${ pkgs.flock }/bin/flock -u 10 &&
                                                                                         ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                         do
-                                                                                            PID=${ environment-variable "PID_FILE*.%" } &&
+                                                                                            PID=$( ${ pkgs.coreutils }/bin/basename ${ environment-variable "PID_FILE%.*" } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                 ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                         done &&
@@ -128,7 +128,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
                                                                                                             while [ ! -f ${ environment-variable "WORK_DIRECTORY" }/flag ]
                                                                                                             do
-                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ builtins.toString cache-sleep }
+                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ builtins.toString cache-sleep }s
                                                                                                             done &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
@@ -180,13 +180,13 @@
                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/out ${ environment-variable "WORK_DIRECTORY" }/err ${ environment-variable "WORK_DIRECTORY" }/status &&
                                                                                         if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                         then
-                                                                                            SLEEP=$(( $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/epoch ) - $( ${ pkgs.coreutils }/bin/date +%s ) ))
+                                                                                            SLEEP=$(( $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/validity ) - $( ${ pkgs.coreutils }/bin/date +%s ) ))
                                                                                         else
                                                                                             SLEEP=0
                                                                                         fi &&
                                                                                         CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
                                                                                         ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
-                                                                                        ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" }s &&
+                                                                                        ${ pkgs.coreutils }/bin/sleep 10s && # ${ environment-variable "SLEEP" }s &&
                                                                                         if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
                                                                                         then
                                                                                             ${ environment-variable "CLEAR" }
@@ -571,7 +571,7 @@
 
                                                                                                                                             assert_equals ${ environment-variable "EXPECTED_NO_CACHE_ARGUMENTS" } ${ environment-variable "OBSERVED_NO_CACHE_ARGUMENTS" } "We expect the predicted argument to no-script." &&
                                                                                                                                             assert_matches ${ environment-variable "EXPECTED_NO_CACHE_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_NO_CACHE_STANDARD_OUTPUT" } "We expect the predicted standard output to no-script." &&
-                                                                                                                                            # assert_equals "${ environment-variable "EXPECTED_NO_CACHE_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_NO_CACHE_STANDARD_ERROR" }" "We expect the predicted standard error to no-script." &&
+                                                                                                                                            assert_equals "${ environment-variable "EXPECTED_NO_CACHE_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_NO_CACHE_STANDARD_ERROR" }" "We expect the predicted standard error to no-script." &&
                                                                                                                                             # assert_equals ${ environment-variable "EXPECTED_NO_CACHE_SCRIPTS_FILE" } ${ environment-variable "OBSERVED_NO_CACHE_SCRIPTS_FILE" } "We expect the predicted scripts to be available to the NO_SCRIPT." &&
                                                                                                                                             # assert_equals ${ environment-variable "EXPECTED_NO_CACHE_STRIP" } ${ environment-variable "OBSERVED_NO_CACHE_STRIP" } "We expect the the predicted strip value to the NO_SCRIPT." &&
                                                                                                                                             # assert_equals "${ environment-variable "OBSERVED_NO_CACHE_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_NO_CACHE_TARGET" }" "We expected the NO_SCRIPT target to be blank." &&
