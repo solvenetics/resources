@@ -127,7 +127,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ pkgs.writeShellScript "manage" manage } | ${ at } now > /dev/null 2>&1 &&
 # exit 0 &&
 sleep 1s &&
-#                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag &&
+#                                                                                                           ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flag &&
 exit 0 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
