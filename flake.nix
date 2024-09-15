@@ -610,19 +610,21 @@
                                                                                                                                     to-string = t : if builtins.typeOf t == "bool" && t then "true" else if builtins.typeOf t == "bool" && ! t then "false" else "null" ;
                                                                                                                                     command = builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
                                                                                                                                     in
-                                                                                                                                        ''
-                                                                                                                                            export COMMAND=${ command } &&
-                                                                                                                                                export ARGUMENTS=${ arguments } &&
-                                                                                                                                                export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
-                                                                                                                                                export STATUS=${ if builtins.typeOf init == "bool" && ! init then "66" else "0" } &&
-                                                                                                                                                asssert_status_code ${ environment-variable "STATUS" } ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } |" else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" }
-                                                                                                                                        '' ;
+                                                                                                                                        strip
+                                                                                                                                            ''
+                                                                                                                                                export COMMAND=${ command } &&
+                                                                                                                                                    export ARGUMENTS=${ arguments } &&
+                                                                                                                                                    export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
+                                                                                                                                                    export STATUS=${ if builtins.typeOf init == "bool" && ! init then "66" else "0" } &&
+                                                                                                                                                    asssert_status_code ${ environment-variable "STATUS" } ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } |" else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" }
+                                                                                                                                            '' ;
                                                                                                                         in
                                                                                                                             [
                                                                                                                                 ( script true true )
                                                                                                                                 ( script true false )
                                                                                                                                 ( script false true )
                                                                                                                                 ( script false false )
+                                                                                                                                # ( temporary false false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
