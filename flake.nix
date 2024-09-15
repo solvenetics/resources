@@ -127,7 +127,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" }/flags &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
 #                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "WORK_DIRECTORY" }/flags  &&
-${ pkgs.coreutils }/bin/sleep 10s &&
+${ pkgs.coreutils }/bin/sleep 1s &&
 exit 0 &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
                                                                                                             then
