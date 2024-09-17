@@ -712,7 +712,7 @@ ${ pkgs.coreutils }/bin/echo STANDARD INPUT OBSERVED &&
 ${ pkgs.coreutils }/bin/cat /build/standard-input &&
 ${ pkgs.coreutils }/bin/echo STANDARD INPUT EXPECTED &&
                                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "RI" } &&
-                                                                                                                                                    OBSERVED_02_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "RA" }" STANDARD_INPUT="${ environment-variable "RI" }" ${ scripts.util.identity } ) ) &&
+                                                                                                                                                    OBSERVED_02_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 02" STANDARD_INPUT="${ environment-variable "RI" }" ${ scripts.util.identity } ) ) &&
 
                                                                                                                                                     OBSERVED_02_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 02 standard output file ) ) &&
                                                                                                                                                     OBSERVED_02_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 02 standard error file ) ) &&
