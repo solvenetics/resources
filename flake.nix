@@ -443,6 +443,7 @@
                                                                                 {
                                                                                     null = temporary : { temporary = temporary.null ; epoch = 2 ; } ;
                                                                                 } ;
+                                                                            lock = /build/resources.lock ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
