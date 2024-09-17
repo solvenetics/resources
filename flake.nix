@@ -843,8 +843,6 @@
                                                                                                                         export STANDARD_INPUT=""
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
-${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } >> /build/arguments &&
-${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } >> /build/standard-input
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
                                                                                                                     exit ${ builtins.toString status }
