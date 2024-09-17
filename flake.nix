@@ -612,9 +612,9 @@
                                                                                                                                         let
                                                                                                                                             to-string = t : if builtins.typeOf t == "bool" && t then "good" else if builtins.typeOf t == "bool" && ! t then "bad" else "null" ;
                                                                                                                                             in builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
-                                                                                                                                    computed-assertion = if delta then "assert_equals" else "assert_matches" ;
+                                                                                                                                    computed-assertion = if is-init then "assert_equals" else "assert_matches" ;
                                                                                                                                     computed-status = if is-init then "0" else "64" ;
-                                                                                                                                    computed-standard-error = if delta then "" else "We were unable to complete initiation:  \/build/[a-zA-Z0-9]{8}\.broken" ;
+                                                                                                                                    computed-standard-error = if is-init then "" else "We were unable to complete initiation:  \/build/[a-zA-Z0-9]{8}\.broken" ;
                                                                                                                                     computed-standard-output = if is-init then "\/build\/[a-zA-Z0-9]{8}\.resource\/target" else "\/build\/[a-zA-Z0-9]{8}\.broken\/target" ;
                                                                                                                                     computed-logs =
                                                                                                                                         let
@@ -630,7 +630,6 @@
                                                                                                                                                     log-06 = log-01 ;
                                                                                                                                                     log-07 = log-01 ;
                                                                                                                                                 } ;
-                                                                                                                                    delta = is-init ;
                                                                                                                                     is-init = if builtins.typeOf init == "bool" && ! init then false else true ;
                                                                                                                                     is-release = if is-init && builtins.typeOf release == "bool" && ! release then false else true ;
                                                                                                                                     in
