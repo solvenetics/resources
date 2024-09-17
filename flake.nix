@@ -256,7 +256,9 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
-                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
+                                                                                            exec 100> ${ lock } &&
+                                                                                                ${ pkgs.flock }/bin/flock -s 100 &&
+                                                                                                RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
@@ -443,7 +445,7 @@
                                                                                 {
                                                                                     null = temporary : { temporary = temporary.null ; epoch = 2 ; } ;
                                                                                 } ;
-                                                                            lock = /build/resources.lock ;
+                                                                            lock = "/build/resources.lock" ;
                                                                             out = out ;
                                                                             secondary = { pkgs = pkgs ; } ;
                                                                             scripts =
@@ -653,7 +655,7 @@
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.bash }/bin/bash -c \"${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 07 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 07 > /build/$( ${ scripts.util.identity } 07 standard output file ) 2> /build/$( ${ scripts.util.identity } 07 standard error file )\"" &&
                                                                                                                                                     exec 100> /build/resources.lock &&
                                                                                                                                                     ${ pkgs.flock }/bin/flock 100 &&
-                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ pkgs.bash }/bin/bash -c \"${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 08 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 08 > /build/$( ${ scripts.util.identity } 08 standard output file ) 2> /build/$( ${ scripts.util.identity } 08 standard error file )\"" &&
+                                                                                                                                                    assert_status_code 0 "${ pkgs.bash }/bin/bash -c \"${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 08 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 08 > /build/$( ${ scripts.util.identity } 08 standard output file ) 2> /build/$( ${ scripts.util.identity } 08 standard error file ) &\"" &&
                                                                                                                                                     OBSERVED_01_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard output file ) ) &&
                                                                                                                                                     OBSERVED_01_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard error file ) ) &&
                                                                                                                                                     OBSERVED_01_LOG=$( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard output file ) ) ) &&
