@@ -617,6 +617,10 @@
                                                                                                                                     computed-status = if is-init then "0" else "64" ;
                                                                                                                                     computed-standard-error = if delta then "" else "We were unable to complete initiation:  \/build/[a-zA-Z0-9]{8}\.broken" ;
                                                                                                                                     computed-standard-output = if is-init then "\/build\/[a-zA-Z0-9]{8}\.resource\/target" else "\/build\/[a-zA-Z0-9]{8}\.broken\/target" ;
+                                                                                                                                    computed-logs =
+                                                                                                                                        {
+                                                                                                                                            log-01 = "_init" ;
+                                                                                                                                        } ;
                                                                                                                                     delta = is-init ;
                                                                                                                                     is-init = if builtins.typeOf init == "bool" && ! init then false else true ;
                                                                                                                                     is-release = if is-init && builtins.typeOf release == "bool" && ! release then false else true ;
@@ -629,7 +633,7 @@
                                                                                                                                                     EXPECTED_STATUS=${ computed-status } &&
                                                                                                                                                     EXPECTED_01_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_01_STANDARD_ERROR="${ computed-standard-error }" &&
-                                                                                                                                                    EXPECTED_01_LOG="_init" &&
+                                                                                                                                                    EXPECTED_01_LOG=${ computed-logs.log-01 } &&
                                                                                                                                                     EXPECTED_02_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_02_STANDARD_ERROR="${ computed-standard-error }" &&
                                                                                                                                                     EXPECTED_02_LOG=${ if delta then "_init_release" else "_init" } &&
