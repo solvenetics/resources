@@ -620,6 +620,8 @@
                                                                                                                                     computed-logs =
                                                                                                                                         {
                                                                                                                                             log-01 = "_init" ;
+                                                                                                                                            log-02 = if is-init then "_init_release" else "_init" ;
+                                                                                                                                            log-03 = if is-init then "WRONG" else "_init_init" ;
                                                                                                                                         } ;
                                                                                                                                     delta = is-init ;
                                                                                                                                     is-init = if builtins.typeOf init == "bool" && ! init then false else true ;
@@ -636,10 +638,10 @@
                                                                                                                                                     EXPECTED_01_LOG=${ computed-logs.log-01 } &&
                                                                                                                                                     EXPECTED_02_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_02_STANDARD_ERROR="${ computed-standard-error }" &&
-                                                                                                                                                    EXPECTED_02_LOG=${ if delta then "_init_release" else "_init" } &&
+                                                                                                                                                    EXPECTED_02_LOG=${ computed-logs.log-02 } &&
                                                                                                                                                     EXPECTED_03_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_03_STANDARD_ERROR="${ computed-standard-error }" &&
-                                                                                                                                                    EXPECTED_03_LOG=${ if delta then "XXXX" else "_init_init" } &&
+                                                                                                                                                    EXPECTED_03_LOG=${ computed-logs.log-03 } &&
                                                                                                                                                     EXPECTED_04_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_04_STANDARD_ERROR="${ computed-standard-error }" &&
                                                                                                                                                     EXPECTED_04_LOG=${ environment-variable "EXPECTED_03_LOG" } &&
