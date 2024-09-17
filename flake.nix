@@ -618,11 +618,20 @@
                                                                                                                                     computed-standard-error = if delta then "" else "We were unable to complete initiation:  \/build/[a-zA-Z0-9]{8}\.broken" ;
                                                                                                                                     computed-standard-output = if is-init then "\/build\/[a-zA-Z0-9]{8}\.resource\/target" else "\/build\/[a-zA-Z0-9]{8}\.broken\/target" ;
                                                                                                                                     computed-logs =
-                                                                                                                                        {
-                                                                                                                                            log-01 = "_init" ;
-                                                                                                                                            log-02 = if is-init then "_init_release" else "_init" ;
-                                                                                                                                            log-03 = if is-init then "WRONG" else "_init_init" ;
-                                                                                                                                        } ;
+                                                                                                                                        let
+                                                                                                                                            log-01 = if is-init then "_init_release" else "_init" ;
+                                                                                                                                            log-03 = if is-init then "_init_release_init_release" else "_init_init" ;
+                                                                                                                                            in
+                                                                                                                                                {
+                                                                                                                                                    log-01 = log-01 ;
+                                                                                                                                                    log-02 = log-01 ;
+                                                                                                                                                    log-03 = log-03 ;
+                                                                                                                                                    log-04 = log-03 ;
+                                                                                                                                                    log-05 = log-01 ;
+                                                                                                                                                    log-06 = log-01 ;
+                                                                                                                                                    log-07 = log-01 ;
+                                                                                                                                                    log-08 = "" ;
+                                                                                                                                                } ;
                                                                                                                                     delta = is-init ;
                                                                                                                                     is-init = if builtins.typeOf init == "bool" && ! init then false else true ;
                                                                                                                                     is-release = if is-init && builtins.typeOf release == "bool" && ! release then false else true ;
