@@ -701,9 +701,18 @@
                                                                                                                                                     OBSERVED_01_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard error file ) ) &&
                                                                                                                                                     # OBSERVED_01_LOG=$( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard output file ) ) ) &&
 
-                                                                                                                                                    RA=$( ARGUMENTS="${ environment-variable "ARGUMENTS" }" STANDARD_INPUT="${ environment-variable "STANDARD_INPUT" }" ${ scripts.util.identity } ${ environment-variable "ARGUMENTS" } ) &&
-                                                                                                                                                    RI=$( ARGUMENTS="${ environment-variable "ARGUMENTS" }" STANDARD_INPUT="${ environment-variable "STANDARD_INPUT" }" ${ scripts.util.identity } ${ environment-variable "STANDARD_INPUT" } ) &&
-                                                                                                                                                    # OBSERVED_02_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "RA" }" STANDARD_INPUT="${ environment-variable "RI" }" ${ scripts.util.identity } ) ) &&
+                                                                                                                                                    RA="${ environment-variable "ARGUMENTS" } 02" &&
+                                                                                                                                                    RI="" ; # $( ${ scripts.util.identity } ${ environment-variable "STANDARD_INPUT" } standard input 02 ) &&
+                                                                                                                                                    ####
+${ pkgs.coreutils }/bin/echo ARGUMENTS OBSERVED &&
+${ pkgs.coreutils }/bin/cat /build/arguments &&
+${ pkgs.coreutils }/bin/echo ARGUMENTS EXPECTED &&
+${ pkgs.coreutils }/bin/echo ${ environment-variable "RA" } &&
+${ pkgs.coreutils }/bin/echo STANDARD INPUT OBSERVED &&
+${ pkgs.coreutils }/bin/cat /build/standard-input &&
+${ pkgs.coreutils }/bin/echo STANDARD INPUT EXPECTED &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "RI" } &&
+                                                                                                                                                    OBSERVED_02_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "RA" }" STANDARD_INPUT="${ environment-variable "RI" }" ${ scripts.util.identity } ) ) &&
 
                                                                                                                                                     OBSERVED_02_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 02 standard output file ) ) &&
                                                                                                                                                     OBSERVED_02_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 02 standard error file ) ) &&
@@ -832,6 +841,7 @@
                                                                                                         path : name : value :
                                                                                                             if builtins.typeOf value == "string" then [ "${ builtins.concatStringsSep "." ( builtins.concatLists [ path [ name ] ] ) }=${ value }" ]
                                                                                                             else builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ) ) ;
+                                                                                                    ###
                                                                                                     temporary =
                                                                                                         message : status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
                                                                                                             ''
@@ -845,6 +855,8 @@
                                                                                                                         export STANDARD_INPUT=""
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
+${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } >> /build/arguments &&
+${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } >> /build/standard-input
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
                                                                                                                     exit ${ builtins.toString status }
