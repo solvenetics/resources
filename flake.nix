@@ -711,6 +711,8 @@
                                                                                                                                 ( script false false )
                                                                                                                                 ( temp false false false )
                                                                                                                                 ( temp false false true )
+                                                                                                                                ( temp false true false )
+                                                                                                                                ( temp false true true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
