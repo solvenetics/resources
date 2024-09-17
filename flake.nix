@@ -701,16 +701,8 @@
                                                                                                                                                     OBSERVED_01_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard error file ) ) &&
                                                                                                                                                     # OBSERVED_01_LOG=$( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 01 standard output file ) ) ) &&
 
-                                                                                                                                                    RA="${ environment-variable "ARGUMENTS" } 02" &&
                                                                                                                                                     RI="" ; # $( ${ scripts.util.identity } ${ environment-variable "STANDARD_INPUT" } standard input 02 ) &&
                                                                                                                                                     ####
-${ pkgs.coreutils }/bin/echo ARGUMENTS OBSERVED &&
-${ pkgs.coreutils }/bin/cat /build/arguments &&
-${ pkgs.coreutils }/bin/echo ARGUMENTS EXPECTED &&
-${ pkgs.coreutils }/bin/echo ${ environment-variable "RA" } &&
-${ pkgs.coreutils }/bin/echo STANDARD INPUT OBSERVED &&
-${ pkgs.coreutils }/bin/cat /build/standard-input &&
-${ pkgs.coreutils }/bin/echo STANDARD INPUT EXPECTED &&
                                                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "RI" } &&
                                                                                                                                                     OBSERVED_02_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 02" STANDARD_INPUT="${ environment-variable "RI" }" ${ scripts.util.identity } ) ) &&
 
