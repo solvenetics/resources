@@ -721,6 +721,7 @@
                                                                                                                                                     OBSERVED_07_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 07 standard output file ) ) &&
                                                                                                                                                     OBSERVED_07_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 07 standard error file ) ) &&
                                                                                                                                                     # OBSERVED_07_LOG=$( ${ pkgs.coreutils }/bin/cat $( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 07 standard output file ) ) ) &&
+
                                                                                                                                                     # assert_matches ${ environment-variable "EXPECTED_01_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_01_STANDARD_OUTPUT" } "We expect the standard output of the process one to match." &&
                                                                                                                                                     # ${ computed-assertion } "${ environment-variable "EXPECTED_01_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_01_STANDARD_ERROR" }" "We expect the standard error of the process one to match." &&
                                                                                                                                                     # assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
@@ -843,7 +844,7 @@
                                                                                                                     else
                                                                                                                         export STANDARD_INPUT=""
                                                                                                                     fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ) ${ environment-variable target }
+                                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
                                                                                                                     exit ${ builtins.toString status }
