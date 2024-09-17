@@ -713,6 +713,8 @@
                                                                                                                                 ( temp false false true )
                                                                                                                                 ( temp false true false )
                                                                                                                                 ( temp false true true )
+                                                                                                                                ( temp false null false )
+                                                                                                                                ( temp false null true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
