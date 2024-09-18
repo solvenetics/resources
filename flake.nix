@@ -617,7 +617,7 @@
                                                                                                                                     computed-standard-output = if is-init then "\/build\/[a-zA-Z0-9]{8}\.resource\/target" else "\/build\/[a-zA-Z0-9]{8}\.broken\/target" ;
                                                                                                                                     computed-logs =
                                                                                                                                         let
-                                                                                                                                            log-01 = if builtins.typeOf init == "bool" && init then "_init" else "" ;
+                                                                                                                                            log-01 = if builtins.typeOf init == "bool" then "_init" else "" ;
                                                                                                                                             log-02 = if is-init then "_init_release" else "_init" ;
                                                                                                                                             log-03 = if is-init then "_init_release_init_release" else "_init_init" ;
                                                                                                                                             in
@@ -725,7 +725,13 @@
                                                                                                                                                     OBSERVED_07_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 07" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 07" else "" }" ${ scripts.util.identity } ) ) &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_01_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_01_STANDARD_OUTPUT" } "We expect the standard output of the process one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_01_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_01_STANDARD_ERROR" }" "We expect the standard error of the process one to match." &&
-                                                                                                                                                    ###### assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
+${ pkgs.coreutils }/bin/echo BEFORE &&
+${ pkgs.coreutils }/bin/echo EXPECTED &&
+${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_01_LOG" } &&
+${ pkgs.coreutils }/bin/echo OBSERVED &&
+${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_01_LOG" } &&
+${ pkgs.coreutils }/bin/echo AFTER &&
+                                                                                                                                                    assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_02_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_02_STANDARD_OUTPUT" } "We expect the standard output of the model one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_02_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_02_STANDARD_ERROR" }" "We expect the standard error of the model one to match." &&
                                                                                                                                                     ##### assert_equals ${ environment-variable "EXPECTED_02_LOG" } ${ environment-variable "OBSERVED_02_LOG" } "We expect the log of the model one to match." &&
