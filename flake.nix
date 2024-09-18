@@ -739,21 +739,21 @@
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_05_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_05_STANDARD_OUTPUT" } "We expect the standard output of the comparison one (except arguments) to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_05_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_05_STANDARD_ERROR" }" "We expect the standard error of the comparison one (except arguments) to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_05_LOG" } ${ environment-variable "OBSERVED_05_LOG" } "We expect the log of the comparison one (except arguments)" &&
-                                                                                                                                                    ${ computed-06.assertions }
-                                                                                                                                                    # assert_matches "${ environment-variable "EXPECTED_07_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_07_STANDARD_OUTPUT" }" "We expect the standard output of the comparison one (except arguments and standard input) to match." &&
+                                                                                                                                                    ${ computed-06.assertions } &&
+                                                                                                                                                    assert_matches "${ environment-variable "EXPECTED_07_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_07_STANDARD_OUTPUT" }" "We expect the standard output of the comparison one (except arguments and standard input) to match." &&
                                                                                                                                                     # ${ computed-assertion } "${ environment-variable "EXPECTED_07_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_07_STANDARD_ERROR" }" "We expect the standard error of the comparison one (except arguments and standard input) to match." &&
                                                                                                                                                     # assert_equals ${ environment-variable "EXPECTED_07_LOG" } ${ environment-variable "OBSERVED_07_LOG" }  "We expect the standard error of the comparison one (except arguments and standard input) to match." &&
                                                                                                                                                     ${ not-equals [ "OBSERVED_01_STANDARD_OUTPUT" "OBSERVED_02_STANDARD_OUTPUT" "OBSERVED_03_STANDARD_OUTPUT" "OBSERVED_04_STANDARD_OUTPUT" "OBSERVED_05_STANDARD_OUTPUT" "OBSERVED_06_OUTPUT" "OBSERVED_07_STANDARD_OUTPUT" ] }
                                                                                                                                             '' ;
                                                                                                                         in
                                                                                                                             [
-                                                                                                                                ## ( script true true )
-                                                                                                                                ## ( script true false )
-                                                                                                                                ## ( script false true )
-                                                                                                                                ## ( script false false )
-                                                                                                                                ## ( temp false false false )
-                                                                                                                                ( temp false false true )
-                                                                                                                                # ( temp false true false )
+                                                                                                                                ( script true true )
+                                                                                                                                ( script true false )
+                                                                                                                                ( script false true )
+                                                                                                                                ( script false false )
+                                                                                                                                ( temp false false false )
+                                                                                                                                # ( temp false false true )
+                                                                                                                                ( temp false true false )
                                                                                                                                 # ( temp false true true )
                                                                                                                                 # ( temp false null false )
                                                                                                                                 # ( temp false null true )
@@ -850,7 +850,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
-                                                                                                                    exit ${ builtins.toString status }
+                                                                                                                        exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     terminal =
                                                                                                         { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
@@ -889,7 +889,7 @@
                                                                                                                     release =
                                                                                                                         {
                                                                                                                             bad = temporary "release" 67 ;
-                                                                                                                            good = temporary "release" 68 ;
+                                                                                                                            good = temporary "release" 0 ;
                                                                                                                         } ;
                                                                                                                 } ;
                                                                                                             terminal = terminal ;
