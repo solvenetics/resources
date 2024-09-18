@@ -725,12 +725,6 @@
                                                                                                                                                     OBSERVED_07_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 07" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 07" else "" }" ${ scripts.util.identity } ) ) &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_01_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_01_STANDARD_OUTPUT" } "We expect the standard output of the process one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_01_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_01_STANDARD_ERROR" }" "We expect the standard error of the process one to match." &&
-${ pkgs.coreutils }/bin/echo BEFORE &&
-${ pkgs.coreutils }/bin/echo EXPECTED &&
-${ pkgs.coreutils }/bin/echo ${ environment-variable "EXPECTED_01_LOG" } &&
-${ pkgs.coreutils }/bin/echo OBSERVED &&
-${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_01_LOG" } &&
-${ pkgs.coreutils }/bin/echo AFTER &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_02_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_02_STANDARD_OUTPUT" } "We expect the standard output of the model one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_02_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_02_STANDARD_ERROR" }" "We expect the standard error of the model one to match." &&
