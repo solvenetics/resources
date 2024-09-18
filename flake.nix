@@ -747,15 +747,15 @@ ${ pkgs.coreutils }/bin/sleep 10s &&
                                                                                                                                             '' ;
                                                                                                                         in
                                                                                                                             [
-                                                                                                                                # ( script true true )
-                                                                                                                                # ( script true false )
-                                                                                                                                # ( script false true )
-                                                                                                                                # ( script false false )
+                                                                                                                                ( script true true )
+                                                                                                                                ( script true false )
+                                                                                                                                ( script false true )
+                                                                                                                                ( script false false )
                                                                                                                                 ( temp false false false )
                                                                                                                                 ### ( temp false false true )
-                                                                                                                                # ( temp false true false )
+                                                                                                                                ( temp false true false )
                                                                                                                                 ### ( temp false true true )
-                                                                                                                                # ( temp false null false )
+                                                                                                                                ( temp false null false )
                                                                                                                                 ### ( temp false null true )
                                                                                                                                 #### ( temp true false false )
                                                                                                                                 ### ( temp true false true )
