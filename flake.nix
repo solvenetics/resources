@@ -618,8 +618,8 @@
                                                                                                                                     computed-logs =
                                                                                                                                         let
                                                                                                                                             log-01 = if builtins.typeOf init == "bool" then "_init" else "" ;
-                                                                                                                                            log-02 = if is-init then "_init_release" else "_init" ;
-                                                                                                                                            log-03 = if is-init then "_init_release_init_release" else "_init_init" ;
+                                                                                                                                            log-02 = if builtins.typeOf init == "bool" then "_init_release" else "_init" ;
+                                                                                                                                            log-03 = if builtins.typeOf init == "bool" then "_init_release_init_release" else "_init_init" ;
                                                                                                                                             in
                                                                                                                                                 {
                                                                                                                                                     log-01 = log-01 ;
