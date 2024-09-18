@@ -620,16 +620,17 @@
                                                                                                                                     computed-logs =
                                                                                                                                         let
                                                                                                                                             log-01 = if is-init then "_init_release" else "_init" ;
+                                                                                                                                            log-02 = if is-init then "_init_release" else "_init" ;
                                                                                                                                             log-03 = if is-init then "_init_release_init_release" else "_init_init" ;
                                                                                                                                             in
                                                                                                                                                 {
                                                                                                                                                     log-01 = log-01 ;
-                                                                                                                                                    log-02 = log-01 ;
+                                                                                                                                                    log-02 = log-02 ;
                                                                                                                                                     log-03 = log-03 ;
                                                                                                                                                     log-04 = log-03 ;
-                                                                                                                                                    log-05 = log-01 ;
-                                                                                                                                                    log-06 = log-01 ;
-                                                                                                                                                    log-07 = log-01 ;
+                                                                                                                                                    log-05 = log-02 ;
+                                                                                                                                                    log-06 = log-02 ;
+                                                                                                                                                    log-07 = log-02 ;
                                                                                                                                                 } ;
                                                                                                                                     computed-06 =
                                                                                                                                         if has-standard-input then
