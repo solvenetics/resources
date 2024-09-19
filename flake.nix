@@ -270,8 +270,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/invalidate.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
-${ pkgs.coreutils }/bin/echo BEFORE AT >> /build/debug &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now >> /build/debug 2>&1 &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now >> /dev/null 2>&1 &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
@@ -303,7 +302,6 @@ ${ pkgs.coreutils }/bin/echo BEFORE AT >> /build/debug &&
                                                                                         } ;
                                                                                     in
                                                                                         ''
-${ pkgs.coreutils }/bin/echo AT 0 >> /build/debug &&
                                                                                             RESOURCE=${ environment-variable 1 } &&
                                                                                                 PID=${ environment-variable 2 } &&
                                                                                                 if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
@@ -732,7 +730,6 @@ ${ pkgs.coreutils }/bin/echo AT 0 >> /build/debug &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_01_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_01_STANDARD_OUTPUT" } "We expect the standard output of the process one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_01_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_01_STANDARD_ERROR" }" "We expect the standard error of the process one to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
-${ pkgs.coreutils }/bin/cat /build/debug &&
                                                                                                                                                     # if [ -e ${ environment-variable "OBSERVED_02_STANDARD_OUTPUT" } ]
                                                                                                                                                     # then
                                                                                                                                                     #     fail "WTF"
