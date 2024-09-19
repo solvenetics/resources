@@ -797,7 +797,7 @@ ${ pkgs.coreutils }/bin/cat /build/debug &&
                                                                                                                                 ( temp false null true )
                                                                                                                                 ( temp true false false )
                                                                                                                                 ( temp true false true )
-                                                                                                                                # ( temp true true false )
+                                                                                                                                ( temp true true false )
                                                                                                                                 ## ( temp true true true )
                                                                                                                                 # ( temp true null false )
                                                                                                                                 ### ( temp true null true )
