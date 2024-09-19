@@ -256,6 +256,7 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
+${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
