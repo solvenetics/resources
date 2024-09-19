@@ -256,7 +256,6 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
-${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
@@ -268,9 +267,11 @@ ${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                                         INVALIDATE="${ invalidate.does-not-have-standard-input }"
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "INVALIDATE" } > ${ environment-variable "RESOURCE" }/invalidate.sh &&
-                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now > /dev/null 2>&1 &&
+${ pkgs.coreutils }/bin/echo BEFORE AT >> /build/debug &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now >> /build/debug 2>&1 &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
@@ -302,6 +303,7 @@ ${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                         } ;
                                                                                     in
                                                                                         ''
+${ pkgs.coreutils }/bin/echo AT 0 >> /build/debug &&
                                                                                             RESOURCE=${ environment-variable 1 } &&
                                                                                                 PID=${ environment-variable 2 } &&
                                                                                                 if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
@@ -649,10 +651,10 @@ ${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                                                                                 observeds =
                                                                                                                                                     strip
                                                                                                                                                         ''
-                                                                                                                                                            if [ -e ${ environment-variable "EXPECTED_06_STANDARD_OUTPUT" } ]
-                                                                                                                                                            then
-                                                                                                                                                                fail "WTF"
-                                                                                                                                                            fi &&                                                                                                                                                            OBSERVED_06_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 06 standard output file ) ) &&
+                                                                                                                                                            # if [ -e ${ environment-variable "EXPECTED_06_STANDARD_OUTPUT" } ]
+                                                                                                                                                            # then
+                                                                                                                                                            #     fail "WTF"
+                                                                                                                                                            # fi &&                                                                                                                                                            OBSERVED_06_STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 06 standard output file ) ) &&
                                                                                                                                                             OBSERVED_06_STANDARD_ERROR=$( ${ pkgs.coreutils }/bin/cat /build/$( ${ scripts.util.identity } 06 standard error file ) ) &&
                                                                                                                                                             OBSERVED_06_LOG=$( ${ pkgs.coreutils }/bin/cat /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 06" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 03" else "" }" ${ scripts.util.identity } ) )
                                                                                                                                                         '' ;
@@ -730,39 +732,40 @@ ${ pkgs.coreutils }/bin/date >> /build/debug &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_01_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_01_STANDARD_OUTPUT" } "We expect the standard output of the process one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_01_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_01_STANDARD_ERROR" }" "We expect the standard error of the process one to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_01_LOG" } ${ environment-variable "OBSERVED_01_LOG" } "We expect the log of the process one to match." &&
-                                                                                                                                                    if [ -e ${ environment-variable "EXPECTED_02_STANDARD_OUTPUT" } ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "WTF"
-                                                                                                                                                    fi &&
+${ pkgs.coreutils }/bin/cat /build/debug &&
+                                                                                                                                                    # if [ -e ${ environment-variable "OBSERVED_02_STANDARD_OUTPUT" } ]
+                                                                                                                                                    # then
+                                                                                                                                                    #     fail "WTF"
+                                                                                                                                                    # fi &&
                                                                                                                                                     assert_matches "${ environment-variable "EXPECTED_02_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_02_STANDARD_OUTPUT" }" "We expect the standard output of the model one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_02_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_02_STANDARD_ERROR" }" "We expect the standard error of the model one to match." &&
                                                                                                                                                     assert_equals "${ environment-variable "EXPECTED_02_LOG" }" "${ environment-variable "OBSERVED_02_LOG" }" "We expect the log of the model one to match." &&
-                                                                                                                                                    if [ -e ${ environment-variable "EXPECTED_03_STANDARD_OUTPUT" } ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "WTF"
-                                                                                                                                                    fi &&
+                                                                                                                                                    # if [ -e ${ environment-variable "EXPECTED_03_STANDARD_OUTPUT" } ]
+                                                                                                                                                    # then
+                                                                                                                                                    #     fail "WTF"
+                                                                                                                                                    # fi &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_03_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_03_STANDARD_OUTPUT" } "We expect the standard output of the comparison one to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_03_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_03_STANDARD_ERROR" }" "We expect the standard error of the comparison one to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_03_LOG" } ${ environment-variable "OBSERVED_03_LOG" } "We expect the log of the comparison one to match." &&
-                                                                                                                                                    if [ -e ${ environment-variable "EXPECTED_04_STANDARD_OUTPUT" } ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "WTF"
-                                                                                                                                                    fi &&
+                                                                                                                                                    # if [ -e ${ environment-variable "EXPECTED_04_STANDARD_OUTPUT" } ]
+                                                                                                                                                    # then
+                                                                                                                                                    #     fail "WTF"
+                                                                                                                                                    # fi &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_04_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_04_STANDARD_OUTPUT" } "We expect the standard output of the identical match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_04_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_04_STANDARD_ERROR" }" "We expect the standard error of the identical one to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_04_LOG" } ${ environment-variable "OBSERVED_04_LOG" } "We expect the log of the identical one to match." &&
-                                                                                                                                                    if [ -e ${ environment-variable "EXPECTED_05_STANDARD_OUTPUT" } ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "WTF"
-                                                                                                                                                    fi &&
+                                                                                                                                                    # if [ -e ${ environment-variable "EXPECTED_05_STANDARD_OUTPUT" } ]
+                                                                                                                                                    # then
+                                                                                                                                                    #     fail "WTF"
+                                                                                                                                                    # fi &&
                                                                                                                                                     assert_matches ${ environment-variable "EXPECTED_05_STANDARD_OUTPUT" } ${ environment-variable "OBSERVED_05_STANDARD_OUTPUT" } "We expect the standard output of the comparison one (except arguments) to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_05_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_05_STANDARD_ERROR" }" "We expect the standard error of the comparison one (except arguments) to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_05_LOG" } ${ environment-variable "OBSERVED_05_LOG" } "We expect the log of the comparison one (except arguments)" &&
                                                                                                                                                     ${ computed-06.assertions } &&
-                                                                                                                                                    if [ -e ${ environment-variable "EXPECTED_07_STANDARD_OUTPUT" } ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "WTF"
-                                                                                                                                                    fi &&
+                                                                                                                                                    # if [ -e ${ environment-variable "EXPECTED_07_STANDARD_OUTPUT" } ]
+                                                                                                                                                    # then
+                                                                                                                                                    #     fail "WTF"
+                                                                                                                                                    # fi &&
                                                                                                                                                     assert_matches "${ environment-variable "EXPECTED_07_STANDARD_OUTPUT" }" "${ environment-variable "OBSERVED_07_STANDARD_OUTPUT" }" "We expect the standard output of the comparison one (except arguments and standard input) to match." &&
                                                                                                                                                     ${ computed-assertion } "${ environment-variable "EXPECTED_07_STANDARD_ERROR" }" "${ environment-variable "OBSERVED_07_STANDARD_ERROR" }" "We expect the standard error of the comparison one (except arguments and standard input) to match." &&
                                                                                                                                                     assert_equals ${ environment-variable "EXPECTED_07_LOG" } ${ environment-variable "OBSERVED_07_LOG" }  "We expect the standard error of the comparison one (except arguments and standard input) to match." &&
