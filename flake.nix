@@ -654,7 +654,7 @@
                                                                                                                                                             if [ -e ${ environment-variable "EXPECTED_06_STANDARD_OUTPUT" } ]
                                                                                                                                                             then
                                                                                                                                                                 fail "WTF"
-                                                                                                                                                            fi &&
+                                                                                                                                                            fi
                                                                                                                                                         '' ;
                                                                                                                                             }
                                                                                                                                         else
