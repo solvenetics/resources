@@ -799,7 +799,7 @@ ${ pkgs.coreutils }/bin/cat /build/debug &&
                                                                                                                                 ( temp true false true )
                                                                                                                                 ( temp true true false )
                                                                                                                                 ( temp true true true )
-                                                                                                                                # ( temp true null false )
+                                                                                                                                ( temp true null false )
                                                                                                                                 ### ( temp true null true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
