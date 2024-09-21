@@ -886,7 +886,7 @@
                                                                                             verification =
                                                                                                 let
                                                                                                     cache =
-                                                                                                        speed : message : status : { pkgs , ... } : { environment-variable , has-standard-input , scripts , target , ... } :
+                                                                                                        speed : message : status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , target , ... } :
                                                                                                             ''
                                                                                                                 if [ ! -f ${ environment-variable target } ]
                                                                                                                 then
@@ -900,6 +900,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
+                                                                                                                        ${ if speed then cache.evictors.fast else cache.evictors.slow } ${ environment-variable target } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     evictor =
