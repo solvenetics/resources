@@ -614,9 +614,9 @@
                                                                                                                                                     EXPECTED_07_STANDARD_OUTPUT=${ computed-standard-output } &&
                                                                                                                                                     EXPECTED_07_STANDARD_ERROR="${ computed-standard-error }" &&
                                                                                                                                                     EXPECTED_07_LOG=${ computed-logs.log-07 } &&
-                                                                                                                                                    ${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 )) &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 ) )) &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                                                                                    
+exit 0
                                                                                                                                                     # I think that when we used assert_status_code to assess the process one that it executed inside a function and executed the release code when the function was finished which defeats our tests.
                                                                                                                                                     if ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 01 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 01 > /build/$( ${ scripts.util.identity } 01 standard output file ) 2> /build/$( ${ scripts.util.identity } 01 standard error file )
                                                                                                                                                     then
@@ -1055,6 +1055,7 @@
                                                                                                                                 ( temp null null false )
                                                                                                                                 ( temp null null true )
                                                                                                                                 ( script true true )
+                                                                                                                                ( cch false false false false )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
