@@ -486,7 +486,7 @@
                                                                                     in
                                                                                         {
                                                                                             test =
-                                                                                                { pkgs , ... } : { environment-variable , scripts , strip , temporary , ... } :
+                                                                                                { pkgs , ... } : { cache , environment-variable , scripts , strip , temporary , ... } :
                                                                                                     let
                                                                                                         functions =
                                                                                                             let
@@ -502,12 +502,12 @@
                                                                                                                 list =
                                                                                                                     let
                                                                                                                         cch =
-                                                                                                                            init : release : has-standard-input : arguments : standard-input :
+                                                                                                                            init : release : speed : has-standard-input : arguments : standard-input :
                                                                                                                                 let
                                                                                                                                     command =
                                                                                                                                         let
                                                                                                                                             to-string = t : if builtins.typeOf t == "bool" && t then "good" else if builtins.typeOf t == "bool" && ! t then "bad" else "null" ;
-                                                                                                                                            in builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) temporary.verification ) ;
+                                                                                                                                            in builtins.getAttr ( to-string release ) ( builtins.getAttr ( to-string init ) ( builtins.getAttr ( to-string speed ) cache.verification ) ) ;
                                                                                                                                     computed-assertion = if is-init then "assert_equals" else "assert_matches" ;
                                                                                                                                     computed-status = if is-init then "0" else "64" ;
                                                                                                                                     computed-standard-error = if is-init then "" else "We were unable to complete initiation:  \/build/[a-zA-Z0-9]{8}\.broken" ;
