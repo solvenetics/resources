@@ -1252,26 +1252,26 @@
                                                                                                     {
                                                                                                         bad =
                                                                                                             {
-                                                                                                                fast = scripts : { init = scripts.verification.cache.init.bad.fast ; release = scripts.verification.cache.init.bad.fast ; } ;
-                                                                                                                slow = scripts : { init = scripts.verification.cache.init.bad.slow ; release = scripts.verification.cache.init.bad.slow ; } ;
+                                                                                                                fast = scripts : { init = scripts.verification.cache.init.bad.fast ; release = scripts.verification.cache.release.bad.fast ; } ;
+                                                                                                                slow = scripts : { init = scripts.verification.cache.init.bad.slow ; release = scripts.verification.cache.release.bad.slow ; } ;
                                                                                                             } ;
                                                                                                         good =
                                                                                                             {
-                                                                                                                fast = scripts : { init = scripts.verification.cache.init.bad.fast ; release = scripts.verification.cache.init.good.fast ; } ;
-                                                                                                                slow = scripts : { init = scripts.verification.cache.init.bad.slow ; release = scripts.verification.cache.init.good.slow ; } ;
+                                                                                                                fast = scripts : { init = scripts.verification.cache.init.bad.fast ; release = scripts.verification.cache.release.good.fast ; } ;
+                                                                                                                slow = scripts : { init = scripts.verification.cache.init.bad.slow ; release = scripts.verification.cache.release.good.slow ; } ;
                                                                                                             } ;
                                                                                                     } ;
                                                                                                 good =
                                                                                                     {
                                                                                                         bad =
                                                                                                             {
-                                                                                                                fast = scripts : { init = scripts.verification.cache.init.good.fast ; release = scripts.verification.cache.init.bad.fast ; } ;
-                                                                                                                slow = scripts : { init = scripts.verification.cache.init.good.slow ; release = scripts.verification.cache.init.bad.slow ; } ;
+                                                                                                                fast = scripts : { init = scripts.verification.cache.init.good.fast ; release = scripts.verification.cache.release.bad.fast ; } ;
+                                                                                                                slow = scripts : { init = scripts.verification.cache.init.good.slow ; release = scripts.verification.cache.release.bad.slow ; } ;
                                                                                                             } ;
                                                                                                         good =
                                                                                                             {
-                                                                                                                fast = scripts : { init = scripts.verification.cache.init.good.fast ; release = scripts.verification.cache.init.good.fast ; } ;
-                                                                                                                slow = scripts : { init = scripts.verification.cache.init.good.slow ; release = scripts.verification.cache.init.good.slow ; } ;
+                                                                                                                fast = scripts : { init = scripts.verification.cache.init.good.fast ; release = scripts.verification.cache.release.good.fast ; } ;
+                                                                                                                slow = scripts : { init = scripts.verification.cache.init.good.slow ; release = scripts.verification.cache.release.good.slow ; } ;
                                                                                                             } ;
                                                                                                     } ;
                                                                                             } ;
