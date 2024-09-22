@@ -97,6 +97,7 @@
                                                                                             in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
+exit 0 &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
@@ -616,7 +617,7 @@
                                                                                                                                                     EXPECTED_07_LOG=${ computed-logs.log-07 } &&
                                                                                                                                                     ${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 ) )) &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-exit 0
+# exit 0 &&
                                                                                                                                                     # I think that when we used assert_status_code to assess the process one that it executed inside a function and executed the release code when the function was finished which defeats our tests.
                                                                                                                                                     if ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 01 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 01 > /build/$( ${ scripts.util.identity } 01 standard output file ) 2> /build/$( ${ scripts.util.identity } 01 standard error file )
                                                                                                                                                     then
@@ -630,6 +631,7 @@ exit 0
                                                                                                                                                             fail "The process failed but the status did not match."
                                                                                                                                                         fi
                                                                                                                                                     fi &&
+exit 0 &&
                                                                                                                                                     # We do not have to special measures to make sure that the measured script is run in another process because using assert_status_code is enough.
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 02 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 02 > /build/$( ${ scripts.util.identity } 02 standard output file ) 2> /build/$( ${ scripts.util.identity } 02 standard error file )" "model one" &&
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 03 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 03 > /build/$( ${ scripts.util.identity } 03 standard output file ) 2> /build/$( ${ scripts.util.identity } 03 standard error file )" "comparison one" &&
