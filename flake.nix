@@ -593,9 +593,10 @@
                                                                                                                                                     export ARGUMENTS=${ arguments } &&
                                                                                                                                                     export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                                                                                    # We do not have to special measures to make sure that the measured script is run in another process because using assert_status_code is enough.
 exit 0 &&
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 02 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 02 > /build/$( ${ scripts.util.identity } 02 standard output file ) 2> /build/$( ${ scripts.util.identity } 02 standard error file )" "model one" &&
+                                                                                                                                                    AFTER=$( ${ pkgs.coreutils }/bin/date +%s )
+
                                                                                                                                             '' ;
                                                                                                                         script =
                                                                                                                              delta : has-standard-input : arguments : standard-input :
