@@ -592,9 +592,10 @@
                                                                                                                                                         } &&
                                                                                                                                                     export ARGUMENTS=${ arguments } &&
                                                                                                                                                     export STANDARD_INPUT=${ if has-standard-input then standard-input else "" } &&
+                                                                                                                                                    EXPECTED_STATUS=${ computed-status } &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-exit 0 &&
-                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 02 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 02 > /build/$( ${ scripts.util.identity } 02 standard output file ) 2> /build/$( ${ scripts.util.identity } 02 standard error file )" "model one" &&
+# fail "STATUS=${ environment-variable "EXPECTED_STATUS" } COMMAND=${ environment-variable "COMMAND" } STANDARD_INPUT='${ environment-variable "STANDARD_INPUT" } 001-001'" &&
+                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-001 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-001 > /build/$( ${ scripts.util.identity } 02 standard output file 001-001 ) 2> /build/$( ${ scripts.util.identity } 02 standard error file 001-001 )" "model one" &&
                                                                                                                                                     AFTER=$( ${ pkgs.coreutils }/bin/date +%s )
 
                                                                                                                                             '' ;
@@ -1001,7 +1002,6 @@ exit 0 &&
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
-                                                                                                                        ${ if speed then cache.evictors.fast else cache.evictors.slow } ${ environment-variable target } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     evictor =
