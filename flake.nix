@@ -97,7 +97,6 @@
                                                                                             in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
-exit 0 &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
@@ -110,6 +109,8 @@ exit 0 &&
                                                                                                 fi &&
                                                                                                 PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+${ pkgs.coreutils }/bin/echo AAA 0001000 >> /build/debug &&
+exit 64 &&
                                                                                                 exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
@@ -126,9 +127,12 @@ exit 0 &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
                                                                                                             ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" }/manage &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/validity &&
+${ pkgs.coreutils }/echo ${ environment-variable "WORK_DIRECTORY" }/manage > /build/debug &&
+exit 64 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
                                                                                                             while [ ! -f ${ environment-variable "WORK_DIRECTORY" }/flag ]
                                                                                                             do
+exit 0 &&
                                                                                                                 ${ pkgs.coreutils }/bin/sleep ${ builtins.toString cache-sleep }s
                                                                                                             done &&
                                                                                                             if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
@@ -617,6 +621,12 @@ exit 0 &&
                                                                                                                                                     EXPECTED_07_LOG=${ computed-logs.log-07 } &&
                                                                                                                                                     ${ pkgs.coreutils }/bin/sleep $(( 8 - ( $( ${ pkgs.coreutils }/bin/date +%s ) % 8 ) )) &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+${ pkgs.coreutils }/bin/echo HELLO 01 &&
+function cleanup ( )
+{
+    ${ pkgs.coreutils }/bin/cat /build/debug
+} &&
+trap cleanup EXIT &&
 # exit 0 &&
                                                                                                                                                     # I think that when we used assert_status_code to assess the process one that it executed inside a function and executed the release code when the function was finished which defeats our tests.
                                                                                                                                                     if ${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 01 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 01 > /build/$( ${ scripts.util.identity } 01 standard output file ) 2> /build/$( ${ scripts.util.identity } 01 standard error file )
@@ -631,7 +641,8 @@ exit 0 &&
                                                                                                                                                             fail "The process failed but the status did not match."
                                                                                                                                                         fi
                                                                                                                                                     fi &&
-exit 0 &&
+${ pkgs.coreutils }/bin/echo HELLO 05 &&
+${ pkgs.coreutils }/bin/cat /build/debug &&
                                                                                                                                                     # We do not have to special measures to make sure that the measured script is run in another process because using assert_status_code is enough.
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 02 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 02 > /build/$( ${ scripts.util.identity } 02 standard output file ) 2> /build/$( ${ scripts.util.identity } 02 standard error file )" "model one" &&
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 03 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 03 > /build/$( ${ scripts.util.identity } 03 standard output file ) 2> /build/$( ${ scripts.util.identity } 03 standard error file )" "comparison one" &&
