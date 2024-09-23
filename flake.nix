@@ -1056,6 +1056,7 @@ exit 0
                                                                                                                                 ( temp null null true )
                                                                                                                                 ( script true true )
                                                                                                                                 ( cch false false false false )
+                                                                                                                                ( cch false false false true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
