@@ -454,7 +454,7 @@
                                                                                         {
                                                                                             evictors =
                                                                                                 {
-                                                                                                    fast = temporary : { temporary = temporary.evictor ; epoch = 32 ; } ;
+                                                                                                    fast = temporary : { temporary = temporary.evictor ; epoch = builtins.toString ( 4 * inc ) ; } ;
                                                                                                     slow = temporary : { temporary = temporary.evictor ; epoch = 8 ; } ;
                                                                                                 } ;
                                                                                             log = temporary : { temporary = temporary.log ; epoch = 64 ; } ;
