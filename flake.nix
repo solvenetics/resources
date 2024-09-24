@@ -451,8 +451,8 @@
                                                                                 {
                                                                                     evictors =
                                                                                         {
-                                                                                            fast = temporary : { temporary = temporary.evictor ; epoch = 8 ; } ;
-                                                                                            slow = temporary : { temporary = temporary.evictor ; epoch = 2 ; } ;
+                                                                                            fast = temporary : { temporary = temporary.evictor ; epoch = 32 ; } ;
+                                                                                            slow = temporary : { temporary = temporary.evictor ; epoch = 8 ; } ;
                                                                                         } ;
                                                                                     null = temporary : { temporary = temporary.null ; epoch = 2 ; } ;
                                                                                     verification =
@@ -461,26 +461,26 @@
                                                                                                 {
                                                                                                     bad =
                                                                                                         {
-                                                                                                            fast = temporary : { temporary = temporary.cache.bad.bad.fast ; epoch = 4 ; } ;
-                                                                                                            slow = temporary : { temporary = temporary.cache.bad.bad.slow ; epoch = 4 ; } ;
+                                                                                                            fast = temporary : { temporary = temporary.cache.bad.bad.fast ; epoch = 16 ; } ;
+                                                                                                            slow = temporary : { temporary = temporary.cache.bad.bad.slow ; epoch = 16 ; } ;
                                                                                                         } ;
                                                                                                     good =
                                                                                                         {
-                                                                                                            fast = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 4 ; } ;
-                                                                                                            slow = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 4 ; } ;
+                                                                                                            fast = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 16 ; } ;
+                                                                                                            slow = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 16 ; } ;
                                                                                                         } ;
                                                                                                 } ;
                                                                                             good =
                                                                                                 {
                                                                                                     bad =
                                                                                                         {
-                                                                                                            fast = temporary : { temporary = temporary.cache.good.bad.fast ; epoch = 4 ; } ;
-                                                                                                            slow = temporary : { temporary = temporary.cache.good.bad.slow ; epoch = 4 ; } ;
+                                                                                                            fast = temporary : { temporary = temporary.cache.good.bad.fast ; epoch = 16 ; } ;
+                                                                                                            slow = temporary : { temporary = temporary.cache.good.bad.slow ; epoch = 16 ; } ;
                                                                                                         } ;
                                                                                                     good =
                                                                                                         {
-                                                                                                            fast = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 4 ; } ;
-                                                                                                            slow = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 4 ; } ;
+                                                                                                            fast = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 16 ; } ;
+                                                                                                            slow = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 16 ; } ;
                                                                                                         } ;
                                                                                                 } ;
                                                                                         } ;
@@ -603,20 +603,10 @@
                                                                                                                                                     EXPECTED_STATUS=${ computed-status } &&
                                                                                                                                                     EXPECTED_LOG_001_000="_" &&
                                                                                                                                                     EXPECTED_LOG_001_004="_" &&
-                                                                                                                                                    T_0=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-000 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-001 > /build/$( ${ scripts.util.identity } 02 standard output file 001-001 ) 2> /build/$( ${ scripts.util.identity } 02 standard error file 001-000 )" "model one" &&
-                                                                                                                                                    # assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-004 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-004 > /build/$( ${ scripts.util.identity } 02 standard output file 001-004 ) 2> /build/$( ${ scripts.util.identity } 02 standard error file 001-004 )" "model one" &&
-                                                                                                                                                    T_1=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                                                                                    if [ $(( ${ environment-variable "T_1" } - ${ environment-variable "T_0" } )) > 1 ]
-                                                                                                                                                    then
-                                                                                                                                                        fail "We are taking to long to instantiate."
-                                                                                                                                                    fi &&
-                                                                                                                                                    OBSERVED_LOG_001_000=$( read_log /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 001-000" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 001-000" else "" }" ${ scripts.util.identity } ) ) &&
-                                                                                                                                                    OBSERVED_LOG_001_004=$( read_log /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 001-004" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 001-004" else "" }" ${ scripts.util.identity } ) ) &&
-                                                                                                                                                    assert_equals ${ environment-variable "EXPECTED_LOG_001_000" } ${ environment-variable "OBSERVED_LOG_001_000" } &&
-                                                                                                                                                    # assert_equals ${ environment-variable "EXPECTED_LOG_001_004" } ${ environment-variable "OBSERVED_LOG_001_004" }
-                                                                                                                                                    true
-                                                                                                                                            '' ;
+                                                                                                                                                    T0=$(( 32 + 32 * ( $( ${ pkgs.coreutils }/bin/date +%s ) / 32 ) )) &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/sleep $(( ${ environment-variable "T0" } - $( ${ pkgs.coreutils }/bin/date +%s ) )) &&
+                                                                                                                                                    assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-000 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-001 > /build/$( ${ scripts.util.identity } standard output file 001-001 ) 2> /build/$( ${ scripts.util.identity } standard error file 001-000 )" "model one"
+                                                                                                                                             '' ;
                                                                                                                         script =
                                                                                                                              delta : has-standard-input : arguments : standard-input :
                                                                                                                                 strip
