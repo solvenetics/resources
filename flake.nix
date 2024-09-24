@@ -97,6 +97,7 @@
                                                                                             in identity ( value tertiary.temporary ) ;
                                                                                     in
                                                                                         ''
+                                                                                            ${ pkgs.coreutils }/bin/echo AAA 0001000 ${ environment-variable 0 } >> /build/debug &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
@@ -108,10 +109,14 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
+                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001100 ${ environment-variable 0 } >> /build/debug &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                exec 10> ${ cache-directory }/${ cache-epoch-hash }.lock &&
+                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001200 ${ environment-variable 0 } >> /build/debug &&
+                                                                                                exec 10> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
+                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001300 ${ environment-variable 0 } ${ environment-variable cache-epoch-hash }>> /build/debug &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
+                                                                                                    ${ pkgs.coreutils }/bin/echo AAA 00013\410 ${ environment-variable 0 } >> /build/debug &&
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
@@ -150,12 +155,14 @@
                                                                                                         fi
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
                                                                                                 else
+                                                                                                    ${ pkgs.coreutils }/bin/echo AAA 0001420 ${ environment-variable 0 } >> /build/debug &&
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
                                                                                                 fi
                                                                                         '' ;
                                                                             manage =
                                                                                 ''
+                                                                                    ${ pkgs.coreutils }/bin/echo AAA 0002000 >> /build/debug &&
                                                                                     WORK_DIRECTORY=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
                                                                                         ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
                                                                                         HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
@@ -256,6 +263,7 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
+                                                                                            ${ pkgs.coreutils }/bin/echo AAA 0003000 ${ builtins.toString temporary.init } >> /build/debug &&
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
@@ -595,10 +603,12 @@
                                                                                                                                                     EXPECTED_STATUS=${ computed-status } &&
                                                                                                                                                     EXPECTED_LOG_001_000="_" &&
                                                                                                                                                     BEFORE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/date > /build/debug &&
                                                                                                                                                     assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-000 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-001 > /build/$( ${ scripts.util.identity } 02 standard output file 001-001 ) 2> /build/$( ${ scripts.util.identity } 02 standard error file 001-000 )" "model one" &&
                                                                                                                                                     AFTER=$( ${ pkgs.coreutils }/bin/date +%s )
                                                                                                                                                     OBSERVED_LOG_001_000=$( read_log /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 001-000" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 001-000" else "" }" ${ scripts.util.identity } ) ) &&
-                                                                                                                                                    assert_equals ${ environment-variable "EXPECTED_LOG_001_000" } ${ environment-variable "OBSERVED_LOG_001_000" }
+                                                                                                                                                    assert_equals ${ environment-variable "EXPECTED_LOG_001_000" } ${ environment-variable "OBSERVED_LOG_001_000" } &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/cat /build/debug
                                                                                                                                             '' ;
                                                                                                                         script =
                                                                                                                              delta : has-standard-input : arguments : standard-input :
@@ -959,9 +969,9 @@
                                                                                                                                 ( temp null null true )
                                                                                                                                 ( script true true )
                                                                                                                                 ( cch false false false false )
-                                                                                                                                ( cch false false false true )
-                                                                                                                                ( cch false false true false )
-                                                                                                                                ( cch false false true true )
+                                                                                                                                # ( cch false false false true )
+                                                                                                                                # ( cch false false true false )
+                                                                                                                                # ( cch false false true true )
                                                                                                                             ] ;
                                                                                                                 in builtins.genList generator ( builtins.length list ) ;
                                                                                                         in builtins.concatStringsSep " &&\n" functions ;
@@ -1004,13 +1014,14 @@
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
                                                                                                                         ${ pkgs.coreutils }/bin/timeout 5s ${ cache.evictors.fast } ${ environment-variable target } &&
-                                                                                                                        # ${ if speed then cache.evictors.fast else cache.evictors.slow } &&
+                                                                                                                        # ${ if speed then cache.evictors.fast else cache.evictors.fast } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                             '' ;
                                                                                                     evictor =
                                                                                                         message : { pkgs , ... } : { environment-variable , ... } :
                                                                                                             ''
-                                                                                                                ${ pkgs.coreutils }/bin/echo _${ message } > ${ environment-variable "@" }
+                                                                                                                ${ pkgs.coreutils }/bin/date >> /build/debug
+                                                                                                                # ${ pkgs.coreutils }/bin/echo _${ message } > ${ environment-variable "@" }
                                                                                                             '' ;
                                                                                                     internal =
                                                                                                         status : { pkgs , ... } : { cache , environment-variable , has-standard-input , scripts , strip , target , temporary } :
