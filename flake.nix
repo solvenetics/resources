@@ -440,7 +440,7 @@
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
                                                                     let
-                                                                        inc = 16 ;
+                                                                        inc = 32 ;
                                                                         in
                                                                             lib
                                                                                 {
@@ -454,37 +454,37 @@
                                                                                         {
                                                                                             evictors =
                                                                                                 {
-                                                                                                    fast = temporary : { temporary = temporary.evictor ; epoch = builtins.toString ( 4 * inc ) ; } ;
-                                                                                                    slow = temporary : { temporary = temporary.evictor ; epoch = 8 ; } ;
+                                                                                                    fast = temporary : { temporary = temporary.evictor ; epoch = 4 * inc ; } ;
+                                                                                                    slow = temporary : { temporary = temporary.evictor ; epoch = inc ; } ;
                                                                                                 } ;
-                                                                                            log = temporary : { temporary = temporary.log ; epoch = 64 ; } ;
-                                                                                            null = temporary : { temporary = temporary.null ; epoch = 2 ; } ;
+                                                                                            log = temporary : { temporary = temporary.log ; epoch = 8 * inc ; } ;
+                                                                                            null = temporary : { temporary = temporary.null ; epoch = inc ; } ;
                                                                                             verification =
                                                                                                 {
                                                                                                     bad =
                                                                                                         {
                                                                                                             bad =
                                                                                                                 {
-                                                                                                                    fast = temporary : { temporary = temporary.cache.bad.bad.fast ; epoch = 16 ; } ;
-                                                                                                                    slow = temporary : { temporary = temporary.cache.bad.bad.slow ; epoch = 16 ; } ;
+                                                                                                                    fast = temporary : { temporary = temporary.cache.bad.bad.fast ; epoch = 2 * inc ; } ;
+                                                                                                                    slow = temporary : { temporary = temporary.cache.bad.bad.slow ; epoch = 2 * inc ; } ;
                                                                                                                 } ;
                                                                                                             good =
                                                                                                                 {
-                                                                                                                    fast = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 16 ; } ;
-                                                                                                                    slow = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 16 ; } ;
+                                                                                                                    fast = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 2 * inc ; } ;
+                                                                                                                    slow = temporary : { temporary = temporary.cache.bad.good.slow ; epoch = 2 * inc ; } ;
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                     good =
                                                                                                         {
                                                                                                             bad =
                                                                                                                 {
-                                                                                                                    fast = temporary : { temporary = temporary.cache.good.bad.fast ; epoch = 16 ; } ;
-                                                                                                                    slow = temporary : { temporary = temporary.cache.good.bad.slow ; epoch = 16 ; } ;
+                                                                                                                    fast = temporary : { temporary = temporary.cache.good.bad.fast ; epoch = 2 * inc ; } ;
+                                                                                                                    slow = temporary : { temporary = temporary.cache.good.bad.slow ; epoch = 2 * inc ; } ;
                                                                                                                 } ;
                                                                                                             good =
                                                                                                                 {
-                                                                                                                    fast = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 16 ; } ;
-                                                                                                                    slow = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 16 ; } ;
+                                                                                                                    fast = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 2 * inc ; } ;
+                                                                                                                    slow = temporary : { temporary = temporary.cache.good.good.fast ; epoch = 2 * inc ; } ;
                                                                                                                 } ;
                                                                                                         } ;
                                                                                                 } ;
@@ -607,13 +607,13 @@
                                                                                                                                                             EXPECTED_STATUS=${ computed-status } &&
                                                                                                                                                             EXPECTED_LOG_001_000="_" &&
                                                                                                                                                             EXPECTED_LOG_001_001="_" &&
-                                                                                                                                                            T0=$(( ${ builtins.toString ( 4 * inc ) } + ${ builtins.toString ( 4 * inc ) } * ( $( ${ pkgs.coreutils }/bin/date +%s ) / ${ builtins.toString ( 4 * inc ) } ) )) &&
+                                                                                                                                                            T0=$(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( $( ${ pkgs.coreutils }/bin/date +%s ) / ${ builtins.toString ( 8 * inc ) } ) )) &&
                                                                                                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ environment-variable "T0" } - $( ${ pkgs.coreutils }/bin/date +%s ) )) &&
                                                                                                                                                             assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-000 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-001 > /build/$( ${ scripts.util.identity } standard output file 001-000 ) 2> /build/$( ${ scripts.util.identity } standard error file 001-000 )" "model one" &&
                                                                                                                                                             assert_status_code ${ environment-variable "EXPECTED_STATUS" } "${ if has-standard-input then "${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } 001-001 | " else "" }${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } 001-012 > /build/$( ${ scripts.util.identity } standard output file 001-001 ) 2> /build/$( ${ scripts.util.identity } standard error file 001-001 )" "model one" &&
-                                                                                                                                                            if [ $( ${ pkgs.coreutils }/bin/date +%s ) -gt $(( 8 + ${ environment-variable "T0" } )) ]
+                                                                                                                                                            if [ $( ${ pkgs.coreutils }/bin/date +%s ) -gt $(( ${ builtins.toString inc } + ${ environment-variable "T0" } )) ]
                                                                                                                                                             then
-                                                                                                                                                                fail "We are taking too long to instantiate:  $( ${ pkgs.coreutils }/bin/date +%s ) $(( 8 + ${ environment-variable "T0" } ))."
+                                                                                                                                                                fail "We are taking too long to instantiate:  $( ${ pkgs.coreutils }/bin/date +%s ) $(( ${ builtins.toString inc } + ${ environment-variable "T0" } ))."
                                                                                                                                                             fi &&
                                                                                                                                                             OBSERVED_LOG_001_000=$( read_log /build/$( ARGUMENTS="${ environment-variable "ARGUMENTS" } 001-000" STANDARD_INPUT="${ if has-standard-input then "${ environment-variable "STANDARD_INPUT" } 001-000" else "" }" ${ scripts.util.identity } ) ) &&
                                                                                                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString inc } + $( ${ pkgs.coreutils }/bin/date +%s ) - ${ environment-variable "T0" } )) &&
