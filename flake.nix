@@ -1003,6 +1003,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic /build/$( ${ scripts.util.identity } ) ${ environment-variable target }
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n "_${ message }" >> ${ environment-variable target } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/timeout 10s ${ cache.evictors.fast } ${ environment-variable target } &&
                                                                                                                         # ${ if speed then cache.evictors.fast else cache.evictors.slow } &&
                                                                                                                         exit ${ builtins.toString status }
                                                                                                             '' ;
