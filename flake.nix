@@ -437,10 +437,10 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
+                                                                inc = 2 ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
                                                                     let
-                                                                        inc = 32 ;
                                                                         in
                                                                             lib
                                                                                 {
@@ -1237,6 +1237,8 @@
                                                                         in
                                                                             ''
                                                                                 ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                    NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                                    ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
                                                                                     export ${ out }=${ builtins.trace ( builtins.toString resources ) resources } &&
                                                                                     ${ pkgs.bash_unit }/bin/bash_unit ${ builtins.toString resources }/scripts/test.sh
                                                                             '' ;
