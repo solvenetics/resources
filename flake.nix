@@ -300,7 +300,7 @@
                                                                                                 ''
                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                                 '' ;
-                                                                                            set =
+                                                                                            set =identity
                                                                                                 ''
                                                                                                     if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                                     then
@@ -343,12 +343,13 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
+                                                                                    t = builtin.mapAttrs ( set-mapper [ ( environment-variable out ) "scripts" ) ( scripts secondary ) ;
                                                                                     ######
                                                                                     # temporary =
                                                                                     #     {
                                                                                     #         work = scripts : { init = scripts.work ; } ;
                                                                                     #     } ;
-                                                                                    in identity ( value ( builtins.mapAttrs ( set-mapper [ ( environment-variable out ) "scripts" ] ) ( scripts secondary ) ) ) ;
+                                                                                    in identity ( builtins.trace ( builtins.typeOf t ) t ) ( scripts secondary ) ) ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
