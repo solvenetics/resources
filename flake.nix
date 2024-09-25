@@ -353,16 +353,6 @@
                                                                     scripts = scripts [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
-                                                    wtf =
-                                                        let
-                                                            mapper =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
-                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                            in
-                                                                {
-                                                                    temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
-                                                                } ;
                                                     write =
                                                         let
                                                             input =
