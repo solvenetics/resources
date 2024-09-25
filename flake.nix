@@ -345,7 +345,7 @@
                                                                                     #     {
                                                                                     #         work = scripts : { init = scripts.work ; } ;
                                                                                     #     } ;
-                                                                                    in identity ( value { work = "/" ; } ) ;
+                                                                                    in identity ( value ( builtins.mapAttrs ( set [ ( environment-value out ) "scripts" ] ) ( scripts secondary ) ) ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
@@ -496,7 +496,7 @@
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts $( ${ resources.util }/cache/work ) ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {}
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts $( ${ resources.util }/cache/work ) ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {} \;
                                                                     '' ;
                                                     } ;
                                         } ;
