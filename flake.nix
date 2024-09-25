@@ -458,7 +458,7 @@
                                                                                                             ARGUMENTS=${ environment-variable 2 } &&
                                                                                                             STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                             COMMAND=${ environment-variable 4 } &&
-                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "OUT" } ${ environment-variable "COMMAND" } &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "OUT" } ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "TARGET" }/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> { environment-variable "ABSOLUTE" } 1.err
@@ -479,8 +479,8 @@
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ target }
                                                                                                         '' ;
-                                                                                            secondary = { pkgs = pkgs ; } ;
                                                                                         } ;
+                                                                                    secondary = { pkgs = pkgs ; } ;
                                                                                 } ;
                                                                             } ;
                                                                 in
@@ -491,7 +491,7 @@
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }
+                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts $( ${ resources.util }/cache/work ) ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {}
                                                                     '' ;
                                                     } ;
                                         } ;
