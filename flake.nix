@@ -11,6 +11,11 @@
                     system :
                         let
                             environment-variable = name : builtins.concatStringsSep "" [ "$" "{" ( builtins.toString name ) "}" ] ;
+                            has-standard-input =
+                                 strip
+                                     ''
+                                         [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
+                                     '' ;
                             lib =
                                 {
                                     at ? "/run/wrappers/bin/at" ,
@@ -47,11 +52,6 @@
                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
                                             installPhase =
                                                 let
-                                                    has-standard-input =
-                                                        strip
-                                                            ''
-                                                                [ -t 0 ] || [[ "$( ${ pkgs.coreutils }/bin/readlink /proc/self/fd/0 )" == pipe:* ]]
-                                                            '' ;
                                                     mappers =
                                                         let
                                                             cache =
@@ -354,20 +354,6 @@
                                                                     script = script [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
-                                                    strip =
-                                                        string :
-                                                            let
-                                                                first = builtins.substring 0 1 string ;
-                                                                head = builtins.substring 0 ( length - 1 ) string ;
-                                                                last = builtins.substring ( length - 1 ) 1 string ;
-                                                                length = builtins.stringLength string ;
-                                                                tail = builtins.substring 1 ( length - 1 ) string ;
-                                                                whitespace = [ " " "\t" "\n" "\r" "\f" ] ;
-                                                                in
-                                                                    if length == 0 then string
-                                                                    else if builtins.any ( w : w == first ) whitespace then strip tail
-                                                                    else if builtins.any ( w : w == last ) whitespace then strip head
-                                                                    else string ;
                                                     wtf =
                                                         let
                                                             mapper =
@@ -426,6 +412,21 @@
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
+                            strip =
+                                string :
+                                    let
+                                        first = builtins.substring 0 1 string ;
+                                        head = builtins.substring 0 ( length - 1 ) string ;
+                                        last = builtins.substring ( length - 1 ) 1 string ;
+                                        length = builtins.stringLength string ;
+                                        tail = builtins.substring 1 ( length - 1 ) string ;
+                                        whitespace = [ " " "\t" "\n" "\r" "\f" ] ;
+                                        in
+                                            if length == 0 then string
+                                            else if builtins.any ( w : w == first ) whitespace then strip tail
+                                            else if builtins.any ( w : w == last ) whitespace then strip head
+                                            else string ;
+
                             in
                                 {
                                     checks =
@@ -439,13 +440,43 @@
                                                             let
                                                                 inc = 2 ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
-                                                                        in
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                                    ${ pkgs.coreutils }/bin/mkdir $out/cache &&
-                                                                                    NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                    ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } ))
-                                                                            '' ;
+                                                                resources =
+                                                                    {
+                                                                        scripts =
+                                                                            lib
+                                                                                {
+                                                                                    scripts =
+                                                                                        let
+                                                                                            script =
+                                                                                                status : { pkgs , ... } :
+                                                                                                    ''
+                                                                                                        ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                    HAS_STANDARD_INPUT=true
+                                                                                                            else
+                                                                                                                STANDARD_INPUT= &&
+                                                                                                                    HAS_STANDARD_INPUT=false
+                                                                                                            fi &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
+                                                                                                        ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
+                                                                                                        exit ${ builtins.toString status }
+                                                                                                    '' ;
+                                                                                            in
+                                                                                                {
+                                                                                                    bad = script 64 ;
+                                                                                                    good = script 0 ;
+                                                                                                } ;
+                                                                                } ;
+                                                                    } ;
+                                                                in
+                                                                    ''
+                                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir $out/cache &&
+                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } ))
+                                                                    '' ;
                                                     } ;
                                         } ;
                                     lib = lib ;
