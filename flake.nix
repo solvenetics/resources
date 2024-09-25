@@ -364,9 +364,9 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.scripts scripts ;
-                                                                            # temporary = builtins.mapAttrs mappers.temporary temporary ;
+                                                                            temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
                                                                 } ;
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
