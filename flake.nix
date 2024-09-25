@@ -451,10 +451,6 @@
                                                                                 {
                                                                                     scripts =
                                                                                         {
-                                                                                            cache =
-                                                                                                {
-                                                                                                    work = temporary : { temporary = temporary.work ; cache = 8 * inc ; } ;
-                                                                                                } ;
                                                                                             scripts =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
@@ -484,10 +480,6 @@
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ target }
                                                                                                         '' ;
                                                                                             secondary = { pkgs = pkgs ; } ;
-                                                                                            temporary =
-                                                                                                {
-                                                                                                    work = scripts : { init = scripts.work ; } ;
-                                                                                                } ;
                                                                                         } ;
                                                                                 } ;
                                                                             } ;
@@ -499,7 +491,7 @@
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec 
+                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }
                                                                     '' ;
                                                     } ;
                                         } ;
