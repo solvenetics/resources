@@ -455,6 +455,10 @@
                                                                         util =
                                                                             lib
                                                                                 {
+                                                                                    cache =
+                                                                                        {
+                                                                                            work = temporary : { temporary = temporary.work ; epoch = 8 * inc ; } ;
+                                                                                        } ;
                                                                                     scripts =
                                                                                         {
                                                                                             scripts =
