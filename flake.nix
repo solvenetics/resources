@@ -94,7 +94,7 @@
                                                                                                         temporary = temporary ;
                                                                                                         epoch = builtins.toString epoch ;
                                                                                                     } ;
-                                                                                            in identity ( value tertiary.temporary ) ;
+                                                                                            in identity value ;
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0001000 ${ environment-variable 0 } >> /build/debug &&
@@ -211,7 +211,7 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ pkgs.writeShellScript name ( value secondary tertiary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                write_it ${ pkgs.writeShellScript name ( value secondary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -339,7 +339,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity ( value tertiary.scripts ) ;
+                                                                                    in identity value ;
                                                                             in
                                                                                 strip
                                                                                     ''
@@ -363,23 +363,6 @@
                                                             in
                                                                 {
                                                                     temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
-                                                                } ;
-                                                    tertiary =
-                                                        let
-                                                            mapper =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ])
-                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
-                                                            in
-                                                                {
-                                                                    ## ENTRYPOINT 2
-                                                                    cache = builtins.mapAttrs ( mapper [ ( environment-variable out ) "cache" ] ) cache ;
-                                                                    environment-variable = environment-variable ;
-                                                                    has-standard-input = has-standard-input ;
-                                                                    scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) scripts ;
-                                                                    target = target ;
-                                                                    temporary = wtf.temporary ;
-                                                                    strip = strip ;
                                                                 } ;
                                                     write =
                                                         let
@@ -459,9 +442,9 @@
                                                                                                                 STANDARD_INPUT= &&
                                                                                                                     HAS_STANDARD_INPUT=false
                                                                                                             fi &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
-                                                                                                        ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
-                                                                                                        exit ${ builtins.toString status }
+                                                                                                            ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
+                                                                                                            ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
+                                                                                                            exit ${ builtins.toString status }
                                                                                                     '' ;
                                                                                             in
                                                                                                 {
