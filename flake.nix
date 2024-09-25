@@ -439,6 +439,7 @@
                                                                                                     bad = script 64 ;
                                                                                                     good = script 0 ;
                                                                                                 } ;
+                                                                                    secondary = { pkgs = pkgs ; } ;
                                                                                 } ;
                                                                     } ;
                                                                 in
@@ -446,6 +447,7 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ pkgs.coreutils }/bin/mkdir $out/cache &&
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                            ${ resources.scripts }/scripts/good &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } ))
                                                                     '' ;
                                                     } ;
