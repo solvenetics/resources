@@ -218,7 +218,7 @@
                                                             set-mapper =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ] )
-                                                                    else builtins.mapAttrs ( set ( builtins.concatLists [ path [ name ] ] ) ) value ;
+                                                                    else builtins.mapAttrs ( set-mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             temporary =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
