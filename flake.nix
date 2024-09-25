@@ -94,7 +94,7 @@
                                                                                                         temporary = temporary ;
                                                                                                         epoch = builtins.toString epoch ;
                                                                                                     } ;
-                                                                                            in identity value ;
+                                                                                            in identity ( value ( builtins.mapAttrs set [ "temporary" ] ) temporary ) ;
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0001000 ${ environment-variable 0 } >> /build/debug &&
@@ -211,10 +211,11 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ pkgs.writeShellScript name ( value secondary target ) } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                write_it ${ pkgs.writeShellScript name ( strip ( value secondary target ) ) } ) ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( scripts ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
+                                                            set = path : name : value : if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ] ) else builtins.mapAttrs ( set ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             temporary =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
@@ -339,7 +340,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity ( value { } ) ;
+                                                                                    in identity ( value ( builtins.mapAttrs set [ "scripts" ] ) ( scripts secondary ) ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
