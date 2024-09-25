@@ -52,6 +52,17 @@
                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
                                             installPhase =
                                                 let
+                                                    paths =
+                                                        let
+                                                            mapper =
+                                                                path : name : value :
+                                                                    if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ] )
+                                                                    else builtins.mapAttrs ( mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
+                                                            in
+                                                                {
+                                                                    scripts = builtins.mapAttrs ( mapper [ ( environment-variable out ) "scripts" ] ) ( scripts ) ;
+                                                                    temporary = builtins.mapAttrs ( mapper [ ( environment-variable out ) "temporary" ] ) temporary ;
+                                                                } ;
                                                     mappers =
                                                         let
                                                             cache =
@@ -94,7 +105,7 @@
                                                                                                         temporary = temporary ;
                                                                                                         epoch = builtins.toString epoch ;
                                                                                                     } ;
-                                                                                            in identity ( value ( builtins.mapAttrs ( set-mapper [ ( environment-variable out ) "temporary" ] ) temporary ) ) ;
+                                                                                            in identity ( value paths.temporary ) ;
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/echo AAA 0001000 ${ environment-variable 0 } >> /build/debug &&
@@ -215,10 +226,6 @@
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( scripts ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
-                                                            set-mapper =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then builtins.concatStringsSep "/" ( builtins.concatLists [ path [ name ] ] )
-                                                                    else builtins.mapAttrs ( set-mapper ( builtins.concatLists [ path [ name ] ] ) ) value ;
                                                             temporary =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
@@ -300,7 +307,7 @@
                                                                                                 ''
                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
                                                                                                 '' ;
-                                                                                            set =identity
+                                                                                            set =
                                                                                                 ''
                                                                                                     if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
                                                                                                     then
@@ -343,13 +350,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    t = builtin.mapAttrs ( set-mapper [ ( environment-variable out ) "scripts" ) ( scripts secondary ) ;
-                                                                                    ######
-                                                                                    # temporary =
-                                                                                    #     {
-                                                                                    #         work = scripts : { init = scripts.work ; } ;
-                                                                                    #     } ;
-                                                                                    in identity ( builtins.trace ( builtins.typeOf t ) t ) ( scripts secondary ) ) ) ;
+                                                                                    in identity ( value paths.scripts ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
@@ -500,7 +501,7 @@
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts $( ${ resources.util }/cache/work ) ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {} \;
+                                                                            ${ pkgs.coreutils }/bin/true ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts  ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {} \;
                                                                     '' ;
                                                     } ;
                                         } ;
