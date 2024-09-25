@@ -206,14 +206,14 @@
                                                                                     ''
                                                                     else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-cache-throw value ) ;
-                                                            script =
+                                                            scripts =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
                                                                                 write_it ${ pkgs.writeShellScript name ( value secondary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
-                                                                    else if builtins.typeOf value == "set" then  builtins.mapAttrs ( script ( builtins.concatLists [ path [ name ] ] ) ) value
+                                                                    else if builtins.typeOf value == "set" then  builtins.mapAttrs ( scripts ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
                                                             temporary =
                                                                 path : name : value :
@@ -349,9 +349,8 @@
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
-                                                                    ## ENTRYPOINT 1
                                                                     cache = cache [ ( environment-variable out ) "cache" ] ;
-                                                                    script = script [ ( environment-variable out ) "scripts" ] ;
+                                                                    scripts = scripts [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
                                                     wtf =
@@ -370,9 +369,8 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            ## ENTRYPOINT 3
                                                                             cache = builtins.mapAttrs mappers.cache cache ;
-                                                                            scripts = builtins.mapAttrs mappers.script scripts ;
+                                                                            scripts = builtins.mapAttrs mappers.scripts scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
                                                                 } ;
