@@ -271,7 +271,7 @@
                                                                                                 then
                                                                                                     ${ strip init.has-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.has-standard-input }"
-                                                                                               else
+                                                                                                else
                                                                                                     ${ strip init.does-not-have-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.does-not-have-standard-input }"
                                                                                                 fi &&
