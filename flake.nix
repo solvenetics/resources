@@ -211,7 +211,7 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ pkgs.writeShellScript name ( strip ( value secondary target ) ) } ) ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                write_it ${ pkgs.writeShellScript name ( strip ( value secondary target ) ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( scripts ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -271,7 +271,11 @@
                                                                                                 then
                                                                                                     ${ strip init.has-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.has-standard-input }"
-                                                                                                else
+                                                                                                                                                     test =
+                                                                            lib
+                                                                                {
+
+                                                                                } ;                   else
                                                                                                     ${ strip init.does-not-have-standard-input } &&
                                                                                                         INVALIDATE="${ invalidate.does-not-have-standard-input }"
                                                                                                 fi &&
@@ -360,9 +364,9 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            cache = builtins.mapAttrs mappers.cache cache ;
+                                                                            # cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.scripts scripts ;
-                                                                            temporary = builtins.mapAttrs mappers.temporary temporary ;
+                                                                            # temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
                                                                 } ;
                                                             list = builtins.concatLists ( builtins.attrValues output ) ;
@@ -495,7 +499,7 @@
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.findutils }/bin/find .
+                                                                            ${ pkgs.findutils }/bin/find ${ builtins.toString resources.scripts }
                                                                     '' ;
                                                     } ;
                                         } ;
