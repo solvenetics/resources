@@ -494,7 +494,8 @@
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } ))
+                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
+                                                                            ${ pkgs.findutils }/bin/find .
                                                                     '' ;
                                                     } ;
                                         } ;
