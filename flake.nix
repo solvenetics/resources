@@ -345,7 +345,7 @@
                                                                                     #     {
                                                                                     #         work = scripts : { init = scripts.work ; } ;
                                                                                     #     } ;
-                                                                                    in identity ( value ( builtins.mapAttrs ( set [ ( environment-value out ) "scripts" ] ) ( scripts secondary ) ) ) ;
+                                                                                    in identity ( value ( builtins.mapAttrs ( set [ ( environment-variable out ) "scripts" ] ) ( scripts secondary ) ) ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
