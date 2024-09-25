@@ -211,7 +211,7 @@
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
                                                                             ''
-                                                                                write_it ${ pkgs.writeShellScript name ( value secondary ) } ${ builtins.concatStringsSep "/" path } "${ name }"
+                                                                                write_it ${ pkgs.writeShellScript name ( value secondary target ) } ${ builtins.concatStringsSep "/" path } "${ name }"
                                                                             ''
                                                                     else if builtins.typeOf value == "set" then  builtins.mapAttrs ( scripts ( builtins.concatLists [ path [ name ] ] ) ) value
                                                                     else builtins.throw ( invalid-script-throw value ) ;
@@ -245,7 +245,7 @@
                                                                                                 has-standard-input =
                                                                                                     ''
                                                                                                         if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
-                                                                                                        then
+                                                                                                        thenscripts
                                                                                                             STATUS=${ environment-variable "?" } &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
                                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
@@ -339,7 +339,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity value ;
+                                                                                    in identity ( value { } ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
@@ -419,7 +419,7 @@
                                                                                     scripts =
                                                                                         let
                                                                                             script =
-                                                                                                status : { pkgs , ... } :
+                                                                                                status : { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         ARGUMENTS=${ environment-variable "@" } &&
                                                                                                             if ${ has-standard-input }
@@ -430,8 +430,8 @@
                                                                                                                 STANDARD_INPUT= &&
                                                                                                                     HAS_STANDARD_INPUT=false
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
-                                                                                                            ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } | ${ pkgs.coreutils }/bin/base64
+                                                                                                            ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" }
                                                                                                             exit ${ builtins.toString status }
                                                                                                     '' ;
                                                                                             in
@@ -441,13 +441,58 @@
                                                                                                 } ;
                                                                                     secondary = { pkgs = pkgs ; } ;
                                                                                 } ;
-                                                                    } ;
+                                                                        util =
+                                                                            lib
+                                                                                {
+                                                                                    scripts =
+                                                                                        {
+                                                                                            cache =
+                                                                                                {
+                                                                                                    work = temporary : { temporary = temporary.work ; cache = 8 * inc ; } ;
+                                                                                                } ;
+                                                                                            scripts =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        TARGET=${ environment-variable 1 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                            COMMAND=${ environment-variable 4 } &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "OUT" } ${ environment-variable "COMMAND" } &&
+                                                                                                            ABSOLUTE=${ environment-variable "TARGET" }/${ environment-variable "RELATIVE" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> { environment-variable "ABSOLUTE" } 1.err
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
+                                                                                                            fi &&
+                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/2.out 2> { environment-variable "ABSOLUTE" } 2.err
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            fi
+                                                                                                    '' ;
+                                                                                                work =
+                                                                                                    { pkgs , ... } : target :
+                                                                                                        ''
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ target }
+                                                                                                        '' ;
+                                                                                            secondary = { pkgs = pkgs ; } ;
+                                                                                            temporary =
+                                                                                                {
+                                                                                                    work = scripts : { init = scripts.work ; } ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                } ;
+                                                                            } ;
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ pkgs.coreutils }/bin/mkdir $out/cache &&
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                            ${ resources.scripts }/scripts/good &&
+                                                                            ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                            STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } ))
                                                                     '' ;
                                                     } ;
