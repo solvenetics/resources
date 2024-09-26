@@ -473,8 +473,8 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
-                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts } ${ environment-variable "COMMAND" } ) &&
-                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/${ environment-variable "RELATIVE" } &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/scripts ${ environment-variable "COMMAND" } ) &&
+                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/scripts/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> ${ environment-variable "ABSOLUTE" }/1.err
                                                                                                             then
@@ -507,7 +507,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
-                                                                                                            fi                                                                                                                                                                                                                       
+                                                                                                            fi
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
