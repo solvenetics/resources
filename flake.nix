@@ -108,7 +108,6 @@
                                                                                             in identity ( value paths.temporary ) ;
                                                                                     in
                                                                                         ''
-                                                                                            ${ pkgs.coreutils }/bin/echo AAA 0001000 ${ environment-variable 0 } >> /build/debug &&
                                                                                             export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
                                                                                                 ARGUMENTS=${ environment-variable "@" } &&
                                                                                                 if ${ has-standard-input }
@@ -120,14 +119,10 @@
                                                                                                         STANDARD_INPUT=""
                                                                                                 fi &&
                                                                                                 PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001100 ${ environment-variable 0 } >> /build/debug &&
                                                                                                 export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001200 ${ environment-variable 0 } >> /build/debug &&
                                                                                                 exec 10> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                                ${ pkgs.coreutils }/bin/echo AAA 0001300 ${ environment-variable 0 } ${ environment-variable cache-epoch-hash }>> /build/debug &&
                                                                                                 if ${ pkgs.flock }/bin/flock 10
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/echo AAA 00013\410 ${ environment-variable 0 } >> /build/debug &&
                                                                                                     if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
                                                                                                     then
                                                                                                         WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
@@ -166,14 +161,12 @@
                                                                                                         fi
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
                                                                                                 else
-                                                                                                    ${ pkgs.coreutils }/bin/echo AAA 0001420 ${ environment-variable 0 } >> /build/debug &&
                                                                                                     ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
                                                                                                         exit ${ builtins.toString cache-lock-exit }
                                                                                                 fi
                                                                                         '' ;
                                                                             manage =
                                                                                 ''
-                                                                                    ${ pkgs.coreutils }/bin/echo AAA 0002000 >> /build/debug &&
                                                                                     WORK_DIRECTORY=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
                                                                                         ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
                                                                                         HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
@@ -274,7 +267,6 @@
                                                                                         } ;
                                                                                     in
                                                                                         ''
-                                                                                            ${ pkgs.coreutils }/bin/echo AAA 0003000 ${ builtins.toString temporary.init } >> /build/debug &&
                                                                                             RESOURCE=$( ${ temporary-resource-directory } ) &&
                                                                                                 export ${ target }=${ environment-variable "RESOURCE" }/target &&
                                                                                                 if ${ has-standard-input }
@@ -289,8 +281,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/invalidate.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ pkgs.bash }/bin/bash -c ${ environment-variable "RESOURCE" }/invalidate.sh | ${ at } now >> /build/debug 2>&1 &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
@@ -350,7 +341,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity ( value paths.scripts ) ;
+                                                                                    in identity ( value ( builtins.trace "HI 1" paths.scripts ) ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
@@ -420,6 +411,12 @@
                                                         src = ./. ;
                                                         buildCommand =
                                                             let
+                                                                at =
+                                                                    pkgs.writeShellScript
+                                                                        "at"
+                                                                        ''
+                                                                            ${ pkgs.coreutils }/bin/tee &
+                                                                        '' ;
                                                                 inc = 2 ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
@@ -452,21 +449,16 @@
                                                                                                     bad = script 65 ;
                                                                                                     good = script 0 ;
                                                                                                 } ;
-                                                                                    secondary = { pkgs = pkgs ; } ;
+                                                                                    secondary = secondary ;
                                                                                 } ;
                                                                         temporary =
                                                                             lib
                                                                                 {
-                                                                                    at =
-                                                                                        pkgs.writeShellScript
-                                                                                            "at"
-                                                                                            ''
-                                                                                                ${ pkgs.coreutils }/bin/tee &
-                                                                                            '' ;
+                                                                                    at = at ;
                                                                                     scripts =
                                                                                         let
                                                                                             script =
-                                                                                                status : { pkgs , ... } :
+                                                                                                status : { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         ARGUMENTS=${ environment-variable "@" } &&
                                                                                                             if ${ has-standard-input }
@@ -487,40 +479,33 @@
                                                                                                     bad = script 66 ;
                                                                                                     good = script 0 ;
                                                                                                 } ;
+                                                                                    secondary = { pkgs = pkgs ; } ;
                                                                                     temporary =
                                                                                         {
-                                                                                            verification =
+                                                                                            bad =
                                                                                                 {
-                                                                                                    bad =
-                                                                                                        {
-                                                                                                            bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                            good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                            null = scripts : { init = scripts.bad ; } ;
-                                                                                                        } ;
-                                                                                                    good =
-                                                                                                        {
-                                                                                                            bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                            good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                            null = scripts : { init = scripts.bad ; } ;
-                                                                                                        } ;
-                                                                                                    null =
-                                                                                                        {
-                                                                                                            bad = scripts : { release = scripts.bad ; } ;
-                                                                                                            good = scripts : { release = scripts.bad ; } ;
-                                                                                                            null = scripts : { } ;
-                                                                                                        } ;
+                                                                                                    bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                    good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                    null = scripts : { init = scripts.bad ; } ;
+                                                                                                } ;
+                                                                                            good =
+                                                                                                {
+                                                                                                    bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                    good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                    null = scripts : { init = scripts.bad ; } ;
+                                                                                                } ;
+                                                                                            null =
+                                                                                                {
+                                                                                                    bad = scripts : { release = scripts.bad ; } ;
+                                                                                                    good = scripts : { release = scripts.bad ; } ;
+                                                                                                    null = scripts : { } ;
                                                                                                 } ;
                                                                                         } ;
                                                                                 } ;
                                                                         util =
                                                                             lib
                                                                                 {
-                                                                                    at =
-                                                                                        pkgs.writeShellScript
-                                                                                            "at"
-                                                                                            ''
-                                                                                                ${ pkgs.coreutils }/bin/tee &
-                                                                                            '' ;
+                                                                                    at = at ;
                                                                                     cache =
                                                                                         {
                                                                                             work = temporary : { temporary = temporary.work ; epoch = 8 * inc ; } ;
@@ -617,13 +602,14 @@
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ target }
                                                                                                     '' ;
                                                                                         } ;
-                                                                                    secondary = { pkgs = pkgs ; } ;
+                                                                                    secondary = secondary ;
                                                                                     temporary =
                                                                                         {
                                                                                             work = scripts : { init = scripts.work ; } ;
                                                                                         } ;
                                                                                 } ;
                                                                             } ;
+                                                                        secondary = { pkgs = pkgs ; } ;
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
@@ -648,8 +634,10 @@
                                                                             ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
                                                                             ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.out &&
                                                                             ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } -type f -exec ${ pkgs.coreutils }/bin/chmod 0400 {} \; &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
