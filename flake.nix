@@ -497,6 +497,18 @@
                                                                                                             good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
                                                                                                             null = scripts : { init = scripts.bad ; } ;
                                                                                                         } ;
+                                                                                                    good =
+                                                                                                        {
+                                                                                                            bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                            good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                            null = scripts : { init = scripts.bad ; } ;
+                                                                                                        } ;
+                                                                                                    null =
+                                                                                                        {
+                                                                                                            bad = scripts : { release = scripts.bad ; } ;
+                                                                                                            good = scripts : { release = scripts.bad ; } ;
+                                                                                                            null = scripts : { } ;
+                                                                                                        } ;
                                                                                                 } ;
                                                                                         } ;
                                                                                 } ;
