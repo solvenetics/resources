@@ -650,7 +650,6 @@
                                                                             ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
-                                                                            ${ pkgs.coreutils }/bin/echo ${ resources.util }/scripts/scripts &&
                                                                             ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } -type f -exec ${ pkgs.coreutils }/bin/chmod 0400 {} \; &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
