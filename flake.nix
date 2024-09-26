@@ -341,7 +341,7 @@
                                                                                                 init = init ;
                                                                                                 release = release ;
                                                                                             } ;
-                                                                                    in identity ( value ( builtins.trace "HI 1" paths.scripts ) ) ;
+                                                                                    in identity ( value paths.scripts ) ;
                                                                             in
                                                                                 strip
                                                                                     ''
