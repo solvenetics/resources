@@ -489,6 +489,26 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                             fi
                                                                                                     '' ;
+                                                                                            temporary =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        COMMAND=${ environment-variable 1 } &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts } ${ environment-variable "COMMAND" } ) &&
+                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/${ environment-variable "RELATIVE" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> ${ environment-variable "ABSOLUTE" }/1.err
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status 2> ${ environment-variable "ABSOLUTE" }/1.status
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
+                                                                                                            fi &&
+                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/2.out 2> ${ environment-variable "ABSOLUTE" }/2.err
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            fi                                                                                                                                                                                                                       
+                                                                                                    '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
