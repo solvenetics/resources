@@ -455,6 +455,12 @@
                                                                         util =
                                                                             lib
                                                                                 {
+                                                                                    at =
+                                                                                        pkgs.writeShellScript
+                                                                                            "at"
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/tee &
+                                                                                            '' ;
                                                                                     cache =
                                                                                         {
                                                                                             work = temporary : { temporary = temporary.work ; epoch = 8 * inc ; } ;
@@ -468,12 +474,13 @@
                                                                                                             ARGUMENTS=${ environment-variable 2 } &&
                                                                                                             STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                             COMMAND=${ environment-variable 4 } &&
-                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "OUT" } ${ environment-variable "COMMAND" } ) &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts } ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "TARGET" }/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "COMMAND" } &&
                                                                                                             if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> { environment-variable "ABSOLUTE" } 1.err
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status 2> ${ environment-variable "ABSOLUTE" }/1.status
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
                                                                                                             fi &&
@@ -484,11 +491,19 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                             fi
                                                                                                     '' ;
-                                                                                                work =
-                                                                                                    { pkgs , ... } : target :
-                                                                                                        ''
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ target }
-                                                                                                        '' ;
+                                                                                            test =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        test ( )
+                                                                                                            {
+                                                                                                                assert_equals "" "$( ${ pkgs.coreutils }/bin/diff -qrs ${ environment-variable "EXPECTED" } ${ environment-variable "OBSERVED" } )"
+                                                                                                            }
+                                                                                                    '' ;
+                                                                                            work =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ target }
+                                                                                                    '' ;
                                                                                         } ;
                                                                                     secondary = { pkgs = pkgs ; } ;
                                                                                     temporary =
@@ -500,12 +515,23 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir $out/cache &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                             ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec $( ${ resources.util }/scripts/scripts  ${ resources.util }/cache/work ) ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {} \;
+                                                                            export EXPECTED=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED" }/scripts &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED" }/scripts/good &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/1.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/1.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/1.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/2.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/2.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED" }/scripts/good/2.status &&
+                                                                            export OBSERVED=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts ${ environment-variable "OBSERVED" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } {} \; &&
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
                                         } ;
