@@ -494,7 +494,7 @@
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
-                                                                                                        test ( )
+                                                                                                        test_are_same ( )
                                                                                                             {
                                                                                                                 assert_equals "" "$( ${ pkgs.coreutils }/bin/diff -qrs ${ environment-variable "EXPECTED" } ${ environment-variable "OBSERVED" } )"
                                                                                                             }
