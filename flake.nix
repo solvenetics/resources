@@ -478,6 +478,7 @@
                                                                                                             OUT=${ environment-variable 3 } &&
                                                                                                             ERR=${ environment-variable 4 } &&
                                                                                                             STATUS=${ environment-variable 5 } &&
+                                                                                                            DIRECTORY=${ environment-variable 6 } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
                                                                                                                 if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "OUT" } 2> ${ environment-variable "ERR" }
@@ -493,6 +494,10 @@
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
+                                                                                                            fi &&
+                                                                                                            if [ ! -z ${ environment-variable "DIRECTORY" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) ${ environment-variable "DIRECTORY" }
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
@@ -510,20 +515,9 @@
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/temporary ${ environment-variable "COMMAND" } ) &&
-                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary${ environment-variable "RELATIVE" } &&
+                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            if ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> ${ environment-variable "ABSOLUTE" }/1.err"
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status 2> ${ environment-variable "ABSOLUTE" }/1.status
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
-                                                                                                            fi &&
-                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/2.out 2> ${ environment-variable "ABSOLUTE" }/2.err
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
-                                                                                                            fi
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
