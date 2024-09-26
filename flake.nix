@@ -454,6 +454,52 @@
                                                                                                 } ;
                                                                                     secondary = { pkgs = pkgs ; } ;
                                                                                 } ;
+                                                                        temporary =
+                                                                            lib
+                                                                                {
+                                                                                    at =
+                                                                                        pkgs.writeShellScript
+                                                                                            "at"
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/tee &
+                                                                                            '' ;
+                                                                                    scripts =
+                                                                                        let
+                                                                                            script =
+                                                                                                status : { pkgs , ... } :
+                                                                                                    ''
+                                                                                                        ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                            if ${ has-standard-input }
+                                                                                                            then
+                                                                                                                STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                                    HAS_STANDARD_INPUT=true
+                                                                                                            else
+                                                                                                                STANDARD_INPUT= &&
+                                                                                                                    HAS_STANDARD_INPUT=false
+                                                                                                            fi &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 0 } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable out }/scripts/##" -e "s#[.]sh\$##" ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo TEMPORARY OUTPUT ${ environment-variable "RELATIVE" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo TEMPORARY ERROR ${ environment-variable "RELATIVE" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } >&2 &&
+                                                                                                            exit ${ builtins.toString status }
+                                                                                                    '' ;
+                                                                                            in
+                                                                                                {
+                                                                                                    bad = script 65 ;
+                                                                                                    good = script 0 ;
+                                                                                                } ;
+                                                                                    temporary =
+                                                                                        {
+                                                                                            verification =
+                                                                                                {
+                                                                                                    bad =
+                                                                                                        {
+                                                                                                            bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                            good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                            null = scripts : { init = scripts.bad ; } ;
+                                                                                                        } ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                } ;
                                                                         util =
                                                                             lib
                                                                                 {
