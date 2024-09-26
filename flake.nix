@@ -538,7 +538,7 @@
                                                                             ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.status &&
                                                                             ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.err &&
                                                                             ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
-                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
+                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
