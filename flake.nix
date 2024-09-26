@@ -449,7 +449,7 @@
                                                                                                     '' ;
                                                                                             in
                                                                                                 {
-                                                                                                    bad = script 64 ;
+                                                                                                    bad = script 65 ;
                                                                                                     good = script 0 ;
                                                                                                 } ;
                                                                                     secondary = { pkgs = pkgs ; } ;
@@ -625,8 +625,8 @@
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad &&
                                                                             ${ pkgs.coreutils }/bin/echo "ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.err &&
                                                                             ${ pkgs.coreutils }/bin/echo "ERROR bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.status &&
-                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo 65 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo 65 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.status &&
                                                                             ${ pkgs.coreutils }/bin/echo "OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.out &&
                                                                             ${ pkgs.coreutils }/bin/echo "OUTPUT bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.out &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good &&
