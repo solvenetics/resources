@@ -427,6 +427,7 @@
                                                                         scripts =
                                                                             lib
                                                                                 {
+                                                                                    out = out ;
                                                                                     scripts =
                                                                                         let
                                                                                             script =
@@ -441,8 +442,9 @@
                                                                                                                 STANDARD_INPUT= &&
                                                                                                                     HAS_STANDARD_INPUT=false
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" }
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable 0 } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable out }/scripts/##" -e "s#[.]sh\$##" ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo OUTPUT ${ environment-variable "RELATIVE" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ERROR ${ environment-variable "RELATIVE" } ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } >&2 &&
                                                                                                             exit ${ builtins.toString status }
                                                                                                     '' ;
                                                                                             in
@@ -470,18 +472,17 @@
                                                                                             scripts =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
-                                                                                                        COMMAND=${ environment-variable 4 } &&
+                                                                                                        COMMAND=${ environment-variable 1 } &&
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts } ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "COMMAND" } &&
-                                                                                                            if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> { environment-variable "ABSOLUTE" } 1.err
+                                                                                                            if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/1.out 2> ${ environment-variable "ABSOLUTE" }/1.err
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status 2> ${ environment-variable "ABSOLUTE" }/1.status
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/1.status
                                                                                                             fi &&
-                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/2.out 2> { environment-variable "ABSOLUTE" } 2.err
+                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/2.out 2> ${ environment-variable "ABSOLUTE" }/2.err
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                             else
@@ -493,19 +494,32 @@
                                                                                                     ''
                                                                                                         test_diff ( )
                                                                                                             {
-                                                                                                                assert_equals "" "$( ${ pkgs.coreutils }/bin/diff -qrs ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
+                                                                                                                assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
                                                                                                                     {
-                                                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED" } -type f | while read EXPECTED_FILE
+                                                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } -type f | while read EXPECTED_FILE
                                                                                                                         do
                                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "EXPECTED_FILE" } ) &&
                                                                                                                                 OBSERVED_FILE=${ environment-variable "OBSERVED_DIRECTORY" }/${ environment-variable "RELATIVE" } &&
                                                                                                                                 if [ ! -f ${ environment-variable "OBSERVED_FILE" } ]
                                                                                                                                 then
-                                                                                                                                    fail "The OBSERVED_FILE for ${ environment-variable "RELATIVE" } does not exist."
+                                                                                                                                    fail "The observed file for ${ environment-variable "RELATIVE" } does not exist."
                                                                                                                                 fi &&
                                                                                                                                 assert_equals "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "EXPECTED_FILE" } )" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_FILE" } )" "The expected file does not equal the observed file for ${ environment-variable "RELATIVE" }."
+                                                                                                                        done
+                                                                                                                    } &&
+                                                                                                                test_observed_expected ( )
+                                                                                                                    {
+                                                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "OBSERVED_DIRECTORY" } -type f | while read OBSERVED_FILE
+                                                                                                                        do
+                                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ environment-variable "OBSERVED_DIRECTORY" } ${ environment-variable "OBSERVED_FILE" } ) &&
+                                                                                                                                EXPECTED_FILE=${ environment-variable "EXPECTED_DIRECTORY" }/${ environment-variable "RELATIVE" } &&
+                                                                                                                                if [ ! -f ${ environment-variable "EXPECTED_FILE" } ]
+                                                                                                                                then
+                                                                                                                                    fail "The expected file for ${ environment-variable "RELATIVE" } does not exist."
+                                                                                                                                fi &&
+                                                                                                                                assert_equals "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "EXPECTED_FILE" } )" "$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OBSERVED_FILE" } )" "The observed file does not equal the expected file for ${ environment-variable "RELATIVE" }."
                                                                                                                         done
                                                                                                                     }
                                                                                                     '' ;
@@ -527,20 +541,28 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                            ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                            STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                            export ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                            export STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
                                                                             export EXPECTED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad &&
+                                                                            ${ pkgs.coreutils }/bin/echo "ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo "ERROR bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo "OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo "OUTPUT bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.status &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.err &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.out &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.status &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.err &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
-                                                                            # ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo "ERROR good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo "ERROR good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo "OUTPUT good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo "OUTPUT good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.status &&
+                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
+                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } -type f -exec ${ pkgs.coreutils }/bin/chmod 0400 {} \; &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
