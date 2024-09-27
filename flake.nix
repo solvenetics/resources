@@ -582,13 +582,6 @@
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.temporary &&
-                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "ABSOLUTE" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
-                                                                                                            do
-                                                                                                                PID=${ environment-variable "PID_FILE%.*" } &&
-                                                                                                                    COUNTER=$( ${ pkgs.findutils }/bin/find ${ environment-variable "ABSOLUTE" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | ${ pkgs.coreutils }/bin/wc --lines ) &&
-                                                                                                                    ${ pkgs.gnused }/bin/sed -e "s#${ environment-variable "PID" }#${ environment-variable "COUNTER" }#" -e w${ environment-variable "ABSOLUTE" }/${ environment-variable "COUNTER" }.pid.archive ${ environment-variable "PID_FILE" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
-                                                                                                            done &&
                                                                                                             ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]broken/target#BAD#" -i "s#/build/.*/target#GOOD#" ${ environment-variable "ABSOLUTE" }/1.out &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/2.temporary
                                                                                                     '' ;
@@ -643,14 +636,13 @@
                                                                 in
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
-                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                             export ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             export STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
-                                                                            # ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
-                                                                            ${ pkgs.coreutils }/bin/true
+                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
+                                                                            export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory )
+                                                                            ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
                                         } ;
