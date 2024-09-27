@@ -41,7 +41,6 @@
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
                                     temporary ? { } ,
                                     temporary-init-error-code ? 64 ,
-                                    temporary-init-error-message ? "We were unable to complete initiation:  ${ environment-variable "BROKEN" }." ,
                                     temporary-resource-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.resource" ,
                                     temporary-broken-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.broken"
                                 } :
@@ -260,7 +259,7 @@
                                                                                                         fi
                                                                                                     '' ;
                                                                                             } ;
-                                                                                    invalidate =
+                                                                                    scrub =
                                                                                         {
                                                                                             does-not-have-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) " ;
                                                                                             has-standard-input = "${ environment-variable "RESOURCE" } ${ environment-variable "PPID" }" ;
@@ -272,13 +271,13 @@
                                                                                                 if ${ has-standard-input }
                                                                                                 then
                                                                                                     ${ strip init.has-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.has-standard-input }"
+                                                                                                        SCRUB="${ scrub.has-standard-input }"
                                                                                                 else
                                                                                                     ${ strip init.does-not-have-standard-input } &&
-                                                                                                        INVALIDATE="${ invalidate.does-not-have-standard-input }"
+                                                                                                        SCRUB="${ scrub.does-not-have-standard-input }"
                                                                                                 fi &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } > ${ environment-variable "RESOURCE" }/invalidate.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/invalidate.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } > ${ environment-variable "RESOURCE" }/scrub.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/scrub.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -286,7 +285,6 @@
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo "${ builtins.toString temporary-init-error-message }" >&2 &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
                                                                                         '' ;
@@ -455,6 +453,7 @@
                                                                             lib
                                                                                 {
                                                                                     at = at ;
+                                                                                    out = out ;
                                                                                     scripts =
                                                                                         let
                                                                                             script =
@@ -557,10 +556,12 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
-                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/temporary ${ environment-variable "COMMAND" } ) &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary }/temporary ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.temporary &&
+                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]broken/target#BAD#" -i "s#/build/.*/target#GOOD#" ${ environment-variable "ABSOLUTE" }/1.out &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/2.temporary
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
@@ -635,6 +636,15 @@
                                                                             ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.out &&
                                                                             ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad &&
+                                                                            ${ pkgs.coreutils }/bin/echo "" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.err &&
+                                                                            ${ pkgs.coreutils }/bin/echo "BAD" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.out &&
+                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.status &&
+                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary &&
+                                                                            ${ pkgs.coreutils }/bin/echo "TEMPORARY OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.out.log &&
+                                                                            ${ pkgs.coreutils }/bin/echo "TEMPORARY ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.err.log &&
+                                                                            ${ pkgs.coreutils }/bin/echo 66 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.status.asc &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
