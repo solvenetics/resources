@@ -681,6 +681,7 @@
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } -type f -exec ${ pkgs.coreutils }/bin/chmod 0400 {} \; &&
                                                                             ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "EXPECTED_DIRECTORY" } $out/expected &&
+                                                                            ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "OBSERVED_DIRECTORY" } $out/observed &&
                                                                             # ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                             ${ pkgs.coreutils }/bin/true
                                                                     '' ;
