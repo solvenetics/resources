@@ -561,7 +561,11 @@
                                                                                                             fi &&
                                                                                                             if [ ! -z ${ environment-variable "DIRECTORY" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) ${ environment-variable "DIRECTORY" }
+                                                                                                                ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) ${ environment-variable "DIRECTORY" } &&
+                                                                                                                    if [ -f ${ environment-variable "DIRECTORY" }/init.sh ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.gnused }/bin/sed -i "s#/nix/store/.*#/nix/store#" ${ environment-variable "DIRECTORY" }/init.sh
+                                                                                                                    fi
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
@@ -583,17 +587,17 @@
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1 &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1/1 &&
-                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]broken/target#BAD#" -i "s#/build/.*/target#GOOD#" ${ environment-variable "ABSOLUTE" }/1.out &&
+                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]##" ${ environment-variable "ABSOLUTE" }/1.out &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/2 &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/2/1
-                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]broken/target#BAD#" -i "s#/build/.*/target#GOOD#" ${ environment-variable "ABSOLUTE" }/2.out
+                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]##" ${ environment-variable "ABSOLUTE" }/2.out
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         test_diff ( )
                                                                                                             {
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
                                                                                                                     assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
@@ -647,7 +651,7 @@
                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
-                                                                            # ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
