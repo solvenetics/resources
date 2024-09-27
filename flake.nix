@@ -648,40 +648,7 @@
                                                                             export ARGUMENTS=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             export STANDARD_INPUT=$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                             ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
-                                                                            export EXPECTED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT ERROR bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo 65 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.status &&
-                                                                            ${ pkgs.coreutils }/bin/echo 65 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.status &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/1.out &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT bad ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/bad/2.out &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT ERROR good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT ERROR good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.status &&
-                                                                            ${ pkgs.coreutils }/bin/echo 0 > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.status &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/1.out &&
-                                                                            ${ pkgs.coreutils }/bin/echo "SCRIPT OUTPUT good ${ environment-variable "ARGUMENTS" } true ${ environment-variable "STANDARD_INPUT" }" > ${ environment-variable "EXPECTED_DIRECTORY" }/scripts/good/2.out &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad &&
-                                                                            ${ pkgs.coreutils }/bin/echo 1 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.pid.archive &&
-                                                                            ${ pkgs.coreutils }/bin/echo "" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.err &&
-                                                                            ${ pkgs.coreutils }/bin/echo "BAD" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.out &&
-                                                                            ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.status &&
-                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary &&
-                                                                            ${ pkgs.coreutils }/bin/echo "TEMPORARY OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.out.log &&
-                                                                            ${ pkgs.coreutils }/bin/echo "TEMPORARY ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.err.log &&
-                                                                            ${ pkgs.coreutils }/bin/echo 66 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.status.asc &&
-                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/init.sh &&
-                                                                            export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
-                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } -type f -exec ${ pkgs.coreutils }/bin/chmod 0400 {} \; &&
-                                                                            ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "EXPECTED_DIRECTORY" } $out/expected &&
-                                                                            ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "OBSERVED_DIRECTORY" } $out/observed &&
+                                                                            export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             # ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                             ${ pkgs.coreutils }/bin/true
                                                                     '' ;
