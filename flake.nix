@@ -562,9 +562,14 @@
                                                                                                             if [ ! -z ${ environment-variable "DIRECTORY" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) ${ environment-variable "DIRECTORY" } &&
+                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "DIRECTORY" } | while read FILE
+                                                                                                                    do
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.permissions
+                                                                                                                    done &&
                                                                                                                     if [ -f ${ environment-variable "DIRECTORY" }/init.sh ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.gnused }/bin/sed -i "s#/nix/store/.*#/nix/store#" ${ environment-variable "DIRECTORY" }/init.sh
+                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/.*#/nix/store#" ${ environment-variable "DIRECTORY" }/init.sh -e w${ environment-variable "DIRECTORY" }/init.sh.archive &&
+                                                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "DIRECTORY" }/init.sh
                                                                                                                     fi
                                                                                                             fi
                                                                                                     '' ;
