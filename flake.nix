@@ -535,6 +535,30 @@
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         {
+                                                                                            directory =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        ROOT=${ environment-variable 1 } &&
+                                                                                                            ${ pkgs.findutils }/bin/find /build -mindepth 2 -maxdepth 2 -name target | while read FILE
+                                                                                                            do
+                                                                                                                if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } ) == $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "ROOT" }/1/target ) ]
+                                                                                                                then
+                                                                                                                    SOURCE=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "FILE" } ) &&
+                                                                                                                        INDEX=$( ${ pkgs.findutils }/bin/find ${ environment-variable "ROOT" }/2 -mindepth 1 | ${ pkgs.coreutils }/bin/wc --lines ) &&
+                                                                                                                        DESTINATION=${ environment-variable "ROOT" }/2/${ environment-variable "INDEX" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DESTINATION" } &&
+                                                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "DESTINATION" } | while read FILE
+                                                                                                                        do
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.permissions
+                                                                                                                        done &&
+                                                                                                                        if [ -f ${ environment-variable "DESTINATION" }/init.sh ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#/nix/store/.*#/nix/store#" ${ environment-variable "DESTINATION" }/init.sh -e w${ environment-variable "DESTINATION" }/init.sh.archive &&
+                                                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "DESTINATION" }/init.sh
+                                                                                                                        fi                                                                                                                        
+                                                                                                                fi
+                                                                                                            done
+                                                                                                    '' ;
                                                                                             record =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
