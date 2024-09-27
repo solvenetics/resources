@@ -292,10 +292,10 @@
                                                                                                 export ${ target }=${ environment-variable resource }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
-                                                                                                    WAIT_PID=${ environment-variable "PPID" } &&
+                                                                                                    WAIT_PID=${ environment-variable "PPID//[[:space:]]/I a" } &&
                                                                                                         STATUS=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "prepare" prepare.has-standard-input } ${ environment-variable "@" } )
                                                                                                 else
-                                                                                                    WAIT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                                    WAIT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } | ${ pkgs.findutils }/bin/xargs ) &&
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
