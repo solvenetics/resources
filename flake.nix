@@ -299,8 +299,7 @@
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean > ${ environment-variable resource }/scrub.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable resource }/scrub.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean | ${ at } now > /dev/null 2>&1 &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -583,6 +582,13 @@
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.temporary &&
+                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "ABSOLUTE" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                                            do
+                                                                                                                PID=${ environment-variable "PID_FILE%.*" } &&
+                                                                                                                    COUNTER=$( ${ pkgs.findutils }/bin/find ${ environment-variable "ABSOLUTE" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | ${ pkgs.coreutils }/bin/wc --lines ) &&
+                                                                                                                    ${ pkgs.gnused }/bin/sed -e "s#${ environment-variable "PID" }#${ environment-variable "COUNTER" }#" -e w${ environment-variable "ABSOLUTE" }/${ environment-variable "COUNTER" }.pid.archive ${ environment-variable "PID_FILE" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                                            done &&
                                                                                                             ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]broken/target#BAD#" -i "s#/build/.*/target#GOOD#" ${ environment-variable "ABSOLUTE" }/1.out &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/2.temporary
                                                                                                     '' ;
@@ -661,6 +667,7 @@
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad &&
                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad &&
+                                                                            ${ pkgs.coreutils }/bin/echo 1 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.pid.archive &&
                                                                             ${ pkgs.coreutils }/bin/echo "" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.err &&
                                                                             ${ pkgs.coreutils }/bin/echo "BAD" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.out &&
                                                                             ${ pkgs.coreutils }/bin/echo 64 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.status &&
@@ -668,6 +675,7 @@
                                                                             ${ pkgs.coreutils }/bin/echo "TEMPORARY OUTPUT bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.out.log &&
                                                                             ${ pkgs.coreutils }/bin/echo "TEMPORARY ERROR bad ${ environment-variable "ARGUMENTS" } false" > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.err.log &&
                                                                             ${ pkgs.coreutils }/bin/echo 66 > ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/1.temporary/init.status.asc &&
+                                                                            ${ pkgs.coreutils }/bin/touch ${ environment-variable "EXPECTED_DIRECTORY" }/temporary/bad/bad/init.sh &&
                                                                             export OBSERVED_DIRECTORY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} \; &&
