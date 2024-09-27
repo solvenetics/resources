@@ -36,6 +36,7 @@
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
                                     lock ? "/tmp/tmp.JnWlkWVHzR.lock" ,
                                     out ? "e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d" ,
+                                    resource ? "bf01d7a5dfd1ad0c7bd4a8ecba39063384d09898d821698c82691d8f28d9aa1067e4abeff96cf3641ab311d22cb5937b9429b6ca0c151d6365fbe0025c575f01" ,
                                     secondary ? { } ,
                                     scripts ? secondary : { } ,
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
@@ -224,66 +225,88 @@
                                                                         let
                                                                             init =
                                                                                 let
-                                                                                    init =
+                                                                                    clean =
+                                                                                        let
+                                                                                            wipe =
+                                                                                                ''
+                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable resource } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                                    do
+                                                                                                        PID=${ environment-variable "PID_FILE%.*" } &&
+                                                                                                             ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                                    done &&
+                                                                                                            ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release }
+                                                                                                '' ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    export ${ resource }=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "wipe" wipe }
+                                                                                                '' ;
+                                                                                    prepare =
                                                                                         if builtins.typeOf temporary.init == "null" then
                                                                                             {
-                                                                                                does-not-have-standard-input = "STATUS=0" ;
-                                                                                                has-standard-input = "STATUS=0" ;
+                                                                                                does-not-have-standard-input = "${ pkgs.coreutils }/bin/echo 0" ;
+                                                                                                has-standard-input = "${ pkgs.coreutils }/bin/echo 0" ;
                                                                                             }
                                                                                         else
                                                                                             {
                                                                                                 does-not-have-standard-input =
                                                                                                     ''
-                                                                                                        if ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
-                                                                                                        then
-                                                                                                            STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                                        else
-                                                                                                            STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                                        fi
+                                                                                                        ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/cat ${ temporary.init } > ${ environment-variable resource }/init.sh &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable resource }/arguments.asc &&
+                                                                                                            if ${ temporary.init } ${ environment-variable "ARGUMENTS" } > ${ environment-variable resource }/init.out.log 2> ${ environment-variable resource }/init.err.log
+                                                                                                            then
+                                                                                                                STATUS=${ environment-variable "?" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 0
+                                                                                                            else
+                                                                                                                STATUS=${ environment-variable "?" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.toString temporary-init-error-code }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable resource }/init.status.asc
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.sh ${ environment-variable resource }/arguments.asc ${ environment-variable resource }/init.out.log ${ environment-variable resource }/init.err.log ${ environment-variable resource }/init.status.asc
                                                                                                     '' ;
                                                                                                 has-standard-input =
                                                                                                     ''
-                                                                                                        if ${ pkgs.coreutils }/bin/tee | ${ temporary.init } ${ environment-variable "@" } > ${ environment-variable "RESOURCE" }/init.out.log 2> ${ environment-variable "RESOURCE" }/init.err.log
-                                                                                                        then
-                                                                                                            STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                                        else
-                                                                                                            STATUS=${ environment-variable "?" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "RESOURCE" }/init.status.asc &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log ${ environment-variable "RESOURCE" }/init.err.log ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                                        fi
-                                                                                                    '' ;
+                                                                                                        ARGUMENTS=${ environment-variable "@" } &&
+                                                                                                            STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/cat ${ temporary.init } > ${ environment-variable resource }/init.sh &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable resource }/arguments.asc &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable resource }/standard-input.asc &&
+                                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ temporary.init } ${ environment-variable "ARGUMENTS" } > ${ environment-variable resource }/init.out.log 2> ${ environment-variable resource }/init.err.log
+                                                                                                            then
+                                                                                                                STATUS=${ environment-variable "?" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo 0
+                                                                                                            else
+                                                                                                                STATUS=${ environment-variable "?" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ builtins.toString temporary-init-error-code }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable resource }/init.status.asc
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.sh ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable resource }/init.out.log ${ environment-variable resource }/init.err.log ${ environment-variable resource }/init.status.asc
+                                                                                                     '' ;
                                                                                             } ;
-                                                                                    scrub =
-                                                                                        {
-                                                                                            does-not-have-standard-input = "${ environment-variable "RESOURCE" } $( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) " ;
-                                                                                            has-standard-input = "${ environment-variable "RESOURCE" } ${ environment-variable "PPID" }" ;
-                                                                                        } ;
                                                                                     in
                                                                                         ''
-                                                                                            RESOURCE=$( ${ temporary-resource-directory } ) &&
-                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
+                                                                                            export ${ resource }=$( ${ temporary-resource-directory } ) &&
+                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clean" clean } ${ environment-variable resource }/clean &&
+                                                                                                export ${ target }=${ environment-variable resource }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
-                                                                                                    ${ strip init.has-standard-input } &&
-                                                                                                        SCRUB="${ scrub.has-standard-input }"
+                                                                                                    WAIT_PID=${ environment-variable "PPID" } &&
+                                                                                                        STATUS=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "prepare" prepare.has-standard-input } ${ environment-variable "@" } )
                                                                                                 else
-                                                                                                    ${ strip init.does-not-have-standard-input } &&
-                                                                                                        SCRUB="${ scrub.does-not-have-standard-input }"
+                                                                                                    WAIT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } ) &&
+                                                                                                        STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release } ${ environment-variable "RESOURCE" } ${ environment-variable "PPID" } > ${ environment-variable "RESOURCE" }/scrub.sh &&
-                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable "RESOURCE" }/scrub.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean > ${ environment-variable resource }/scrub.sh &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0500 ${ environment-variable resource }/scrub.sh &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
-                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } ${ environment-variable "BROKEN" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
