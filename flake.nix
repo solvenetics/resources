@@ -582,7 +582,14 @@
                                                                                             temporary =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
-                                                                                                        ${ environment-variable "OUT" }/scripts/scripts ${ environment-variable "@" }
+                                                                                                       COMMAND=${ environment-variable 1 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 2 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 3 } &&
+                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary }/temporary ${ environment-variable "COMMAND" } ) &&
+                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
