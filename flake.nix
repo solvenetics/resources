@@ -588,15 +588,16 @@
                                                                                                             if [ ! -z ${ environment-variable "DIRECTORY" } ]
                                                                                                             then
                                                                                                                 SOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DIRECTORY" } &&
-                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "DIRECTORY" } | while read FILE
+                                                                                                                    DESTINATION=${ environment-variable "DIRECTORY" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DESTINATION" } &&
+                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "DESTINATION" } | while read FILE
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.permissions
                                                                                                                     done &&
-                                                                                                                    if [ -f ${ environment-variable "DIRECTORY" }/init.sh ]
+                                                                                                                    if [ -f ${ environment-variable "DESTINATION" }/init.sh ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/.*#/nix/store#" ${ environment-variable "DIRECTORY" }/init.sh -e w${ environment-variable "DIRECTORY" }/init.sh.archive &&
-                                                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "DIRECTORY" }/init.sh
+                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/.*#/nix/store#" ${ environment-variable "DESTINATION" }/init.sh -e w${ environment-variable "DESTINATION" }/init.sh.archive &&
+                                                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "DESTINATION" }/init.sh
                                                                                                                     fi
                                                                                                             fi
                                                                                                     '' ;
