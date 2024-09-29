@@ -565,12 +565,14 @@
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
                                                                                                             HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                            ARGUMENTS=${ environment-variable 3 } &&
-                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                            ARGUMENTS_=${ environment-variable 3 } &&
+                                                                                                            STANDARD_INPUT_=${ environment-variable 4 } &&
                                                                                                             OUT=${ environment-variable 5 } &&
                                                                                                             ERR=${ environment-variable 6 } &&
                                                                                                             STATUS=${ environment-variable 7 } &&
                                                                                                             DIRECTORY=${ environment-variable 8 } &&
+                                                                                                            ARGUMENTS=${ environment-variable "ARGUMENTS_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable "STANDARD_INPUT_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
                                                                                                                 if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "OUT" } 2> ${ environment-variable "ERR" }
