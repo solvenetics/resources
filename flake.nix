@@ -590,6 +590,8 @@
                                                                                                                 SOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) &&
                                                                                                                     INDEX=$( ${ pkgs.findutils }/bin/find ${ environment-variable "DIRECTORY" } -mindepth 1 -maxdepth 1 -type d | ${ pkgs.coreutils }/bin/wc --lines ) &&
                                                                                                                     DESTINATION=${ environment-variable "DIRECTORY" } &&
+                                                                                                                    # DESTINATION=${ environment-variable "DIRECTORY" }/${ environment-variable "INDEX" } &&
+                                                                                                                    # ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "DESTINATION" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DESTINATION" } &&
                                                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "DESTINATION" } | while read FILE
                                                                                                                     do
