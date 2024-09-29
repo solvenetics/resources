@@ -535,6 +535,24 @@
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         {
+                                                                                            directory =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } | while read I
+                                                                                                            do
+                                                                                                                RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary } ${ environment-variable "I" } ) &&
+                                                                                                                    ABSOLUTE=${ environment-variable "OUTPUT" }/${ environment-variable "RELATIVE" } &&
+                                                                                                                    if [ -d ${ environment-variable "I" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }
+                                                                                                                    else
+                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#ERROR#ERROR#" -e w${ environment-variable "ABSOLUTE" } > /dev/null 2>&1
+                                                                                                                    fi &&
+                                                                                                                    ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
+                                                                                                            done
+                                                                                                    '' ;
                                                                                             record =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
@@ -565,7 +583,11 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
                                                                                                             fi &&
-                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-zA-Z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" } > /dev/null 2>&1
+                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-zA-Z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" } > /dev/null 2>&1 &&
+                                                                                                            if [ -d ${ environment-variable "DIRECTORY" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/true ${ environment-variable out }/scripts/directory $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ${ environment-variable "DIRECTORY" }
+                                                                                                            fi
                                                                                                     '' ;
                                                                                             scripts =
                                                                                                 { pkgs , ... } : target :
@@ -588,8 +610,10 @@
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary }/temporary ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            # ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1.before &&
+                                                                                                            # ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1.after &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.before &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.before
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
