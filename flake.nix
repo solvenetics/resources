@@ -560,7 +560,7 @@
                                                                                                                 fi
                                                                                                             done
                                                                                                     '' ;
-                                                                                            record =
+                                                                                            script =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
@@ -584,24 +584,6 @@
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
-                                                                                                            fi &&
-                                                                                                            if [ ! -z ${ environment-variable "DIRECTORY" } ]
-                                                                                                            then
-                                                                                                                SOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) &&
-                                                                                                                    INDEX=$( ${ pkgs.findutils }/bin/find ${ environment-variable "DIRECTORY" } -mindepth 1 -maxdepth 1 -type d | ${ pkgs.coreutils }/bin/wc --lines ) &&
-                                                                                                                    # DESTINATION=${ environment-variable "DIRECTORY" } &&
-                                                                                                                    DESTINATION=${ environment-variable "DIRECTORY" }/${ environment-variable "INDEX" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "DIRECTORY" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DESTINATION" } &&
-                                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable "DESTINATION" } | while read FILE
-                                                                                                                    do
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.permissions
-                                                                                                                    done &&
-                                                                                                                    if [ -f ${ environment-variable "DESTINATION" }/init.sh ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/.*#/nix/store#" ${ environment-variable "DESTINATION" }/init.sh -e w${ environment-variable "DESTINATION" }/init.sh.archive &&
-                                                                                                                            ${ pkgs.coreutils }/bin/rm ${ environment-variable "DESTINATION" }/init.sh
-                                                                                                                    fi
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
@@ -611,8 +593,8 @@
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/scripts ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/scripts/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
+                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                     '' ;
                                                                                             temporary =
                                                                                                 { pkgs , ... } : target :
