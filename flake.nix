@@ -565,7 +565,6 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
                                                                                                             fi &&
-                                                                                                            # ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } > ${ environment-variable "OUT" }
                                                                                                             ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" }
                                                                                                     '' ;
                                                                                             scripts =
