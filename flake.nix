@@ -587,7 +587,8 @@
                                                                                                             fi &&
                                                                                                             if [ ! -z ${ environment-variable "DIRECTORY" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) ${ environment-variable "DIRECTORY" } &&
+                                                                                                                SOURCE=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "OUT" } ) ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive ${ environment-variable "SOURCE" } ${ environment-variable "DIRECTORY" } &&
                                                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable "DIRECTORY" } | while read FILE
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.permissions
