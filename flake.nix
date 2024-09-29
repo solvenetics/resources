@@ -546,24 +546,27 @@
                                                                                                             ERR=${ environment-variable 6 } &&
                                                                                                             STATUS=${ environment-variable 7 } &&
                                                                                                             DIRECTORY=${ environment-variable 8 } &&
+                                                                                                            TEMPORARY_OUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
                                                                                                             ARGUMENTS=${ environment-variable "ARGUMENTS_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
                                                                                                             STANDARD_INPUT=${ environment-variable "STANDARD_INPUT_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
-                                                                                                                if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "OUT" } 2> ${ environment-variable "ERR" }
+                                                                                                                if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "TEMPORARY_OUT" } 2> ${ environment-variable "ERR" }
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
                                                                                                             else
-                                                                                                                if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "OUT" } 2> ${ environment-variable "ERR" }
+                                                                                                                if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "TEMPORARY_OUT" } 2> ${ environment-variable "ERR" }
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 else
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
-                                                                                                            fi
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } > ${ environment-variable "OUT" }
+                                                                                                            # ${ pkgs.gnused }/bin/sed -e "s#/build/[0-9a-z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" }
                                                                                                     '' ;
                                                                                             scripts =
                                                                                                 { pkgs , ... } : target :
@@ -580,16 +583,7 @@
                                                                                             temporary =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
-                                                                                                        COMMAND=${ environment-variable 1 } &&
-                                                                                                            RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary }/temporary ${ environment-variable "COMMAND" } ) &&
-                                                                                                            ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1 &&
-                                                                                                            ARGUMENTS="${ environment-variable "RELATIVE" }:1" ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1/1 &&
-                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]##" ${ environment-variable "ABSOLUTE" }/1.out &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/2 &&
-                                                                                                            ARGUMENTS="${ environment-variable "RELATIVE" }:2" ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/2/1
-                                                                                                            ${ pkgs.gnused }/bin/sed -i "s#/build/.*[.]##" ${ environment-variable "ABSOLUTE" }/2.out
+                                                                                                        ${ environment-variable "OUT" }/scripts/scripts ${ environment-variable 3 }
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
