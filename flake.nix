@@ -565,10 +565,12 @@
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
                                                                                                             HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                            OUT=${ environment-variable 3 } &&
-                                                                                                            ERR=${ environment-variable 4 } &&
-                                                                                                            STATUS=${ environment-variable 5 } &&
-                                                                                                            DIRECTORY=${ environment-variable 6 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
+                                                                                                            OUT=${ environment-variable 5 } &&
+                                                                                                            ERR=${ environment-variable 6 } &&
+                                                                                                            STATUS=${ environment-variable 7 } &&
+                                                                                                            DIRECTORY=${ environment-variable 8 } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
                                                                                                                 if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "OUT" } 2> ${ environment-variable "ERR" }
@@ -595,8 +597,8 @@
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/scripts ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/scripts/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } false ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
-                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } true ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
+                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status &&
+                                                                                                            ${ environment-variable out }/scripts/script ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status
                                                                                                     '' ;
                                                                                             temporary =
                                                                                                 { pkgs , ... } : target :
