@@ -437,7 +437,6 @@
                                                                         ''
                                                                             ${ pkgs.coreutils }/bin/tee &
                                                                         '' ;
-                                                                inc = 2 ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
                                                                     {
@@ -529,10 +528,6 @@
                                                                             lib
                                                                                 {
                                                                                     at = at ;
-                                                                                    cache =
-                                                                                        {
-                                                                                            work = temporary : { temporary = temporary.work ; epoch = 8 * inc ; } ;
-                                                                                        } ;
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         {
@@ -552,7 +547,62 @@
                                                                                                                         ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE" } ${ environment-variable "I" } > /dev/null 2>&1
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
-                                                                                                            done
+                                                                                                            done &&
+if [ -x ${ environment-variable out }/scripts/post-out ]
+then
+    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } /build/debug PIPE ${ at } now
+fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } /build/debug" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
+                                                                                                    '' ;
+                                                                                            post-delete =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --event delete_self ${ environment-variable "INPUT" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "OUTPUT" }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
+                                                                                                                    exit 63
+                                                                                                            fi
+                                                                                                    '' ;
+                                                                                            post-move =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --event move_self ${ environment-variable "INPUT" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "OUTPUT" }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
+                                                                                                                    exit 63
+                                                                                                            fi
+                                                                                                    '' ;
+                                                                                            post-out =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+${ pkgs.coreutils }/bin/date >> /build/debug &&
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
+                                                                                                                    # if [ -f ${ environment-variable "INPUT" }/release.out.log ]
+                                                                                                                    # then
+                                                                                                                    #    ${ pkgs.inotify-tools }/bin/inotify-wait --event attrib ${ environment-variable "INPUT" }/release.out.log &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }
+                                                                                                                    # fi
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
+                                                                                                                    exit 63
+                                                                                                            fi
                                                                                                     '' ;
                                                                                             record =
                                                                                                 { pkgs , ... } : target :
@@ -612,7 +662,7 @@
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.before &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.before
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.before mkdir
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
@@ -668,10 +718,10 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             export OBSERVED_DIRECTORY=$out &&
-                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                            ${ pkgs.coreutils }/bin/sleep $(( ${ builtins.toString ( 8 * inc ) } + ${ builtins.toString ( 8 * inc ) } * ( ${ environment-variable "NOW" } / ${ builtins.toString ( 8 * inc ) } ) - ${ environment-variable "NOW" } )) &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
+                                                                            ${ pkgs.coreutils }/bin/sleep 10s &&
+${ pkgs.findutils }/bin/find /build -name release.out.log &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
