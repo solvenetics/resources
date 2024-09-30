@@ -434,12 +434,13 @@
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                                 do
-                                                                                                                    if [ ${ environment-variable "FILE" } == ${ environment-variable "TARGET" } ]
-                                                                                                                    then
-                                                                                                                       ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "TARGET" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "TARGET" }.cat &&
-                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "TARGET" }.cat
-                                                                                                                    fi
+                                                                                                                    case ${ environment-variable "FILE" } in
+                                                                                                                        release.out.log)
+                                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
+                                                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat &&
+                                                                                                                                ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat
+                                                                                                                                ;;
+                                                                                                                    esac
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
