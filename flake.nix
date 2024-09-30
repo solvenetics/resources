@@ -19,19 +19,6 @@
                             lib =
                                 {
                                     at ? "/run/wrappers/bin/at" ,
-                                    cache ? { } ,
-                                    cache-default-closure ? builtins.false ,
-                                    cache-default-epoch ? 1 ,
-                                    cache-directory ? environment-variable "TMPDIR" ,
-                                    cache-epoch-hash ? "cc3be3d5e123a64b31bd74e9d3e3a4e13337ad02c5d3b622af5094688f9255b773448e911a4bf1fb156e2a05ea599108f96ac0e056cbb27d489d6f9cc4c2324a" ,
-                                    cache-init-error-code ? 64 ,
-                                    cache-init-error-message ? "We were unable to instantiate:  ${ environment-variable "WORK_DIR" }" ,
-                                    cache-lock-exit ? 64 ,
-                                    cache-lock-message ? "We were unable to lock the cache." ,
-                                    cache-sleep ? 2 , # This is a kludge.  inotifywait is better but I can not get that to work.  Instead we are polling files and sleeping this amount of time between polls.  The smaller this is the faster this is but at the same time using more resources.
-                                    cache-timestamp ? "bc4815fbc3b8c18f56ba1fa1cc22105f1ce4dfc8e29acd3140b0483976ab4980a559a487c3de5d23c24fd48b60f1a6531572af4a4da5349131a75ec49217d661" ,
-                                    cache-work-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.work" ,
-                                    invalid-cache-throw ? value : "02bc1acea7eb0055c96f9f39d90f2c348666ddc2a4f3c72c148ea61da4ddfc3d06fc851eefcf6821ec0708328f81d5eccb13c730447de562c2f19bddc5c83135: ${ builtins.typeOf value }" ,
                                     invalid-script-throw ? value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
                                     lock ? "/tmp/tmp.JnWlkWVHzR.lock" ,
@@ -65,152 +52,7 @@
                                                                 } ;
                                                     mappers =
                                                         let
-                                                            cache =
-                                                                path : name : value :
-                                                                    if builtins.typeOf value == "lambda" then
-                                                                        let
-                                                                            clear =
-                                                                                ''
-                                                                                    ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/basename $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) ) &&
-                                                                                        WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
-                                                                                        exec 200> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                        ${ pkgs.flock }/bin/flock 10 &&
-                                                                                        ${ pkgs.coreutils }/bin/mv ${ cache-directory }/${ environment-variable cache-epoch-hash } ${ environment-variable "WORK_DIRECTORY" } &&
-                                                                                        ${ pkgs.flock }/bin/flock -u 10 &&
-                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
-                                                                                        do
-                                                                                            PID=$( ${ pkgs.coreutils }/bin/basename ${ environment-variable "PID_FILE%.*" } ) &&
-                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
-                                                                                        done &&
-                                                                                        ${ pkgs.findutils }/bin/find ${ environment-variable "WORK_DIRECTORY" } -mindepth 1 -maxdepth 1 -type f -name "*.sh" | while read CACHE_FILE
-                                                                                        do
-                                                                                            ${ environment-variable "CACHE_FILE" } &&
-                                                                                                ${ pkgs.coreutils }/bin/rm ${ environment-variable "CACHE_FILE" }
-                                                                                        done &&
-                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "WORK_DIRECTORY" }
-                                                                                '' ;
-                                                                            hook =
-                                                                                let
-                                                                                    populate =
-                                                                                        let
-                                                                                            identity =
-                                                                                                {
-                                                                                                    closure ? cache-default-closure ,
-                                                                                                    epoch ? cache-default-epoch ,
-                                                                                                    temporary
-                                                                                                } :
-                                                                                                    {
-                                                                                                        closure = closure ;
-                                                                                                        temporary = temporary ;
-                                                                                                        epoch = builtins.toString epoch ;
-                                                                                                    } ;
-                                                                                            in identity ( value paths.temporary ) ;
-                                                                                    in
-                                                                                        ''
-                                                                                            export ${ cache-timestamp }=${ environment-variable "${ cache-timestamp }:=$( ${ pkgs.coreutils }/bin/date +%s )" } &&
-                                                                                                ARGUMENTS=${ environment-variable "@" } &&
-                                                                                                if ${ has-standard-input }
-                                                                                                then
-                                                                                                    HAS_STANDARD_INPUT=true &&
-                                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/tee )
-                                                                                                else
-                                                                                                    HAS_STANDARD_INPUT=false &&
-                                                                                                        STANDARD_INPUT=""
-                                                                                                fi &&
-                                                                                                PARENT_CACHE_EPOCH_HASH=${ environment-variable cache-epoch-hash } &&
-                                                                                                export ${ cache-epoch-hash }=$( ${ pkgs.coreutils }/bin/echo -n $(( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } )) ${ environment-variable "ARGUMENTS" } ${ environment-variable "HAS_STANDARD_INPUT" } ${ environment-variable "STANDARD_INPUT" } $( ${ pkgs.coreutils }/bin/whoami ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "" ( builtins.concatLists [ path ( builtins.map builtins.toString [ name populate.epoch populate.temporary ] ) ] ) ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                exec 10> ${ cache-directory }/${ environment-variable cache-epoch-hash }.lock &&
-                                                                                                if ${ pkgs.flock }/bin/flock 10
-                                                                                                then
-                                                                                                    if [ ! -d ${ cache-directory }/${ environment-variable cache-epoch-hash } ]
-                                                                                                    then
-                                                                                                        WORK_DIRECTORY=$( ${ cache-work-directory } ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "WORK_DIRECTORY" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/arguments &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/has-standard-input &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "WORK_DIRECTORY" }/standard-input &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo $(( ${ builtins.toString populate.epoch } + ${ builtins.toString populate.epoch } * ( ${ environment-variable cache-timestamp } / ${ builtins.toString populate.epoch } ) )) > ${ environment-variable "WORK_DIRECTORY" }/validity &&
-                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ populate.temporary } ${ environment-variable "WORK_DIRECTORY" }/temporary &&
-                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable cache-epoch-hash }/clear ${ environment-variable "WORK_DIRECTORY" }/link &&
-                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "clear" clear } ${ environment-variable "WORK_DIRECTORY" }/clear &&
-                                                                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "manage" manage } ${ environment-variable "WORK_DIRECTORY" }/manage &&
-                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/arguments ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ${ environment-variable "WORK_DIRECTORY" }/standard-input ${ environment-variable "WORK_DIRECTORY" }/validity &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" }/manage | ${ at } now &&
-                                                                                                            while [ ! -f ${ environment-variable "WORK_DIRECTORY" }/flag ]
-                                                                                                            do
-                                                                                                                ${ pkgs.coreutils }/bin/sleep ${ builtins.toString cache-sleep }s
-                                                                                                            done &&
-                                                                                                            if [ $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/status ) == 0 ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/mv ${ environment-variable "WORK_DIRECTORY" } ${ cache-directory }/${ environment-variable cache-epoch-hash }
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "WORK_DIRECTORY" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ cache-init-error-message }" >&2 &&
-                                                                                                                    exit ${ builtins.toString cache-init-error-code }
-                                                                                                            fi
-                                                                                                    fi &&
-                                                                                                        if [ ! -z "${ environment-variable "PARENT_CACHE_EPOCH_HASH" }" ] && [ ! -e ${ cache-directory }/${ environment-variable cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh ]
-                                                                                                        then
-                                                                                                           ${ pkgs.coreutils }/bin/ln --symbolic ${ cache-directory }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }/clear ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PARENT_CACHE_EPOCH_HASH" }.sh
-                                                                                                        fi &&
-                                                                                                        if [ ! -e ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid ]
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "PPID" } > ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ cache-directory }/${ environment-variable cache-epoch-hash }/${ environment-variable "PPID" }.pid
-                                                                                                        fi
-                                                                                                        ${ pkgs.coreutils }/bin/cat ${ cache-directory }/${ environment-variable cache-epoch-hash }/out
-                                                                                                else
-                                                                                                    ${ pkgs.coreutils }/bin/echo "${ cache-lock-message }" >&2 &&
-                                                                                                        exit ${ builtins.toString cache-lock-exit }
-                                                                                                fi
-                                                                                        '' ;
-                                                                            manage =
-                                                                                ''
-                                                                                    WORK_DIRECTORY=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
-                                                                                        ARGUMENTS=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/arguments ) &&
-                                                                                        HAS_STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/has-standard-input ) &&
-                                                                                        STANDARD_INPUT=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/standard-input ) &&
-                                                                                        if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
-                                                                                        then
-                                                                                            if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
-                                                                                            then
-                                                                                                STATUS=${ environment-variable "?" }
-                                                                                            else
-                                                                                                STATUS=${ environment-variable "?" }
-                                                                                            fi
-                                                                                        else
-                                                                                            if ${ environment-variable "WORK_DIRECTORY" }/temporary ${ environment-variable "ARGUMENTS" } > ${ environment-variable "WORK_DIRECTORY" }/out 2> ${ environment-variable "WORK_DIRECTORY" }/err
-                                                                                            then
-                                                                                                STATUS=${ environment-variable "?" }
-                                                                                            else
-                                                                                                STATUS=${ environment-variable "?" }
-                                                                                            fi
-                                                                                        fi &&
-                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable "WORK_DIRECTORY" }/status &&
-                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "WORK_DIRECTORY" }/out ${ environment-variable "WORK_DIRECTORY" }/err ${ environment-variable "WORK_DIRECTORY" }/status &&
-                                                                                        if [ ${ environment-variable "STATUS" } == 0 ]
-                                                                                        then
-                                                                                            SLEEP=$(( $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "WORK_DIRECTORY" }/validity ) - $( ${ pkgs.coreutils }/bin/date +%s ) ))
-                                                                                        else
-                                                                                            SLEEP=0
-                                                                                        fi &&
-                                                                                        CLEAR=$( ${ pkgs.coreutils }/bin/readlink ${ environment-variable "WORK_DIRECTORY" }/link ) &&
-                                                                                        ${ pkgs.coreutils }/bin/touch ${ environment-variable "WORK_DIRECTORY" }/flag &&
-                                                                                        ${ pkgs.coreutils }/bin/sleep ${ environment-variable "SLEEP" }s &&
-                                                                                        if [ ${ environment-variable "STATUS" } == 0 ] && [ -x ${ environment-variable "CLEAR" } ]
-                                                                                        then
-                                                                                            ${ environment-variable "CLEAR" }
-                                                                                        fi
-                                                                                '' ;
-                                                                            in
-                                                                                strip
-                                                                                    ''
-                                                                                        write_it ${ pkgs.writeShellScript name hook } ${ builtins.concatStringsSep "/" path } "${ name }"
-                                                                                    ''
-                                                                    else if builtins.typeOf value == "set" then builtins.mapAttrs ( cache ( builtins.concatLists [ path [ name ] ] ) ) value
-                                                                    else builtins.throw ( invalid-cache-throw value ) ;
-                                                            scripts =
+                                                             scripts =
                                                                 path : name : value :
                                                                     if builtins.typeOf value == "lambda" then
                                                                         strip
@@ -299,7 +141,7 @@
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean | ${ at } now > /dev/null 2>&1 &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean | ${ at } now &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -371,7 +213,6 @@
                                                                 else builtins.throw ( invalid-temporary-throw value ) ;
                                                             in
                                                                 {
-                                                                    cache = cache [ ( environment-variable out ) "cache" ] ;
                                                                     scripts = scripts [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
@@ -381,7 +222,6 @@
                                                                 {
                                                                     "${ environment-variable out }" =
                                                                         {
-                                                                            cache = builtins.mapAttrs mappers.cache cache ;
                                                                             scripts = builtins.mapAttrs mappers.scripts scripts ;
                                                                             temporary = builtins.mapAttrs mappers.temporary temporary ;
                                                                         } ;
@@ -435,7 +275,9 @@
                                                                     pkgs.writeShellScript
                                                                         "at"
                                                                         ''
-                                                                            ${ pkgs.bash }/bin/bash -c "$( ${ pkgs.coreutils }/bin/tee )" &
+                                                                            COMMAND=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                ${ pkgs.coreutils }/bin/echo AT ${ environment-variable "COMMAND" } >> /build/debug &&
+                                                                                ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
                                                                         '' ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
@@ -713,11 +555,11 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             export OBSERVED_DIRECTORY=$out &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
+                                                                            ${ pkgqs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
 ${ pkgs.coreutils }/bin/echo &&
-${ pkgs.findutils }/bin/find /build -type f -name "release.*" &&
+${ pkgs.coreutils }/bin/cat /build/debug &&
 ${ pkgs.coreutils }/bin/echo &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
