@@ -70,16 +70,46 @@
                                                                                     clean =
                                                                                         let
                                                                                             wipe =
-                                                                                                ''
-                                                                                                    ${ pkgs.findutils }/bin/find ${ environment-variable resource } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
-                                                                                                    do
-                                                                                                        PID=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "PID_FILE" } ) &&
-${ pkgs.coreutils }/bin/echo "IN WIPE resource=\"${ environment-variable resource }\" ; PID=\"${ environment-variable "PID" }\" ; PID_FILE=\"${ environment-variable "PID_FILE" }\"" >> /build/debug &&
-                                                                                                             ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                                             ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
-                                                                                                    done &&
-                                                                                                        ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release }
-                                                                                                '' ;
+                                                                                                let
+                                                                                                    null =
+                                                                                                        ''
+                                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
+                                                                                                        '' ;
+                                                                                                    set =
+                                                                                                        ''
+                                                                                                            if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable resource }/release.out.log 2> ${ environment-variable resource }/release.err.log
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
+                                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/release.out.log ${ environment-variable resource }/release.err.log ${ environment-variable resource }/release.status.asc &&
+                                                                                                                    ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } $( ${ temporary-broken-directory } )
+                                                                                                            fi
+                                                                                                        '' ;
+                                                                                                    in
+                                                                                                        ''
+                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable resource } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
+                                                                                                            do
+                                                                                                                PID=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "PID_FILE" } ) &&
+        ${ pkgs.coreutils }/bin/echo "IN WIPE resource=\"${ environment-variable resource }\" ; PID=\"${ environment-variable "PID" }\" ; PID_FILE=\"${ environment-variable "PID_FILE" }\"" >> /build/debug &&
+                                                                                                                     ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
+                                                                                                                     ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
+                                                                                                            done &&
+                                                                                                            if [ -f ${ environment-variable resource }/init.out.log ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.out.log
+                                                                                                            fi &&
+                                                                                                            if [ -f ${ environment-variable resource }/init.err.log ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.err.log
+                                                                                                            fi &&
+                                                                                                            if [ -f ${ environment-variable resource }/init.status.asc ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.status.asc
+                                                                                                            fi &&
+                                                                                                            export ${ target }=${ environment-variable resource }/target &&
+                                                                                                            ${ if builtins.typeOf temporary.release == "null" then null else set }
+                                                                                                        '' ;
                                                                                             in
                                                                                                 ''
                                                                                                     export ${ resource }=$( ${ pkgs.coreutils }/bin/dirname ${ environment-variable 0 } ) &&
@@ -125,7 +155,7 @@ ${ pkgs.coreutils }/bin/echo "IN WIPE resource=\"${ environment-variable resourc
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ builtins.toString temporary-init-error-code }
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable resource }/init.status.asc
-                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.sh ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable resource }/init.out.log ${ environment-variable resource }/init.err.log ${ environment-variable resource }/init.status.asc
+                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.sh ${ environment-variable resource }/arguments.asc ${ environment-variable resource }/standard-input.asc ${ environment-variable resource }/init.out.log ${ environment-variable resource }/init.err.log ${ environment-variable resource }/init.status.asc
                                                                                                      '' ;
                                                                                             } ;
                                                                                     in
@@ -391,7 +421,7 @@ fi &&
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OUTPUT=${ environment-variable 2 } &&
-                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } | while read I
+                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } -not -name "*.pid" | while read I
                                                                                                             do
                                                                                                                 RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "I" } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable "INPUT" }##" ) &&
                                                                                                                     ABSOLUTE=${ environment-variable "OUTPUT" }${ environment-variable "RELATIVE" } &&
