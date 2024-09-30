@@ -94,18 +94,6 @@
                                                                                                                      ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                                      ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                                             done &&
-                                                                                                            if [ -f ${ environment-variable resource }/init.out.log ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.out.log
-                                                                                                            fi &&
-                                                                                                            if [ -f ${ environment-variable resource }/init.err.log ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.err.log
-                                                                                                            fi &&
-                                                                                                            if [ -f ${ environment-variable resource }/init.status.asc ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.status.asc
-                                                                                                            fi &&
                                                                                                             export ${ target }=${ environment-variable resource }/target &&
                                                                                                             ${ if builtins.typeOf temporary.release == "null" then null else set }
                                                                                                         '' ;
