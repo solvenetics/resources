@@ -79,10 +79,12 @@
                                                                                                         ''
                                                                                                             if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable resource }/release.out.log 2> ${ environment-variable resource }/release.err.log
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
+                                                                                                                ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/release.out.log ${ environment-variable resource }/release.err.log ${ environment-variable resource }/release.status.asc &&
+                                                                                                                    ${ pkgs.coreutils }/bin/sleep 1s &&
                                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } $( ${ temporary-broken-directory } )
                                                                                                             fi
                                                                                                         '' ;
@@ -441,10 +443,11 @@
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
-                                                                                                                    if [ -f $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log ) ]
+                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.err.log ]
                                                                                                                     then
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }
+                                                                                                                        ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }.stat
                                                                                                                     fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
@@ -477,7 +480,7 @@
                                                                                                                     then
                                                                                                                        ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.out.log &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }.stat
                                                                                                                     fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
