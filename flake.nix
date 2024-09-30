@@ -141,7 +141,7 @@
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean | ${ at } now &&
+                                                                                                # ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -275,8 +275,8 @@
                                                                     pkgs.writeShellScript
                                                                         "at"
                                                                         ''
-                                                                            COMMAND=$( ${ pkgs.coreutils }/bin/tee ) &&
-                                                                                ${ pkgs.coreutils }/bin/echo AT ${ environment-variable "COMMAND" } >> /build/debug &&
+                                                                            COMMAND=$( ${ pkgs.coreutils }/bin/cat ) &&
+                                                                                ${ pkgs.coreutils }/bin/echo AT A${ environment-variable "COMMAND" }B >> /build/debug &&
                                                                                 ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
                                                                         '' ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
@@ -390,9 +390,10 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } /build/debug" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
+                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } /build/debug" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
+                                                                                                            ${ pkgs.coreutils }/bin/true
                                                                                                     '' ;
                                                                                             post-delete =
                                                                                                 { pkgs , ... } : target :
@@ -555,7 +556,7 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             export OBSERVED_DIRECTORY=$out &&
-                                                                            ${ pkgqs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
 ${ pkgs.coreutils }/bin/echo &&
