@@ -417,6 +417,7 @@
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-err ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.err.log.post" | ${ at } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-status ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.status.log.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
@@ -485,6 +486,25 @@
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 52
+                                                                                                            fi
+                                                                                                    '' ;
+                                                                                            post-status =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
+                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.status.asc ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.status.asc &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.status.asc > ${ environment-variable "OUTPUT" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.status.asc > ${ environment-variable "OUTPUT" }.stat
+                                                                                                                    fi
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
+                                                                                                                    exit 53
                                                                                                             fi
                                                                                                     '' ;
                                                                                             record =
