@@ -584,7 +584,6 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
                                                                                                             fi &&
-                                                                                                            # ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } > ${ environment-variable "OUT" } &&
                                                                                                             ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-zA-Z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" } > /dev/null 2>&1 &&
                                                                                                             if [ ! -z ${ environment-variable "DIRECTORY" } ]
                                                                                                             then
@@ -612,8 +611,6 @@
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.temporary }/temporary ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
-                                                                                                            # ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1.before &&
-                                                                                                            # ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }/1.after &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.before &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.before
                                                                                                     '' ;
