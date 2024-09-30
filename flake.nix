@@ -91,7 +91,6 @@
                                                                                                             ${ pkgs.findutils }/bin/find ${ environment-variable resource } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                                             do
                                                                                                                 PID=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "PID_FILE" } ) &&
-        ${ pkgs.coreutils }/bin/echo "IN WIPE resource=\"${ environment-variable resource }\" ; PID=\"${ environment-variable "PID" }\" ; PID_FILE=\"${ environment-variable "PID_FILE" }\"" >> /build/debug &&
                                                                                                                      ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                                      ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                                             done &&
