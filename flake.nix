@@ -549,7 +549,7 @@
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }
                                                                                                                     else
-                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}##g" -e w${ environment-variable "ABSOLUTE" } ${ environment-variable "I" } > /dev/null 2>&1
+                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE" } ${ environment-variable "I" } > /dev/null 2>&1
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done
