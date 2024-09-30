@@ -73,11 +73,12 @@
                                                                                                 ''
                                                                                                     ${ pkgs.findutils }/bin/find ${ environment-variable resource } -mindepth 1 -maxdepth 1 -type f -name "*.pid" | while read PID_FILE
                                                                                                     do
-                                                                                                        PID=${ environment-variable "PID_FILE%.*" } &&
+                                                                                                        PID=$( ${ pkgs.coreutils }/bin/cat ${ environment-variable "PID_FILE" } ) &&
+${ pkgs.coreutils }/bin/echo "IN WIPE resource=\"${ environment-variable resource }\" ; PID=\"${ environment-variable "PID" }\" ; PID_FILE=\"${ environment-variable "PID_FILE" }\"" >> /build/debug &&
                                                                                                              ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
                                                                                                              ${ pkgs.coreutils }/bin/rm ${ environment-variable "PID_FILE" }
                                                                                                     done &&
-                                                                                                            ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release }
+                                                                                                        ${ pkgs.coreutils }/bin/nice --adjustment 19 ${ pkgs.writeShellScript "release" release }
                                                                                                 '' ;
                                                                                             in
                                                                                                 ''
@@ -134,21 +135,28 @@
                                                                                                 export ${ target }=${ environment-variable resource }/target &&
                                                                                                 if ${ has-standard-input }
                                                                                                 then
-                                                                                                    WAIT_PID=${ environment-variable "PPID//[[:space:]]/I a" } &&
+                                                                                                    WAIT_PID=${ environment-variable "PPID" } &&
                                                                                                         STATUS=$( ${ pkgs.coreutils }/bin/tee | ${ pkgs.writeShellScript "prepare" prepare.has-standard-input } ${ environment-variable "@" } )
                                                                                                 else
                                                                                                     WAIT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } | ${ pkgs.findutils }/bin/xargs ) &&
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
+${ pkgs.coreutils }/bin/echo "WAIT_PID \"${ environment-variable "WAIT_PID" }\"" >> /build/debug &&
+if [ -z "${ environment-variable "WAIT_PID" }" ]
+then
+    ${ pkgs.coreutils }/bin/echo WAIT_PID is empty. >&2 &&
+        exit 59
+fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
-                                                                                                ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable "BROKEN" }/clean" | ${ at } now &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
                                                                                         '' ;
