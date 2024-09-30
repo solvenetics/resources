@@ -441,7 +441,7 @@
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
-                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.err.log ] && [ -f $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log ) ]
+                                                                                                                    if [ -f $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log ) ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }
