@@ -414,6 +414,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-err ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.err.log.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
@@ -454,12 +455,12 @@
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
-                                                                                                                    # if [ -f ${ environment-variable "INPUT" }/release.out.log ]
-                                                                                                                    # then
-                                                                                                                    #    ${ pkgs.inotify-tools }/bin/inotify-wait --event attrib ${ environment-variable "INPUT" }/release.out.log &&
+                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.out.log ]
+                                                                                                                    then
+                                                                                                                       ${ pkgs.inotify-tools }/bin/inotify-wait --event attrib ${ environment-variable "INPUT" }/release.out.log &&
                                                                                                                             ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }
-                                                                                                                    # fi
+                                                                                                                    fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 63
