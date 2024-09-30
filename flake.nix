@@ -170,12 +170,6 @@
                                                                                                     WAIT_PID=$( ${ pkgs.procps }/bin/ps -o ppid= -p ${ environment-variable "PPID" } | ${ pkgs.findutils }/bin/xargs ) &&
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
-${ pkgs.coreutils }/bin/echo "WAIT_PID \"${ environment-variable "WAIT_PID" }\"" >> /build/debug &&
-if [ -z "${ environment-variable "WAIT_PID" }" ]
-then
-    ${ pkgs.coreutils }/bin/echo WAIT_PID is empty. >&2 &&
-        exit 59
-fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
