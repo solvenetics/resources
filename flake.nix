@@ -280,7 +280,7 @@
                                                                                 then
                                                                                     ${ pkgs.coreutils }/bin/echo NO COMMAND RECEIVED >> /build/debug
                                                                                 else
-                                                                                    ${ pkgs.coreutils }/bin/echo AT ${ environment-variable "COMMAND" } >> /build/debug &&
+                                                                                    ${ pkgs.coreutils }/bin/echo AT COMMAND ${ environment-variable "COMMAND" } >> /build/debug &&
                                                                                         ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
                                                                                 fi
                                                                         '' ;
@@ -395,7 +395,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
@@ -567,6 +567,8 @@
 ${ pkgs.coreutils }/bin/echo &&
 ${ pkgs.coreutils }/bin/cat /build/debug &&
 ${ pkgs.coreutils }/bin/wc /build/debug &&
+${ pkgs.coreutils }/bin/echo &&
+${ pkgs.findutils }/bin/find /build -name "release*" &&
 ${ pkgs.coreutils }/bin/echo &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
