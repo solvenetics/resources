@@ -28,6 +28,7 @@
                                     scripts ? secondary : { } ,
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
                                     temporary ? { } ,
+                                    temporary-hold ? 1 ,
                                     temporary-init-error-code ? 64 ,
                                     temporary-resource-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.resource" ,
                                     temporary-broken-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.broken"
@@ -81,12 +82,12 @@
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/resource.out.log ${ environment-variable resource }/resource.err.log ${ environment-variable resource }/resource.status.asc &&
-                                                                                                                    ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                    ${ pkgs.coreutils }/bin/sleep ${ builtins.toString temporary-hold }s &&
                                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/release.out.log ${ environment-variable resource }/release.err.log ${ environment-variable resource }/release.status.asc &&
-                                                                                                                    ${ pkgs.coreutils }/bin/sleep 1s &&
+                                                                                                                    ${ pkgs.coreutils }/bin/sleep ${ builtins.toString temporary-hold }s &&
                                                                                                                     ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } $( ${ temporary-broken-directory } )
                                                                                                             fi
                                                                                                         '' ;
