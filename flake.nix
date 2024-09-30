@@ -417,7 +417,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } release.out.log" | ${ at } now > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-err ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.err.log.post" | ${ at } now > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-status ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.status.asc.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
@@ -432,13 +432,13 @@
                                                                                                             TARGET=${ environment-variable 3 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } | while read FILE
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                                 do
-                                                                                                                    if [ ${ environment-variable "FILE" } == ${ environment-variable "INPUT" }/release.out.log ]
+                                                                                                                    if [ ${ environment-variable "FILE" } == ${ environment-variable "TARGET" } ]
                                                                                                                     then
-                                                                                                                       ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "FILE" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }.stat
+                                                                                                                       ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "TARGET" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "TARGET" }.cat &&
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "TARGET" }.cat
                                                                                                                     fi
                                                                                                                 done
                                                                                                             else
