@@ -309,7 +309,7 @@
                                                                             COMMAND=$( ${ pkgs.coreutils }/bin/tee ) &&
                                                                                 if [ -z "${ environment-variable "COMMAND" }" ]
                                                                                 then
-                                                                                    ${ pkgs.coreutils }/bin/echo NO COMMAND RECEIVED >> /build/debug
+                                                                                    ${ pkgs.coreutils }/bin/false
                                                                                 else
                                                                                     ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
                                                                                 fi
