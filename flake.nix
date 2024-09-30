@@ -441,15 +441,14 @@
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
-                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.err.log ]
+                                                                                                                    if [ -f ${ environment-variable "INPUT" }/release.err.log ] && [ -f $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log ) ]
                                                                                                                     then
-                                                                                                                       ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log )
-                                                                                                                            # ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
-                                                                                                                            # ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }
                                                                                                                     fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 52
+                                                                                                                    exit 53
                                                                                                             fi
                                                                                                     '' ;
                                                                                             post-move =
