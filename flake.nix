@@ -275,9 +275,14 @@
                                                                     pkgs.writeShellScript
                                                                         "at"
                                                                         ''
-                                                                            COMMAND=$( ${ pkgs.coreutils }/bin/cat ) &&
-                                                                                ${ pkgs.coreutils }/bin/echo AT A${ environment-variable "COMMAND" }B >> /build/debug &&
-                                                                                ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
+                                                                            COMMAND=$( ${ pkgs.coreutils }/bin/tee ) &&
+                                                                                if [ -z "${ environment-variable "COMMAND" }" ]
+                                                                                then
+                                                                                    ${ pkgs.coreutils }/bin/echo NO COMMAND RECEIVED >> /build/debug
+                                                                                else
+                                                                                    ${ pkgs.coreutils }/bin/echo AT ${ environment-variable "COMMAND" } >> /build/debug &&
+                                                                                        ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
+                                                                                fi
                                                                         '' ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
@@ -390,7 +395,7 @@
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } /build/debug" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-out ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.out.log.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
