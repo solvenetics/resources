@@ -141,7 +141,7 @@
                                                                                                         STATUS=$( ${ pkgs.writeShellScript "prepare" prepare.does-not-have-standard-input } ${ environment-variable "@" } )
                                                                                                 fi &&
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "WAIT_PID" } > ${ environment-variable resource }/${ environment-variable "WAIT_PID" }.pid
-                                                                                                # ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now &&
+                                                                                                ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now &&
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target }
@@ -561,6 +561,7 @@
                                                                             ${ pkgs.coreutils }/bin/sleep 10s &&
 ${ pkgs.coreutils }/bin/echo &&
 ${ pkgs.coreutils }/bin/cat /build/debug &&
+${ pkgs.coreutils }/bin/wc /build/debug &&
 ${ pkgs.coreutils }/bin/echo &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
