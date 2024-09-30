@@ -443,10 +443,9 @@
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT" } &&
                                                                                                                     if [ -f ${ environment-variable "INPUT" }/release.err.log ]
                                                                                                                     then
-                                                                                                                       ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log &&
+                                                                                                                       ${ pkgs.coreutils }/bin/cat $( ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/release.err.log )
                                                                                                                             # ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" } &&
                                                                                                                             # ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.err.log > ${ environment-variable "OUTPUT" }
-                                                                                                                            ${ pkgs.coreutils }/bin/true
                                                                                                                     fi
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
