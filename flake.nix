@@ -419,8 +419,7 @@
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } delete_self" | ${ at } now &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
-                                                                                                            ${ pkgs.coreutils }/bin/true
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } move_self" | ${ at } now
                                                                                                     '' ;
                                                                                             post-create =
                                                                                                 { pkgs , ... } : target :
@@ -440,7 +439,7 @@
                                                                                                                     exit 52
                                                                                                             fi
                                                                                                     '' ;
-                                                                                            post-delete =
+                                                                                            post-operate =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
