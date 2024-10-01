@@ -418,8 +418,6 @@
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-err ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.err.log.post" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-status ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/release.status.asc.post" | ${ at } &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
@@ -429,18 +427,13 @@
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OUTPUT=${ environment-variable 2 } &&
-                                                                                                            TARGET=${ environment-variable 3 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                                 do
-                                                                                                                    case ${ environment-variable "FILE" } in
-                                                                                                                        release.out.log)
-                                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
-                                                                                                                                ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat &&
-                                                                                                                                ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat
-                                                                                                                                ;;
-                                                                                                                    esac
+                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat &&
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
