@@ -81,7 +81,9 @@
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/resource.out.log ${ environment-variable resource }/resource.err.log ${ environment-variable resource }/resource.status.asc &&
+${ pkgs.coreutils }/bin/echo 1 >> /build/debug &&
                                                                                                                     ${ pkgs.coreutils }/bin/sleep ${ builtins.toString temporary-hold }s &&
+${ pkgs.coreutils }/bin/echo 2 >> /build/debug &&
                                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
@@ -174,46 +176,6 @@
                                                                                                         ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable "BROKEN" }/clean" | ${ at } now &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
-                                                                                        '' ;
-                                                                            release =
-                                                                                let
-                                                                                    release =
-                                                                                        {
-                                                                                            null =
-                                                                                                ''
-                                                                                                    ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
-                                                                                                '' ;
-                                                                                            set =
-                                                                                                ''
-                                                                                                    if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable "RESOURCE" }/release.out.log 2> ${ environment-variable "RESOURCE" }/release.err.log
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable "RESOURCE" }
-                                                                                                    else
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "RESOURCE" }/release.status.asc &&
-                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/release.out.log ${ environment-variable "RESOURCE" }/release.err.log ${ environment-variable "RESOURCE" }/release.status.asc &&
-                                                                                                            ${ pkgs.coreutils }/bin/mv ${ environment-variable "RESOURCE" } $( ${ temporary-broken-directory } )
-                                                                                                    fi
-                                                                                                '' ;
-                                                                                        } ;
-                                                                                    in
-                                                                                        ''
-                                                                                            RESOURCE=${ environment-variable 1 } &&
-                                                                                                PID=${ environment-variable 2 } &&
-                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.out.log ]
-                                                                                                then
-                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.out.log
-                                                                                                fi &&
-                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.err.log ]
-                                                                                                then
-                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.err.log
-                                                                                                fi &&
-                                                                                                if [ -f ${ environment-variable "RESOURCE" }/init.status.asc ]
-                                                                                                then
-                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable "RESOURCE" }/init.status.asc
-                                                                                                fi &&
-                                                                                                ${ pkgs.coreutils }/bin/tail --follow /dev/null --pid ${ environment-variable "PID" } &&
-                                                                                                export ${ target }=${ environment-variable "RESOURCE" }/target &&
-                                                                                                ${ if builtins.typeOf temporary.release == "null" then release.null else release.set }
                                                                                         '' ;
                                                                             temporary =
                                                                                 let
@@ -426,14 +388,16 @@
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OUTPUT=${ environment-variable 2 } &&
+${ pkgs.coreutils }/bin/echo YES >> /build/debug
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                                 do
-                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.cat &&
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.stat
+                                                                                                                    # ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.cat &&
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.stat
                                                                                                                 done
+${ pkgs.coreutils }/bin/echo NOPE >> /build/debug
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 52
@@ -522,7 +486,9 @@
                                                                                                         test_diff ( )
                                                                                                             {
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
-                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
+                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed." &&
+${ pkgs.coreutils }/bin/cat /build/debug &&
+                                                                                                                    fail wtf
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
                                                                                                                     {
