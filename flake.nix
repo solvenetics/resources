@@ -413,9 +413,9 @@
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }
                                                                                                                     else
-                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE" } ${ environment-variable "I" } > /dev/null 2>&1
+                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE" } ${ environment-variable "I" }.pre.sed > /dev/null 2>&1
                                                                                                                     fi &&
-                                                                                                                    ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
+                                                                                                                    ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.pre.stat
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1 &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now &&
@@ -432,8 +432,8 @@
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                                 do
                                                                                                                     ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat &&
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.stat
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.cat &&
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.stat
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
@@ -449,7 +449,7 @@
                                                                                                             then
                                                                                                                 while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete_self --format "%w%f" ${ environment-variable "INPUT" } | read FILE
                                                                                                                 do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }.post.delete
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
