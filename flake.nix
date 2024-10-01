@@ -447,13 +447,13 @@
                                                                                                             OUTPUT=${ environment-variable 2 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
-                                                                                                                while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete_self --format ""%w%f ${ environment-variable "INPUT" } | read FILE
+                                                                                                                while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete_self --format "%w%f" ${ environment-variable "INPUT" } | read FILE
                                                                                                                 do
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 63
+                                                                                                                    exit 53
                                                                                                             fi
                                                                                                     '' ;
                                                                                             post-err =
