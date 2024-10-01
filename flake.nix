@@ -409,7 +409,7 @@ ${ pkgs.coreutils }/bin/echo 2 >> /build/debug &&
                                                                                                             then
                                                                                                                 ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
                                                                                                                 do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-attr ${ environment-variable "FILE" } ${ environment-variable "OUTPUT" } | ${ at } now > /dev/null 2>&1
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-attr ${ environment-variable "FILE" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
