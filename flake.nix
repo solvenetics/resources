@@ -433,7 +433,7 @@
                                                                                                                 do
                                                                                                                     ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat &&
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.cat
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/release.out.log > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.stat
                                                                                                                 done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
