@@ -418,7 +418,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE" }.stat
                                                                                                             done &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-delete ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/delete.flag | ${ at } now > /dev/null 2>&1 &&
                                                                                                             # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-move ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }/move.flag | ${ at } now > /dev/null 2>&1
                                                                                                             ${ pkgs.coreutils }/bin/true
                                                                                                     '' ;
@@ -447,8 +447,10 @@
                                                                                                             OUTPUT=${ environment-variable 2 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --event delete_self ${ environment-variable "INPUT" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/touch ${ environment-variable "OUTPUT" }
+                                                                                                                while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event delete_self --format ""%w%f ${ environment-variable "INPUT" } | read FILE
+                                                                                                                do
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }
+                                                                                                                done
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 63
