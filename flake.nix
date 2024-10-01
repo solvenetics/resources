@@ -383,21 +383,34 @@ ${ pkgs.coreutils }/bin/echo 2 >> /build/debug &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } delete_self" | ${ at } now &&
                                                                                                             ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } move_self" | ${ at } now
                                                                                                     '' ;
+                                                                                            post-attr =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            OUTPUT=${ environment-variable 2 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event attrib ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
+                                                                                                                do
+                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.cat &&
+                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.stat
+                                                                                                                done
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
+                                                                                                                    exit 53
+                                                                                                            fi
+                                                                                                    '' ;
                                                                                             post-create =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OUTPUT=${ environment-variable 2 } &&
-${ pkgs.coreutils }/bin/echo YES >> /build/debug
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
+                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
                                                                                                                 do
-                                                                                                                    # ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT" }/${ environment-variable "FILE" } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.cat &&
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "INPUT" }/${ environment-variable "FILE" } > ${ environment-variable "OUTPUT" }/${ environment-variable "FILE" }.post.stat
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-attr ${ environment-variable "FILE" } ${ environment-variable "OUTPUT" } | ${ at } now > /dev/null 2>&1
                                                                                                                 done
-${ pkgs.coreutils }/bin/echo NOPE >> /build/debug
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 52
@@ -486,9 +499,7 @@ ${ pkgs.coreutils }/bin/echo NOPE >> /build/debug
                                                                                                         test_diff ( )
                                                                                                             {
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
-                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed." &&
-${ pkgs.coreutils }/bin/cat /build/debug &&
-                                                                                                                    fail wtf
+                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
                                                                                                                     {
