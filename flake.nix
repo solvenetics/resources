@@ -364,13 +364,13 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
-                                                                                                            PRE_CAT_DIRECTORY=${ environment-variable 2 } &&
-                                                                                                            PRE_STAT_DIRECTORY=${ environment-variable 3 } &&
+                                                                                                            CAT_DIRECTORY=${ environment-variable 2 } &&
+                                                                                                            STAT_DIRECTORY=${ environment-variable 3 } &&
                                                                                                             ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } -not -name "*.pid" | while read I
                                                                                                             do
                                                                                                                 RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "I" } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable "INPUT" }##" ) &&
-                                                                                                                    ABSOLUTE_CAT=${ environment-variable "PRE_CAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
-                                                                                                                    ABSOLUTE_STAT=${ environment-variable "PRE_STAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
+                                                                                                                    ABSOLUTE_CAT=${ environment-variable "CAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
+                                                                                                                    ABSOLUTE_STAT=${ environment-variable "STAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
                                                                                                                     if [ -d ${ environment-variable "I" } ]
                                                                                                                     then
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" }
@@ -378,11 +378,7 @@
                                                                                                                         ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE_CAT" } ${ environment-variable "I" } > /dev/null 2>&1
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE_STAT" }
-                                                                                                            done &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" }" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } delete_self" | ${ at } now &&
-                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } ${ environment-variable "OUTPUT" } move_self" | ${ at } now
-                                                                                                            ${ pkgs.coreutils }/bin/true
+                                                                                                            done
                                                                                                     '' ;
                                                                                             post-attr =
                                                                                                 { pkgs , ... } : target :
