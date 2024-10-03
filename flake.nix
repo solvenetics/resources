@@ -418,17 +418,19 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
-                                                                                                            OUTPUT=${ environment-variable 2 } &&
-                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
+                                                                                                            CAT_DIRECTORY=${ environment-variable 2 } &&
+                                                                                                            STAT_DIRECTORY=${ environment-variable 3 } &&
+                                                                                                            if [ -d ${ environment-variable "INPUT" } ] && ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" }
                                                                                                             then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
-                                                                                                                do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-attr ${ environment-variable "FILE" } ${ environment-variable "FILE" }" | ${ at } now >> /dev/null 2>&1
-                                                                                                                done
+                                                                                                                ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" }
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
                                                                                                                     exit 52
                                                                                                             fi
+                                                                                                    '' ;
+                                                                                            post-directory =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
                                                                                                     '' ;
                                                                                             post-operate =
                                                                                                 { pkgs , ... } : target :
@@ -507,11 +509,11 @@
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             INPUT_1=$( ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.pre.cat ${ environment-variable "ABSOLUTE" }/1.pre.stat ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT_1" } >> /build/debug &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT_1" } >> /build/debug &&
                                                                                                             # ${ pkgs.inotify-tools }/bin/inotifywait --event create ${ environment-variable "INPUT_1" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT_1" }/release.status.asc >> /build/debug &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT_1" }/release.status.asc >> /build/debug &&
                                                                                                             # ${ pkgs.inotify-tools }/bin/inotifywait --event attrib ${ environment-variable "INPUT_1" }/release.status.asc &&
-                                                                                                            ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_1" } ${ environment-variable "ABSOLUTE" }/1.post.cat ${ environment-variable "ABSOLUTE" }/1.post.stat &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_1" } ${ environment-variable "ABSOLUTE" }/1.post.cat ${ environment-variable "ABSOLUTE" }/1.post.stat" | ${ at } now &&
                                                                                                             INPUT_2=$( ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.pre.cat ${ environment-variable "ABSOLUTE" }/2.pre.stat )
                                                                                                             ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_1" } ${ environment-variable "ABSOLUTE" }/1.post.cat ${ environment-variable "ABSOLUTE" }/1.post.stat
                                                                                                     '' ;
