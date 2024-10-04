@@ -392,9 +392,8 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
-                                                                                                            OUTPUT=${ environment-variable 2 } &&
-                                                                                                            OPERATION=${ environment-variable 3 } &&
-                                                                                                            FLAG=${ environment-variable 4 } &&
+                                                                                                            OPERATION=${ environment-variable 2 } &&
+                                                                                                            FLAG=${ environment-variable 3 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } ${ environment-variable "INPUT" } | read FILE
