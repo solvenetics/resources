@@ -27,7 +27,7 @@
                                     scripts ? secondary : { } ,
                                     target ? "e4608844be8ee356014f54c180b70cce7b8f1c34d9b73a8f3d9f516135ef5b889f9bd2ca55f4d1d66d3b81ed58f2c90a5e7ff082fa3c704339c0772ead4c644a" ,
                                     temporary ? { } ,
-                                    temporary-hold ? 1 ,
+                                    temporary-hold ? 0 ,
                                     temporary-init-error-code ? 64 ,
                                     temporary-resource-directory ? "${ pkgs.coreutils }/bin/mktemp --directory -t XXXXXXXX.resource" ,
                                     temporary-broken-directory ? "${ pkgs.coreutils }/bin/mktemp --dry-run -t XXXXXXXX.broken"
@@ -352,6 +352,7 @@
                                                                                                     null = scripts : { } ;
                                                                                                 } ;
                                                                                         } ;
+                                                                                    temporary-hold = 5 ;
                                                                                 } ;
                                                                         util =
                                                                             lib
@@ -366,20 +367,26 @@
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             CAT_DIRECTORY=${ environment-variable 2 } &&
                                                                                                             STAT_DIRECTORY=${ environment-variable 3 } &&
-                                                                                                            ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } -not -name "*.pid" | while read I
-                                                                                                            do
-                                                                                                                RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "I" } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable "INPUT" }##" ) &&
-                                                                                                                    ABSOLUTE_CAT=${ environment-variable "CAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
-                                                                                                                    ABSOLUTE_STAT=${ environment-variable "STAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
-                                                                                                                    if [ -d ${ environment-variable "I" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_CAT" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_STAT" }
-                                                                                                                    else
-                                                                                                                        ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE_CAT" } ${ environment-variable "I" } > /dev/null 2>&1 &&
-                                                                                                                            ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE_STAT" }
-                                                                                                                    fi
-                                                                                                            done
+                                                                                                            MISSING_DIRECTORY=${ environment-variable 4 } &&
+                                                                                                            if [ ${ environment-variable "INPUT" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } -not -name "*.pid" | while read I
+                                                                                                                do
+                                                                                                                    RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "I" } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable "INPUT" }##" ) &&
+                                                                                                                        ABSOLUTE_CAT=${ environment-variable "CAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
+                                                                                                                        ABSOLUTE_STAT=${ environment-variable "STAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
+                                                                                                                        if [ -d ${ environment-variable "I" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_CAT" } &&
+                                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_STAT" }
+                                                                                                                        else
+                                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE_CAT" } ${ environment-variable "I" } > /dev/null 2>&1 &&
+                                                                                                                                ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE_STAT" }
+                                                                                                                        fi
+                                                                                                                done
+                                                                                                            else
+                                                                                                                ${ pkgs.coreutils }/bin/touch ${ environment-variable "MISSING_DIRECTORY" }
+                                                                                                            fi
                                                                                                     '' ;
                                                                                             post-attr =
                                                                                                 { pkgs , ... } : target :
@@ -462,6 +469,7 @@
                                                                                                             STATUS=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.status &&
                                                                                                             PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat &&
                                                                                                             PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat &&
+                                                                                                            PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.missing &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
@@ -507,12 +515,14 @@
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/temporary/${ environment-variable "RELATIVE" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             INPUT_1=$( ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/1.out ${ environment-variable "ABSOLUTE" }/1.err ${ environment-variable "ABSOLUTE" }/1.status ${ environment-variable "ABSOLUTE" }/1.pre.cat ${ environment-variable "ABSOLUTE" }/1.pre.stat ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_1" } ${ environment-variable "ABSOLUTE" }/1.post.cat ${ environment-variable "ABSOLUTE" }/1.post.stat" | ${ at } now &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_1" }${ environment-variable "ABSOLUTE" }/1.post.delete delete_self | ${ at } now &&                                                                                               ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_1" }${ environment-variable "ABSOLUTE" }/1.post.move move_self | ${ at } now &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_1" } ${ environment-variable "ABSOLUTE" }/1.post.cat ${ environment-variable "ABSOLUTE" }/1.post.stat ${ environment-variable "ABSOLUTE" }/1.post.missing" | ${ at } now > /dev/null &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_1" }${ environment-variable "ABSOLUTE" }/1.post.delete delete_self | ${ at } now &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_1" }${ environment-variable "ABSOLUTE" }/1.post.delete delete_self | ${ at } now &&
                                                                                                             INPUT_2=$( ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" }/2.out ${ environment-variable "ABSOLUTE" }/2.err ${ environment-variable "ABSOLUTE" }/2.status ${ environment-variable "ABSOLUTE" }/2.pre.cat ${ environment-variable "ABSOLUTE" }/2.pre.stat ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_2" } ${ environment-variable "ABSOLUTE" }/2.post.cat ${ environment-variable "ABSOLUTE" }/2.post.stat" | ${ at } now &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_2" }${ environment-variable "ABSOLUTE" }/2.post.delete delete_self | ${ at } now &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_2" }${ environment-variable "ABSOLUTE" }/2.post.move move_self | ${ at } now
+                                                                                                            # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT_2" } ${ environment-variable "ABSOLUTE" }/2.post.cat ${ environment-variable "ABSOLUTE" }/2.post.stat ${ environment-variable "ABSOLUTE" }/1.post.missing" | ${ at } now &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_2" }${ environment-variable "ABSOLUTE" }/2.post.delete delete_self | ${ at } now &&
+                                                                                                            # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT_2" }${ environment-variable "ABSOLUTE" }/2.post.move move_self | ${ at } now
+                                                                                                            ${ pkgs.coreutils }/bin/true
                                                                                                     '' ;
                                                                                             test =
                                                                                                 { pkgs , ... } : target :
@@ -569,8 +579,8 @@
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             export OBSERVED_DIRECTORY=$out &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
-                                                                            # ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
-                                                                            ${ pkgs.coreutils }/bin/sleep 10s &&
+                                                                            ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
+                                                                            ${ pkgs.coreutils }/bin/sleep 15s &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
                                                     } ;
