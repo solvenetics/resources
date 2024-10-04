@@ -127,7 +127,7 @@
                                                                                                                 STATUS=${ environment-variable "?" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ builtins.toString temporary-init-error-code }
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable resource }/init.status.asc
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "STATUS" } > ${ environment-variable resource }/init.status.asc &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/init.sh ${ environment-variable resource }/arguments.asc ${ environment-variable resource }/init.out.log ${ environment-variable resource }/init.err.log ${ environment-variable resource }/init.status.asc
                                                                                                     '' ;
                                                                                                 has-standard-input =
@@ -166,12 +166,12 @@
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now
+                                                                                                        # ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now
+                                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } ${ environment-variable "BROKEN" } &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "BROKEN" }/target &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable "BROKEN" }/clean" | ${ at } now &&
                                                                                                         exit ${ builtins.toString temporary-init-error-code }
                                                                                                 fi
                                                                                         '' ;
