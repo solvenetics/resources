@@ -448,8 +448,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }/post.${ environment-variable "OPERATION" }
                                                                                                                 done
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 53
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n B >> ${ environment-variable "FILE" }/post.${ environment-variable "OPERATION" }
                                                                                                             fi
                                                                                                     '' ;
                                                                                             record =
