@@ -394,15 +394,10 @@
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OPERATION=${ environment-variable 2 } &&
                                                                                                             FLAG=${ environment-variable 3 } &&
-                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
-                                                                                                            then
-                                                                                                                while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } ${ environment-variable "INPUT" } | read FILE
-                                                                                                                do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FLAG" }
-                                                                                                                done
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n B >> ${ environment-variable "FLAG" }
-                                                                                                            fi
+                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } ${ environment-variable "INPUT" } | while read FILE
+                                                                                                            do
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FLAG" }
+                                                                                                            done
                                                                                                     '' ;
                                                                                             record =
                                                                                                 { pkgs , ... } : target :
@@ -446,11 +441,10 @@
                                                                                                             if [ ${ environment-variable "IS_TEMPORARY" } == true ]
                                                                                                             then
                                                                                                                 INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
-                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "COMMAND" }
+                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } > /dev/null 2>&1 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now > /dev/null 2>&1 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
@@ -482,7 +476,7 @@
                                                                                                         test_diff ( )
                                                                                                             {
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
-                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
+                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed." 
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
                                                                                                                     {
