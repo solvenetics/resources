@@ -394,15 +394,15 @@
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OUTPUT=${ environment-variable 2 } &&
                                                                                                             OPERATION=${ environment-variable 3 } &&
+                                                                                                            FLAG=${ environment-variable 4 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 while ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } --format "%w%f" ${ environment-variable "INPUT" } | read FILE
                                                                                                                 do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FILE" }/post.${ environment-variable "OPERATION" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FLAG" }
                                                                                                                 done
                                                                                                             else
-                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 53
+                                                                                                                ${ pkgs.coreutils }/bin/echo -n B >> ${ environment-variable "FLAG" }
                                                                                                             fi
                                                                                                     '' ;
                                                                                             record =
@@ -448,7 +448,7 @@
                                                                                                                 INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
                                                                                                                     ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" }${ environment-variable "POST_DELETE_FLAG" } | ${ at } now
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
