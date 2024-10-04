@@ -388,53 +388,6 @@
                                                                                                                 ${ pkgs.coreutils }/bin/touch ${ environment-variable "MISSING_DIRECTORY" }
                                                                                                             fi
                                                                                                     '' ;
-                                                                                            post-attr =
-                                                                                                { pkgs , ... } : target :
-                                                                                                    ''
-                                                                                                        INPUT=${ environment-variable 1 } &&
-                                                                                                            OUTPUT=${ environment-variable 2 } &&
-                                                                                                            if [ -f ${ environment-variable "INPUT" } ]
-                                                                                                            then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event attrib ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
-                                                                                                                do
-                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.post.cat &&
-                                                                                                                        ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "FILE" } > ${ environment-variable "FILE" }.post.stat
-                                                                                                                done
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 53
-                                                                                                            fi
-                                                                                                    '' ;
-                                                                                           post-close-write =
-                                                                                                { pkgs , ... } : target :
-                                                                                                    ''
-                                                                                                        INPUT=${ environment-variable 1 } &&
-                                                                                                            OUTPUT=${ environment-variable 2 } &&
-                                                                                                            if [ -d ${ environment-variable "INPUT" } ]
-                                                                                                            then
-                                                                                                                ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%w%f" | while read FILE
-                                                                                                                do
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-attr ${ environment-variable "FILE" } ${ environment-variable "FILE" }" | ${ at } now >> /dev/null 2>&1
-                                                                                                                done
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 52
-                                                                                                            fi
-                                                                                                    '' ;
-                                                                                            post-create =
-                                                                                                { pkgs , ... } : target :
-                                                                                                    ''
-                                                                                                        INPUT=${ environment-variable 1 } &&
-                                                                                                            CAT_DIRECTORY=${ environment-variable 2 } &&
-                                                                                                            STAT_DIRECTORY=${ environment-variable 3 } &&
-                                                                                                            if [ -d ${ environment-variable "INPUT" } ] && ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" }
-                                                                                                            then
-                                                                                                                ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" }
-                                                                                                            else
-                                                                                                                ${ pkgs.coreutils }/bin/echo The resource directory was deleted before we could establish a watch. >&2 &&
-                                                                                                                    exit 52
-                                                                                                            fi
-                                                                                                    '' ;
                                                                                             post-operate =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
