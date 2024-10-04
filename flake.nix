@@ -424,6 +424,7 @@
                                                                                                             PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat &&
                                                                                                             POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.cat &&
                                                                                                             POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.stat &&
+                                                                                                            POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.delete &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
@@ -447,6 +448,7 @@
                                                                                                                 INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
                                                                                                                     ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" }${ environment-variable "POST_DELETE_FLAG" } | ${ at } now
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
