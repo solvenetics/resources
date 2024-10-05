@@ -80,10 +80,7 @@
                                                                                                             if ${ pkgs.writeShellScript "release" temporary.release } > ${ environment-variable resource }/release.out.log 2> ${ environment-variable resource }/release.err.log
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable resource }/release.status.asc &&
-${ pkgs.coreutils }/bin/echo AAA 0001000 >> /build/debug &&
-${ pkgs.findutils }/bin/find ${ environment-variable resource } >> /build/debug &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0400 ${ environment-variable resource }/release.out.log ${ environment-variable resource }/release.err.log ${ environment-variable resource }/release.status.asc &&
-${ pkgs.coreutils }/bin/echo AAA 0002000 >> /build/debug &&
                                                                                                                     ${ pkgs.coreutils }/bin/sleep ${ builtins.toString temporary-hold }s &&
                                                                                                                     ${ pkgs.coreutils }/bin/rm --recursive --force ${ environment-variable resource }
                                                                                                             else
@@ -479,9 +476,7 @@ ${ pkgs.coreutils }/bin/echo AAA 0002000 >> /build/debug &&
                                                                                                         test_diff ( )
                                                                                                             {
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat /build/debug &&
-                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed." &&
-                                                                                                                    fail wtf
+                                                                                                                    assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
                                                                                                                     {
