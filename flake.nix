@@ -401,22 +401,26 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
-                                                                                                            CAT_DIRECTORY=${ environment-variable 2 } &&
-                                                                                                            STAT_DIRECTORY=${ environment-variable 3 } &&
-                                                                                                            MISSING_DIRECTORY=${ environment-variable 4 } &&
-                                                                                                            CAT_DUPLICATE=${ environment-variable 5 } &&
-                                                                                                            STAT_DUPLICATE=${ environment-variable 6 } &&
+                                                                                                            POST_CREATE=${ environment-variable 2 } &&
+                                                                                                            CAT_DIRECTORY=${ environment-variable 3 } &&
+                                                                                                            STAT_DIRECTORY=${ environment-variable 4 } &&
+                                                                                                            MISSING_DIRECTORY=${ environment-variable 5 } &&
+                                                                                                            CAT_DUPLICATE=${ environment-variable 6 } &&
+                                                                                                            STAT_DUPLICATE=${ environment-variable 7 } &&
                                                                                                             ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
                                                                                                             do
-                                                                                                                if [ ${ environment-variable "FILE" } == "release.out.log" ]
+                                                                                                                if [ ${ environment-variable "FILE" } == "release.status.asc" ]
                                                                                                                 then
-                                                                                                                    ${ environment-variable out }/scripts/post-attr --monitor --event attr ${ environment-variable "INPUT" }/release.status.asc | while read FILE
+                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event attrib ${ environment-variable "INPUT" }/release.status.asc | while read FILE
                                                                                                                     do
                                                                                                                         ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "MISSING_DIRECTORY" } ${ environment-variable "CAT_DUPLICATE" } ${ environment-variable "STAT_DUPLICATE" }
                                                                                                                     done
-                                                                                                                else
-                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "POST_CREATE" }/${ environment-variable "FILE" }
-                                                                                                                fi
+                                                                                                                fi &&
+                                                                                                                    if [ ! -d ${ environment-variable "POST_CREATE" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "POST_CREATE" }
+                                                                                                                    fi &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >> ${ environment-variable "POST_CREATE" }/${ environment-variable "FILE" }
                                                                                                             done
                                                                                                     '' ;
                                                                                             post-operate =
@@ -450,6 +454,7 @@
                                                                                                             PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.missing &&
                                                                                                             PRE_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat.duplicate &&
                                                                                                             PRE_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat.duplicate &&
+                                                                                                            POST_CREATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.create &&
                                                                                                             POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.cat &&
                                                                                                             POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.stat &&
                                                                                                             POST_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.missing &&
@@ -479,7 +484,7 @@
                                                                                                             then
                                                                                                                 INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
                                                                                                                     ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_MISSING_FLAG" } ${ environment-variable "PRE_CAT_DUPLICATE_FLAG" } ${ environment-variable "PRE_STAT_DUPLICATE_FLAG" } > /dev/null 2>&1 &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/bin/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_MISSING_FLAG" } ${ environment-variable "POST_CAT_DUPLICATE_FLAG" } ${ environment-variable "POST_STAT_DUPLICATE_FLAG" }" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CREATE_FLAG" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_MISSING_FLAG" } ${ environment-variable "POST_CAT_DUPLICATE_FLAG" } ${ environment-variable "POST_STAT_DUPLICATE_FLAG" }" | ${ at } now &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
@@ -564,7 +569,7 @@
                                                                             export EXPECTED_DIRECTORY=${ ./expected } &&
                                                                             export OBSERVED_DIRECTORY=$out &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
-                                                                            ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
+                                                                            # ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
                                                                             ${ pkgs.coreutils }/bin/sleep 15s &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
