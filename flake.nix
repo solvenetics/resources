@@ -166,7 +166,8 @@
                                                                                                 if [ ${ environment-variable "STATUS" } == 0 ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable target } &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now
+                                                                                                        # ${ pkgs.coreutils }/bin/echo "${ pkgs.coreutils }/bin/nice --adjustment 19 ${ environment-variable resource }/clean" | ${ at } now
+                                                                                                        ${ pkgs.coreutils }/bin/true
                                                                                                 else
                                                                                                     BROKEN=$( ${ temporary-broken-directory } ) &&
                                                                                                         ${ pkgs.coreutils }/bin/mv ${ environment-variable resource } ${ environment-variable "BROKEN" } &&
@@ -335,19 +336,19 @@
                                                                                             bad =
                                                                                                 {
                                                                                                     bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                    good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
+                                                                                                    good = scripts : { init = scripts.bad ; release = scripts.good ; } ;
                                                                                                     null = scripts : { init = scripts.bad ; } ;
                                                                                                 } ;
                                                                                             good =
                                                                                                 {
-                                                                                                    bad = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                    good = scripts : { init = scripts.bad ; release = scripts.bad ; } ;
-                                                                                                    null = scripts : { init = scripts.bad ; } ;
+                                                                                                    bad = scripts : { init = scripts.good ; release = scripts.bad ; } ;
+                                                                                                    good = scripts : { init = scripts.good ; release = scripts.good ; } ;
+                                                                                                    null = scripts : { init = scripts.good ; } ;
                                                                                                 } ;
                                                                                             null =
                                                                                                 {
                                                                                                     bad = scripts : { release = scripts.bad ; } ;
-                                                                                                    good = scripts : { release = scripts.bad ; } ;
+                                                                                                    good = scripts : { release = scripts.good ; } ;
                                                                                                     null = scripts : { } ;
                                                                                                 } ;
                                                                                         } ;
