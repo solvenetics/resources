@@ -351,7 +351,7 @@
                                                                                                     null = scripts : { } ;
                                                                                                 } ;
                                                                                         } ;
-                                                                                    temporary-hold = 5 ;
+                                                                                    temporary-hold = 1 ;
                                                                                 } ;
                                                                         util =
                                                                             lib
@@ -367,6 +367,8 @@
                                                                                                             CAT_DIRECTORY=${ environment-variable 2 } &&
                                                                                                             STAT_DIRECTORY=${ environment-variable 3 } &&
                                                                                                             MISSING_DIRECTORY=${ environment-variable 4 } &&
+                                                                                                            CAT_DUPLICATE=${ environment-variable 5 } &&
+                                                                                                            STAT_DUPLICATE=${ environment-variable 6 } &&
                                                                                                             if [ -d ${ environment-variable "INPUT" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.findutils }/bin/find ${ environment-variable "INPUT" } -not -name "*.pid" | while read I
@@ -374,6 +376,14 @@
                                                                                                                     RELATIVE=$( ${ pkgs.coreutils }/bin/echo ${ environment-variable "I" } | ${ pkgs.gnused }/bin/sed -e "s#^${ environment-variable "INPUT" }##" ) &&
                                                                                                                         ABSOLUTE_CAT=${ environment-variable "CAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
                                                                                                                         ABSOLUTE_STAT=${ environment-variable "STAT_DIRECTORY" }${ environment-variable "RELATIVE" } &&
+                                                                                                                        if [ -e ${ environment-variable "ABSOLUTE_CAT" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "ABSOLUTE_CAT" } >> ${ environment-variable "CAT_DUPLICATE" }
+                                                                                                                        fi &&
+                                                                                                                        if [ -e ${ environment-variable "ABSOLUTE_STAT" } ]
+                                                                                                                        then
+                                                                                                                            ${ pkgs.coreutils }/bin/echo -n ${ environment-variable "ABSOLUTE_STAT" } >> ${ environment-variable "STAT_DUPLICATE" }
+                                                                                                                        fi &&
                                                                                                                         if [ -d ${ environment-variable "I" } ]
                                                                                                                         then
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_CAT" } &&
@@ -386,6 +396,23 @@
                                                                                                             else
                                                                                                                 ${ pkgs.coreutils }/bin/touch ${ environment-variable "MISSING_DIRECTORY" }
                                                                                                             fi
+                                                                                                    '' ;
+                                                                                            post-create =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        INPUT=${ environment-variable 1 } &&
+                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
+                                                                                                            do
+                                                                                                                if [ ${ environment-variable "FILE" } == "release.out.log" ]
+                                                                                                                then
+                                                                                                                    ${ environment-variable out }/scripts/post-attr --monitor --event attr ${ environment-variable "INPUT" }/release.status.asc | while read FILE
+                                                                                                                    do
+                                                                                                                        ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "MISSING_DIRECTORY" }
+                                                                                                                    done
+                                                                                                                else
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "POST_CREATE" }/${ environment-variable "FILE" }
+                                                                                                                fi
+                                                                                                            done
                                                                                                     '' ;
                                                                                             post-operate =
                                                                                                 { pkgs , ... } : target :
@@ -415,6 +442,9 @@
                                                                                                             STATUS=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.status &&
                                                                                                             PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat &&
                                                                                                             PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat &&
+                                                                                                            PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.missing &&
+                                                                                                            PRE_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat.duplicate &&
+                                                                                                            PRE_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat.duplicate &&
                                                                                                             POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.cat &&
                                                                                                             POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.stat &&
                                                                                                             POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.delete &&
@@ -440,7 +470,7 @@
                                                                                                             if [ ${ environment-variable "IS_TEMPORARY" } == true ]
                                                                                                             then
                                                                                                                 INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
-                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } > /dev/null 2>&1 &&
+                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_MISSING_FLAG" } ${ environment-variable "PRE_CAT_DUPLICATE_FLAG" } ${ environment-variable "PRE_STAT_DUPLICATE_FLAG" } > /dev/null 2>&1 &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
