@@ -439,8 +439,8 @@
                                                                                                     ''
                                                                                                         COMMAND=${ environment-variable 1 } &&
                                                                                                             HAS_STANDARD_INPUT=${ environment-variable 2 } &&
-                                                                                                            ARGUMENTS_=${ environment-variable 3 } &&
-                                                                                                            STANDARD_INPUT_=${ environment-variable 4 } &&
+                                                                                                            ARGUMENTS=${ environment-variable 3 } &&
+                                                                                                            STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                             ABSOLUTE=${ environment-variable 5 } &&
                                                                                                             IS_TEMPORARY=${ environment-variable 6 } &&
                                                                                                             TEMPORARY_OUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
