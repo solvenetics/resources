@@ -399,26 +399,17 @@
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
                                                                                                         INPUT=${ environment-variable 1 } &&
-                                                                                                            POST_CREATE=${ environment-variable 2 } &&
-                                                                                                            CAT_DIRECTORY=${ environment-variable 3 } &&
-                                                                                                            STAT_DIRECTORY=${ environment-variable 4 } &&
-                                                                                                            MISSING_DIRECTORY=${ environment-variable 5 } &&
-                                                                                                            CAT_DUPLICATE=${ environment-variable 6 } &&
-                                                                                                            STAT_DUPLICATE=${ environment-variable 7 } &&
-                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format "%f" | while read FILE
+                                                                                                            CAT_DIRECTORY=${ environment-variable 2 } &&
+                                                                                                            STAT_DIRECTORY=${ environment-variable 3 } &&
+                                                                                                            OUT_FLAG=${ environment-variable 4 } &&
+                                                                                                            ERROR_FLAG=${ environment-variable 5 } &&
+                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format %f | while read FILE
                                                                                                             do
                                                                                                                 if [ ${ environment-variable "FILE" } == "release.status.asc" ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event attrib ${ environment-variable "INPUT" }/release.status.asc | while read FILE
-                                                                                                                    do
-                                                                                                                        ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "MISSING_DIRECTORY" } ${ environment-variable "CAT_DUPLICATE" } ${ environment-variable "STAT_DUPLICATE" }
-                                                                                                                    done
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "ERROR_FLAG" }" | ${ at } now > /dev/null 2>&1
                                                                                                                 fi &&
-                                                                                                                    if [ ! -d ${ environment-variable "POST_CREATE" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "POST_CREATE" }
-                                                                                                                    fi &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >> ${ environment-variable "POST_CREATE" }/${ environment-variable "FILE" }
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >> ${ environment-variable "OUT_FLAG" }
                                                                                                             done
                                                                                                     '' ;
                                                                                             post-operate =
@@ -473,14 +464,11 @@
                                                                                                                     PRE_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/pre.error &&
                                                                                                                     POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.cat &&
                                                                                                                     POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.stat &&
+                                                                                                                    POST_OUT_FLAG=${ environment-variable "ABSOLUTE" }/post.out &&
                                                                                                                     POST_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/post.error &&
-                                                                                                                    POST_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.cat.duplicate &&
-                                                                                                                    POST_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.stat.duplicate &&
-                                                                                                                    POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/post.delete &&
-                                                                                                                    POST_MOVE_FLAG=${ environment-variable "ABSOLUTE" }/post.move &&
                                                                                                                     INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
                                                                                                                     ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_ERROR_FLAG" } > /dev/null 2>&1 &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_OUT" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now > /dev/null 2>&1 &&
                                                                                                                     # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
