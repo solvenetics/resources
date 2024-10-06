@@ -436,6 +436,7 @@
                                                                                                             STANDARD_INPUT=${ environment-variable 4 } &&
                                                                                                             ABSOLUTE=${ environment-variable 5 } &&
                                                                                                             IS_TEMPORARY=${ environment-variable 6 } &&
+                                                                                                            ${ environment-variable out }/temporary/out > /dev/null 2>&1 &&
                                                                                                             TEMPORARY_OUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
                                                                                                             OUT=${ environment-variable "ABSOLUTE" }/out &&
                                                                                                             ERR=${ environment-variable "ABSOLUTE" }/err &&
