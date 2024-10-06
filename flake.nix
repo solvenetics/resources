@@ -307,6 +307,32 @@
                                                                                                 } ;
                                                                                     secondary = secondary ;
                                                                                 } ;
+                                                                        service =
+                                                                            lib
+                                                                                {
+                                                                                    at = at ;
+                                                                                    mask-reference = "/build/*.service" ;
+                                                                                    out = out ;
+                                                                                    scripts =
+                                                                                        {
+                                                                                            init =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/true
+                                                                                                    '' ;
+                                                                                            release =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/true
+                                                                                                    '' ;
+                                                                                        } ;
+                                                                                    secondary = secondary ;
+                                                                                    temporary =
+                                                                                        {
+                                                                                            instance = scripts : { init = scripts.init ; release = scripts.release ; } ;
+                                                                                        } ;
+                                                                                    temporary-resource-directory = "${ pkgs.coreutils }/bin/mktemp -t XXXXXXXX.service" ;
+                                                                                } ;
                                                                         temporary =
                                                                             lib
                                                                                 {
@@ -504,6 +530,13 @@
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "ARGUMENTS" } scripts false ) $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "STANDARD_INPUT" } scripts false ) ${ environment-variable "ABSOLUTE" }/false false &&
                                                                                                             ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "ARGUMENTS" } scripts true ) $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "STANDARD_INPUT" } scripts true ) ${ environment-variable "ABSOLUTE" }/true false
                                                                                                     '' ;
+                                                                                            service =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        COMMAND=${ environment-variable 1 } &&
+                                                                                                            TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "COMMAND" } ) ${ environment-variable "TEMPORARY" }
+                                                                                                    '' ;
                                                                                             sha512 =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
@@ -572,6 +605,7 @@
                                                                             export OBSERVED_DIRECTORY=$out &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
+                                                                            ${ resources.util }/scripts/service ${ resources.service } &&
                                                                             ${ pkgs.coreutils }/bin/sleep 15s &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
