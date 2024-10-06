@@ -470,13 +470,10 @@
                                                                                                             then
                                                                                                                 PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/pre.cat &&
                                                                                                                     PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/pre.stat &&
-                                                                                                                    PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/pre.missing &&
-                                                                                                                    PRE_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/pre.cat.duplicate &&
-                                                                                                                    PRE_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/pre.stat.duplicate &&
-                                                                                                                    POST_CREATE_FLAG=${ environment-variable "ABSOLUTE" }/post.create &&
+                                                                                                                    PRE_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/pre.error &&
                                                                                                                     POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.cat &&
                                                                                                                     POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.stat &&
-                                                                                                                    POST_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/post.missing &&
+                                                                                                                    POST_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/post.error &&
                                                                                                                     POST_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.cat.duplicate &&
                                                                                                                     POST_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.stat.duplicate &&
                                                                                                                     POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/post.delete &&
