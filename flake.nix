@@ -541,16 +541,11 @@
                                                                                                                         done
                                                                                                                     }
                                                                                                     '' ;
-                                                                                            work =
-                                                                                                { pkgs , ... } : target :
-                                                                                                    ''
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ target }
-                                                                                                    '' ;
                                                                                         } ;
                                                                                     secondary = secondary ;
                                                                                     temporary =
                                                                                         {
-                                                                                            work = scripts : { init = scripts.work ; } ;
+                                                                                            out = scripts : { } ;
                                                                                         } ;
                                                                                 } ;
                                                                             } ;
