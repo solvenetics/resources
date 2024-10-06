@@ -222,7 +222,6 @@
                                                         ''
                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                 export ${ out }=$out &&
-                                                                ${ pkgs.coreutils }/bin/cp --recursive util $out &&
                                                                 write_it ( )
                                                                     {
                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable 2 } &&
