@@ -1,0 +1,19 @@
+name: Nix Flake Validation
+on:
+  pull_request:
+  push:
+    branches:
+jobs:
+  check:
+    if: false # this does not work on ubuntu-latest because it involves setting up virtual machines and ubuntu-latest does not support setting up virtual machines
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Nix
+        run: |
+          curl -L https://nixos.org/nix/install | sh
+          source ~/.nix-profile/etc/profile.d/nix.sh
+      - name: Run Nix Flake Check
+        run: timeout nix flake check
