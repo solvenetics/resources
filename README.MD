@@ -69,7 +69,7 @@ This will ensure the service runs on every system reboot.
 
 ## Variables
 
-Here is an explanation of the key variables used in this project:
+Here is an explanation of all the variables used in this project:
 
 - **at**: Points to the `at` command (`/run/wrappers/bin/at`) for scheduling tasks.
 - **debug**: Defaults to `/dev/null`, used for discarding debug output.
@@ -89,6 +89,30 @@ Here is an explanation of the key variables used in this project:
 
 These variables allow the system to manage temporary resources, monitor processes, and clean up resources automatically upon process completion or system reboot.
 
+### Key Variables
+Most of the variables have sensible default values and do not need to be changed.
+#### mask-reference and temporary-resource-directory and ${ temporary-broken-directory }
+These variables probably do not need to be changed but if they are changed they should be changed in combination.
+If we run `${ temporary-resource-directory }` repeatedly and want to find the invocations then `${ mask-reference }` should find all of them without finding any of the invocations of `${ temporary-broken-directory }'.
+#### secondary
+We should definitely redefine.
+This will be defined in the components.
+#### scripts
+We should definitely redefine.
+This will be one of our two most important variables.
+When we redefine this, we can provide scripts.
+These scripts can use the given secondary and a variable `target`.
+`target` holds the value of the temporary resource created.
+#### temporary
+We should definitely redefine.
+This will be the second of our two most important variables.
+When we redefine this, we can provide temporary.
+Each lambda we contribute provides a temporary executable.
+The lambda depends on scripts (previously defined).
+We can specify an init script and a release script (or leave one or both empty).
+The temporary executable will start by executing the init script.
+We will monitor the calling process.
+When it completes, we will call the release script.
 ## Contributing
 
 Contributions are welcome! If you would like to contribute to this project, feel free to submit issues, feature requests, or pull requests on GitHub.
