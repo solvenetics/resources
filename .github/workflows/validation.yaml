@@ -1,0 +1,17 @@
+name: Nix Flake Validation
+on:
+  pull_request:
+  push:
+    branches:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Nix
+        run: |
+          curl -L https://nixos.org/nix/install | sh
+          source ~/.nix-profile/etc/profile.d/nix.sh
+      - name: Run Nix Flake Check
+        run: nix flake check
