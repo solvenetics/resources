@@ -117,9 +117,22 @@ When it completes, we will call the release script.
 
 Contributions are welcome! If you would like to contribute to this project, feel free to submit issues, feature requests, or pull requests on GitHub.
 
-This project uses `nix flake check` to run automated tests.
-There are two known kludges with the automated tests.
-For this reason, the service should be considered untested.
+~~This project uses `nix flake check` to run automated tests.~~
+~~There are two known kludges with the automated tests.~~
+~~For this reason, the service should be considered untested.~~
+
+Note:
+This section is temporary and will be removed once the issue with github actions is resolved.
+We can use
+
+``time timeout 60s nix flake check --no-write-lock-file --show-trace && git commit -am "" --allow-empty --allow-empty-message``
+
+to test our code on our system.
+Whatever we write will complete in 1 minute or less.
+(If we inadvertently write code that hangs the system, it will fail in one minute.)
+If it works it will commit the changes.
+If it does not work it will provide a detailed trace of what went wrong.
+It will provide a measure of the time it took.
 
 ### Reporting Issues
 

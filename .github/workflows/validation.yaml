@@ -4,7 +4,8 @@ on:
   push:
     branches:
 jobs:
-  build:
+  check:
+    if: false # this does not work on ubuntu-latest because it involves setting up virtual machines and ubuntu-latest does not support setting up virtual machines
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
