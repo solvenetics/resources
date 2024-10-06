@@ -401,13 +401,15 @@
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             CAT_DIRECTORY=${ environment-variable 2 } &&
                                                                                                             STAT_DIRECTORY=${ environment-variable 3 } &&
-                                                                                                            OUT_FLAG=${ environment-variable 4 } &&
-                                                                                                            ERROR_FLAG=${ environment-variable 5 } &&
+                                                                                                            DELETE_FLAG=${ environment-variable 4 } &&
+                                                                                                            OUT_FLAG=${ environment-variable 5 } &&
+                                                                                                            ERROR_FLAG=${ environment-variable 6 } &&
                                                                                                             ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event create ${ environment-variable "INPUT" } --format %f | while read FILE
                                                                                                             do
                                                                                                                 if [ ${ environment-variable "FILE" } == "release.status.asc" ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "ERROR_FLAG" }" | ${ at } now > /dev/null 2>&1
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "ERROR_FLAG" }" | ${ at } now > /dev/null 2>&1 &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "DELETE_FLAG" } | ${ at } now > /dev/null 2>&1
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >> ${ environment-variable "OUT_FLAG" }
                                                                                                             done
@@ -418,9 +420,9 @@
                                                                                                         INPUT=${ environment-variable 1 } &&
                                                                                                             OPERATION=${ environment-variable 2 } &&
                                                                                                             FLAG=${ environment-variable 3 } &&
-                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } ${ environment-variable "INPUT" } | while read FILE
+                                                                                                            ${ pkgs.inotify-tools }/bin/inotifywait --monitor --event ${ environment-variable "OPERATION" } ${ environment-variable "INPUT" } --format %f | while read FILE
                                                                                                             do
-                                                                                                                ${ pkgs.coreutils }/bin/echo -n A >> ${ environment-variable "FLAG" }
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "OPERATION" } ${ environment-variable "FILE" } >> ${ environment-variable "FLAG" }
                                                                                                             done
                                                                                                     '' ;
                                                                                             record =
@@ -464,15 +466,12 @@
                                                                                                                     PRE_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/pre.error &&
                                                                                                                     POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.cat &&
                                                                                                                     POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.stat &&
+                                                                                                                    POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/post.delete &&
                                                                                                                     POST_OUT_FLAG=${ environment-variable "ABSOLUTE" }/post.out &&
                                                                                                                     POST_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/post.error &&
                                                                                                                     INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
                                                                                                                     ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_ERROR_FLAG" } > /dev/null 2>&1 &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_OUT" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" }" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "POST_DELETE_FLAG" } | ${ at } now > /dev/null 2>&1 &&
-                                                                                                                    # ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "POST_MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
-                                                                                                                    ${ pkgs.coreutils }/bin/true
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_DELETE_FLAG" } ${ environment-variable "POST_OUT_FLAG" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
