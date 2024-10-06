@@ -533,9 +533,11 @@
                                                                                             service =
                                                                                                 { pkgs , ... } : target :
                                                                                                     ''
-                                                                                                        COMMAND=${ environment-variable 1 } &&
+                                                                                                        TEMPORARY_COMMAND=${ environment-variable 1 } &&
                                                                                                             TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "COMMAND" } ) ${ environment-variable "TEMPORARY" }
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TEMPORARY_COMMAND" } ) ${ environment-variable "TEMPORARY" } &&
+                                                                                                            # ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TEMPORARY_COMMAND" } ) ${ environment-variable "TEMPORARY" }
+                                                                                                            ${ pkgs.coreutils }/bin/true
                                                                                                     '' ;
                                                                                             sha512 =
                                                                                                 { pkgs , ... } : target :
