@@ -444,33 +444,34 @@
                                                                                                             ABSOLUTE=${ environment-variable 5 } &&
                                                                                                             IS_TEMPORARY=${ environment-variable 6 } &&
                                                                                                             TEMPORARY_OUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                            ARGUMENTS=${ environment-variable "ARGUMENTS_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
-                                                                                                            STANDARD_INPUT=${ environment-variable "STANDARD_INPUT_" }_${ environment-variable "HAS_STANDARD_INPUT" } &&
-                                                                                                            OUT=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.out &&
-                                                                                                            ERR=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.err &&
-                                                                                                            STATUS=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.status &&
-                                                                                                            PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat &&
-                                                                                                            PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat &&
-                                                                                                            PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.missing &&
-                                                                                                            PRE_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.cat.duplicate &&
-                                                                                                            PRE_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.pre.stat.duplicate &&
-                                                                                                            POST_CREATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.create &&
-                                                                                                            POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.cat &&
-                                                                                                            POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.stat &&
-                                                                                                            POST_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.missing &&
-                                                                                                            POST_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.cat.duplicate &&
-                                                                                                            POST_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.stat.duplicate &&
-                                                                                                            POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.delete &&
-                                                                                                            POST_MOVE_FLAG=${ environment-variable "ABSOLUTE" }/${ environment-variable "HAS_STANDARD_INPUT" }.post.move &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            OUT=${ environment-variable "ABSOLUTE" }/out &&
+                                                                                                            ERR=${ environment-variable "ABSOLUTE" }/err &&
+                                                                                                            STATUS=${ environment-variable "ABSOLUTE" }/status &&
+                                                                                                            PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/pre.cat &&
+                                                                                                            PRE_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/pre.stat &&
+                                                                                                            PRE_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/pre.missing &&
+                                                                                                            PRE_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/pre.cat.duplicate &&
+                                                                                                            PRE_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/pre.stat.duplicate &&
+                                                                                                            POST_CREATE_FLAG=${ environment-variable "ABSOLUTE" }/post.create &&
+                                                                                                            POST_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.cat &&
+                                                                                                            POST_STAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/post.stat &&
+                                                                                                            POST_MISSING_FLAG=${ environment-variable "ABSOLUTE" }/post.missing &&
+                                                                                                            POST_CAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.cat.duplicate &&
+                                                                                                            POST_STAT_DUPLICATE_FLAG=${ environment-variable "ABSOLUTE" }/post.stat.duplicate &&
+                                                                                                            POST_DELETE_FLAG=${ environment-variable "ABSOLUTE" }/post.delete &&
+                                                                                                            POST_MOVE_FLAG=${ environment-variable "ABSOLUTE" }/post.move &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "HAS_STANDARD_INPUT" } > ${ environment-variable "ABSOLUTE" }/has-standard-input &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ environment-variable "ARGUMENTS" } > ${ environment-variable "ABSOLUTE" }/arguments &&
                                                                                                             if [ ${ environment-variable "HAS_STANDARD_INPUT" } == true ]
                                                                                                             then
-                                                                                                                if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "TEMPORARY_OUT" } 2> ${ environment-variable "ERR" }
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
-                                                                                                                else
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
-                                                                                                                fi
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } > ${ environment-variable "ABSOLUTE" }/standard-input &&
+                                                                                                                    if ${ pkgs.coreutils }/bin/echo ${ environment-variable "STANDARD_INPUT" } | ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "TEMPORARY_OUT" } 2> ${ environment-variable "ERR" }
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
+                                                                                                                    else
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
+                                                                                                                    fi
                                                                                                             else
                                                                                                                 if ${ environment-variable "COMMAND" } ${ environment-variable "ARGUMENTS" } > ${ environment-variable "TEMPORARY_OUT" } 2> ${ environment-variable "ERR" }
                                                                                                                 then
@@ -499,8 +500,14 @@
                                                                                                             STANDARD_INPUT=${ environment-variable 3 } &&
                                                                                                             RELATIVE=$( ${ pkgs.coreutils }/bin/realpath --relative-to ${ resources.scripts }/scripts ${ environment-variable "COMMAND" } ) &&
                                                                                                             ABSOLUTE=${ environment-variable "OBSERVED_DIRECTORY" }/scripts/${ environment-variable "RELATIVE" } &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" } false &&
-                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true ${ environment-variable "ARGUMENTS" } ${ environment-variable "STANDARD_INPUT" } ${ environment-variable "ABSOLUTE" } false
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ environment-variable "ABSOLUTE" } &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } false $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "ARGUMENTS" } false ) $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "STANDARD_INPUT" } false ) ${ environment-variable "ABSOLUTE" }/false false &&
+                                                                                                            ${ environment-variable out }/scripts/record ${ environment-variable "COMMAND" } true $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "ARGUMENTS" } true ) $( ${ environment-variable out }/scripts/sha512 ${ environment-variable "STANDARD_INPUT" } true ) ${ environment-variable "ABSOLUTE" }/true false
+                                                                                                    '' ;
+                                                                                            sha512 =
+                                                                                                { pkgs , ... } : target :
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "@" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128
                                                                                                     '' ;
                                                                                             temporary =
                                                                                                 { pkgs , ... } : target :
