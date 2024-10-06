@@ -19,6 +19,7 @@
                             lib =
                                 {
                                     at ? "/run/wrappers/bin/at" ,
+                                    debug ? "/dev/null" ,
                                     invalid-script-throw ? value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
                                     mask-reference ? "/tmp/*.resource" ,
@@ -273,12 +274,14 @@
                                                                                     ${ pkgs.bash }/bin/bash -c "${ environment-variable "COMMAND" }" &
                                                                                 fi
                                                                         '' ;
+                                                                debug = "/build/debug" ;
                                                                 out = "f37312f2785157f375f8fe159e6122c7c9378b5a4052cadd17e6faff1851b35c749baa51c5d132da58bdfb88e54a81ecc36a989e07baa9cca69dab2f6e28024d" ;
                                                                 resources =
                                                                     {
                                                                         scripts =
                                                                             lib
                                                                                 {
+                                                                                    debug = debug ;
                                                                                     mask-reference = "/build/*.resources" ;
                                                                                     out = out ;
                                                                                     scripts =
@@ -311,6 +314,7 @@
                                                                             lib
                                                                                 {
                                                                                     at = at ;
+                                                                                    debug = debug ;
                                                                                     mask-reference = "/build/*.service" ;
                                                                                     out = out ;
                                                                                     scripts =
@@ -337,6 +341,7 @@
                                                                             lib
                                                                                 {
                                                                                     at = at ;
+                                                                                    debug = debug ;
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         let
@@ -392,6 +397,7 @@
                                                                             lib
                                                                                 {
                                                                                     at = at ;
+                                                                                    debug = debug ;
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         {
@@ -422,7 +428,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_CAT" } &&
                                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable "ABSOLUTE_STAT" }
                                                                                                                         else
-                                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE_CAT" } ${ environment-variable "I" } > /dev/null 2>&1 &&
+                                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#/nix/store/[a-z0-9]\{32\}#/nix/store#g" -e w${ environment-variable "ABSOLUTE_CAT" } ${ environment-variable "I" } >> ${ debug } 2>&1 &&
                                                                                                                                 ${ pkgs.coreutils }/bin/stat --format %A ${ environment-variable "I" } > ${ environment-variable "ABSOLUTE_STAT" }
                                                                                                                         fi
                                                                                                                 done
@@ -444,9 +450,9 @@
                                                                                                             do
                                                                                                                 if [ ${ environment-variable "FILE" } == "release.status.asc" ]
                                                                                                                 then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "ERROR_FLAG" }" | ${ at } now > /dev/null 2>&1 &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "DELETE_FLAG" } | ${ at } now > /dev/null 2>&1
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "MOVE_FLAG" } | ${ at } now > /dev/null 2>&1
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "CAT_DIRECTORY" } ${ environment-variable "STAT_DIRECTORY" } ${ environment-variable "ERROR_FLAG" }" | ${ at } now >> ${ debug } 2>&1 &&
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } delete_self ${ environment-variable "DELETE_FLAG" } | ${ at } now >> ${ debug } 2>&1
+                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable out }/scripts/post-operate ${ environment-variable "INPUT" } move_self ${ environment-variable "MOVE_FLAG" } | ${ at } now >> ${ debug } 2>&1
                                                                                                                 fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "FILE" } >> ${ environment-variable "OUT_FLAG" }
                                                                                                             done
@@ -501,7 +507,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "?" } > ${ environment-variable "STATUS" }
                                                                                                                 fi
                                                                                                             fi &&
-                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-zA-Z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" } > /dev/null 2>&1 &&
+                                                                                                            ${ pkgs.gnused }/bin/sed -e "s#^/build/[0-9a-zA-Z]\{8\}[.]\(resource\|broken\)/target\$#\1#g" -e w${ environment-variable "OUT" } ${ environment-variable "TEMPORARY_OUT" } >> ${ debug } 2>&1 &&
                                                                                                             if [ ${ environment-variable "IS_TEMPORARY" } == true ]
                                                                                                             then
                                                                                                                 PRE_CAT_DIRECTORY=${ environment-variable "ABSOLUTE" }/pre.cat &&
@@ -514,8 +520,8 @@
                                                                                                                     POST_OUT_FLAG=${ environment-variable "ABSOLUTE" }/post.out &&
                                                                                                                     POST_ERROR_FLAG=${ environment-variable "ABSOLUTE" }/post.error &&
                                                                                                                     INPUT=$( ${ pkgs.coreutils }/bin/dirname $( ${ pkgs.coreutils }/bin/cat ${ environment-variable "TEMPORARY_OUT" } ) ) &&
-                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_ERROR_FLAG" } > /dev/null 2>&1 &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_DELETE_FLAG" } ${ environment-variable "POST_MOVE_FLAG" } ${ environment-variable "POST_OUT_FLAG" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now > /dev/null 2>&1
+                                                                                                                    ${ environment-variable out }/scripts/directory ${ environment-variable "INPUT" } ${ environment-variable "PRE_CAT_DIRECTORY" } ${ environment-variable "PRE_STAT_DIRECTORY" } ${ environment-variable "PRE_ERROR_FLAG" } >> ${ debug } 2>&1 &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "${ environment-variable out }/scripts/post-create ${ environment-variable "INPUT" } ${ environment-variable "POST_CAT_DIRECTORY" } ${ environment-variable "POST_STAT_DIRECTORY" } ${ environment-variable "POST_DELETE_FLAG" } ${ environment-variable "POST_MOVE_FLAG" } ${ environment-variable "POST_OUT_FLAG" } ${ environment-variable "POST_ERROR_FLAG" }" | ${ at } now >> ${ debug } 2>&1
                                                                                                             fi
                                                                                                     '' ;
                                                                                             scripts =
@@ -535,7 +541,7 @@
                                                                                                     ''
                                                                                                         TEMPORARY_COMMAND=${ environment-variable 1 } &&
                                                                                                             TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TEMPORARY_COMMAND" } ) ${ environment-variable "TEMPORARY" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname $( ${ environment-variable "TEMPORARY_COMMAND" } ) ) ${ environment-variable "TEMPORARY" } &&
                                                                                                             # ${ pkgs.coreutils }/bin/cp --recursive $( ${ pkgs.coreutils }/bin/dirname ${ environment-variable "TEMPORARY_COMMAND" } ) ${ environment-variable "TEMPORARY" }
                                                                                                             ${ pkgs.coreutils }/bin/true
                                                                                                     '' ;
@@ -562,6 +568,7 @@
                                                                                                         test_diff ( )
                                                                                                             {
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ environment-variable "OBSERVED_DIRECTORY" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/cat /build/debug &&
                                                                                                                     assert_equals "" "$( ${ pkgs.diffutils }/bin/diff --brief --recursive ${ environment-variable "EXPECTED_DIRECTORY" } ${ environment-variable "OBSERVED_DIRECTORY" } )" "We expect expected to exactly equal observed."
                                                                                                             } &&
                                                                                                                 test_expected_observed ( )
@@ -607,7 +614,7 @@
                                                                             export OBSERVED_DIRECTORY=$out &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.scripts }/scripts -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/scripts {} a0d791e90486ab349661235cd0913d11649f6659c848ef4fb8639d04267ecfa03d1c922c455f53727e01fd42749a37b816334d75588127384b9772a61840a25b 9f94b1c83ef72dc398aadf0931f9e723303d34781d433efb685ca793d054c810c6a752c94c0a4944ab43658cede7f1059616659110d3944e8645f5c79aeff59e \; &&
                                                                             ${ pkgs.findutils }/bin/find ${ resources.temporary }/temporary -mindepth 1 -type f -not -name "*.sh" -exec ${ resources.util }/scripts/temporary {} f00f5a32e1ce243eec06f855b1a92661b0dac509bf625840334d7eb133be726000501227713c666f2e2f69f41b2792f5f77a3374be332a4c07eed1dbd74974d0 1e9e30f7de05fc8d9e3487d10ca229ffd3018ac54dd2213ee56e6891bb05709914478b1836dcc8f40cc0b6fe62616cfdda9f41d032da9069f671e656de1bddd2 \; &&
-                                                                            ${ resources.util }/scripts/service ${ resources.service } &&
+                                                                            # ${ resources.util }/scripts/service ${ resources.service } &&
                                                                             ${ pkgs.coreutils }/bin/sleep 15s &&
                                                                             ${ pkgs.bash_unit }/bin/bash_unit ${ resources.util }/scripts/test.sh
                                                                     '' ;
