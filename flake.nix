@@ -21,6 +21,7 @@
                                     at ? "/run/wrappers/bin/at" ,
                                     invalid-script-throw ? value : "b01a14bb7131a8e7bd216e451e4203a123c0b8df5e15dbf52ab6aea134f9eebc33572e663103bf60fcdb71ea6761d8bcb2cc6f8a9170165b5023138f05d1b172:  ${ builtins.typeOf value }" ,
                                     invalid-temporary-throw ? value : "5a675ed32421e1ca7f99ad18413cc5ae2b4bde11700e6f0cf77e326c1af9767cc27a87ecb806979701239425790efeb06bc3e3e65d501fdc799a0a685ecf4ad2:  ${ builtins.typeOf value }" ,
+                                    mask-reference ? "/tmp/*.resource" ,
                                     out ? "e07240d0b9209443a0219b9486f9c4e1fbbc3a3f58875105789ea8210f114bbf2c4d420efff457da21738b8cd00c5ae2c0935fc17ca575260d51d0903797f82d" ,
                                     resource ? "bf01d7a5dfd1ad0c7bd4a8ecba39063384d09898d821698c82691d8f28d9aa1067e4abeff96cf3641ab311d22cb5937b9429b6ca0c151d6365fbe0025c575f01" ,
                                     secondary ? { } ,
@@ -198,6 +199,10 @@
                                                                     scripts = scripts [ ( environment-variable out ) "scripts" ] ;
                                                                     temporary = temporary [ ( environment-variable out ) "temporary" ] ;
                                                                 } ;
+                                                    service =
+                                                        ''
+                                                            ${ pkgs.findutils }/bin/find ${ mask-reference } -mindepth 1 -maxdepth 1 -type l -name clean -exec {} \;
+                                                        '' ;
                                                     write =
                                                         let
                                                             input =
@@ -223,7 +228,10 @@
                                                                              ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable 1 } ${ environment-variable 2 }/${ environment-variable 3 }.sh &&
                                                                              makeWrapper ${ environment-variable 2 }/${ environment-variable 3 }.sh ${ environment-variable 2 }/${ environment-variable 3 } --set ${ out } $out
                                                                     } &&
-                                                                ${ write }
+                                                                ${ write } &&
+                                                                ${ pkgs.coreutils }/bin/echo '${ service }' > $out/service.sh &&
+                                                                ${ pkgs.coreutils }/bin/chmod 0500 $out/service.sh &&
+                                                                makeWrapper $out/service.sh $out/service
                                                         '' ;
                                         } ;
                             pkgs = import nixpkgs { system = system ; } ;
@@ -271,6 +279,7 @@
                                                                         scripts =
                                                                             lib
                                                                                 {
+                                                                                    mask-reference = "/build/*.resources" ;
                                                                                     out = out ;
                                                                                     scripts =
                                                                                         let
