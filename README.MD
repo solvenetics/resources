@@ -23,7 +23,7 @@ This project creates and manages temporary files and variables in a NixOS enviro
 
 1. **Scripts**: Basic executable scripts for various tasks.
 2. **Temporary**: Scripts that create temporary files and directories, automatically deleting them when the calling process completes.
-3. **Service**: A service that runs on boot, ensuring any leftover temporary resources from unexpected shutdowns are cleaned up.
+3. **Service**: A service that runs on boot, ensuring any leftover temporary resources from unexpected shutdowns are cleaned up.  The service is currently untested and should be considered broken.
 
 ## Installation
 
@@ -116,6 +116,10 @@ When it completes, we will call the release script.
 ## Contributing
 
 Contributions are welcome! If you would like to contribute to this project, feel free to submit issues, feature requests, or pull requests on GitHub.
+
+This project uses `nix flake check` to run automated tests.
+There are two known kludges with the automated tests.
+For this reason, the service should be considered untested.
 
 ### Reporting Issues
 
